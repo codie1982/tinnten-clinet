@@ -14,6 +14,15 @@ export default function Home() {
   const [t, i18n] = useTranslation("global")
 
   return (
-     <div>Ana Sayfa</div>
+     <section className="d-flex align-items-center justify-content-center min-vh-100">
+       <div className="middel-section">
+        <div className="">
+          <h1>Welcome to the Home Page</h1>
+        </div>
+        <div className="">
+          <input type="text" placeholder="Search" />
+        </div>
+       </div>
+     </section>
   )
 }
