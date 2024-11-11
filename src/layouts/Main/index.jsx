@@ -22,10 +22,12 @@ export function MainLayout() {
     return (
         <AuthProvider>
             <div data-bs-spy="scroll" data-bs-target="#navbar-example">
+          
                 <Container className="main-container" fluid>
-                    <Header />
+                   
                     <div className="d-flex">
                         <Sidebar />
+                       
                         <div className="flex-grow-1">
                             <Outlet lang={global} />
                         </div>
