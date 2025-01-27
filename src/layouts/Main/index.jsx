@@ -21,20 +21,8 @@ export function MainLayout() {
 
     return (
         <AuthProvider>
-            <div data-bs-spy="scroll" data-bs-target="#navbar-example">
-          
-                <Container className="main-container" fluid>
-                   
-                    <div className="d-flex">
-                        <Sidebar />
-                       
-                        <div className="flex-grow-1">
-                            <Outlet lang={global} />
-                        </div>
-                      {/*   <Footer /> */}
-                    </div>
-                    
-                </Container>
+            <div data-bs-spy="scroll" data-bs-target="#navbar-example" >
+                <Outlet lang={global} />
             </div>
         </AuthProvider>
     )

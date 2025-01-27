@@ -1,348 +1,1009 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+:root {
+    --primary-color: #007bff;
+    --secondary-color: #ffffff;
+    --background-color: #1e1e1e;
+    --advertaise-color: #292929;
+    --advertaise-color-dark: #004e5a;
+    /* Koyu mavi ton */
+    --advertaise-color-light: #9f9f9f;
+    /* Açık mavi ton */
+    --chat-background: #2c2c2c;
+    --chat-header: #3a3a3a;
+    --border-color: #444;
+    --text-color: #e0e0e0;
+    --standart-text-light-color: #848484;
+    --text-dark-color: #1e1e1e;
+    --text-placeholder-color: #656565;
+    --button-hover: #0056b3;
+
 }
 
-html, body {
-    height: 100%;
-    font-size: 16px;
-    font-family: 'Roboto', sans-serif;
+.light-theme {
+    --primary-color: #007bff;
+    --secondary-color: #000000;
+    --background-color: #ffffff;
+    --chat-background: #f2f2f2;
+    --chat-header: #e0e0e0;
+    --border-color: #ccc;
+    --text-color: #000000;
+    --text-light-color: #ffffff;
+    --button-hover: #0056b3;
+}
+
+html,
+body {
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    /* Sayfanın dışına taşmayı engelle */
 }
 
 body {
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: 'Lexend', sans-serif;
 }
 
-img, picture, video, canvas, svg {
-    display: block;
-    max-width: 100%;
-}
 
-input, button, textarea, select {
-    font: inherit;
-}
-
-p, h1, h2, h3, h4, h5, h6 {
-    overflow-wrap: break-word;
-}
-
-a {
-    text-decoration: none;
-    color: inherit;
-}
-
-ul, ol {
-    list-style: none;
-}
-.main-container{
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    margin: 0;
-}
-.navbar{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    height: 100px;
-    background-color: #f8f9fa;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
-.navbar-brand img {
-    height: 40px;
-    width: auto;
+.lexend-500 {
+    font-family: "Lexend", serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
   }
-
-.sidebar {
-    width: 250px;
-    height: 100vh;
+.roboto-slab-500 {
+    font-family: "Roboto Slab", serif;
+    font-optical-sizing: auto;
+    font-weight: 500 ;
+    font-style: normal;
+  }
+  
+.main-container {
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    background-color: #dbdbdb;
-    color: #fff;
+    /* Sidebar ve content'i yan yana koy */
+    height: 100vh;
+    width: 100vw;
 }
 
-.sidebar-image-container{
+/* Sidebar */
+.sidebar {
+    height: 100vh;
+    width: 250px;
+    /* Açıkken */
+    background-color: var(--background-color);
+    transition: width 0.3s ease-in-out;
+    flex-shrink: 0;
+    /* Sidebar küçülürken içeriğin kaymasını engeller */
+}
+
+/* Sidebar kapandığında küçülmesini sağla */
+.sidebar.closed {
+    width: 60px;
+}
+
+.sidebar-content {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    visibility: visible;
+    opacity: 1;
+    transition: visibility 0.1s, opacity 0.3s ease;
+}
+
+.sidebar-content.closed {
+    opacity: 0;
+    display: none;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    flex-grow: 1;
+    height: 50vh;
+}
+
+.sidebar ul li {
+    margin: 10px 10px;
+}
+
+.sidebar ul li a {
+    text-decoration: none;
+    color: var(--text-color);
+}
+
+
+/* İçerik alanı sidebar'a göre genişliğini ayarlasın */
+.sidebar.closed~.content {
+    flex-grow: 1;
+}
+
+.logo-container {
+    display: flex;
+    /* Flexbox kullanarak düzenleme */
+    justify-content: center;
+    /* Yatayda ortalama */
+    align-items: center;
+    /* Dikeyde ortalama */
+    padding: 20px;
+    /* İç boşluk */
+    background-color: var(--logo-background-color);
+    /* Arka plan rengi */
+    border-radius: 8px;
+    /* Kenar yuvarlama */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* Gölge efekti */
+    overflow: hidden;
+}
+
+.site-logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    margin-top: 30px;
+    width: 80%;
+}
+
+.site-logo {
+    position: relative;
+    display: block;
+    width: 130px;
+    height: 130px;
+    padding: 10px;
+    border: 1px solid var(--advertaise-color-light);
+    border-radius: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+}
+
+.site-logo img {
+    width: 150px;
+    height: 150px;
+    margin: -20px
+}
+
+.sidebar-content .title {
+    margin-top: 20px;
+}
+
+.logo-container img {
+    max-width: 100%;
+    /* Resmin maksimum genişliği */
+    height: auto;
+    /* Yüksekliği otomatik ayarla */
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+
+
+.plan-features {
+    display: flex;
+    text-align: center;
+    margin: auto;
+    padding: 10px 0;
     width: 100%;
-    height: 20vh;
-    margin: auto   ;
-    top: 0;
-    margin-top: 10px;
+    border-radius: 10px;
+}
+
+
+.plan-features-content {
+    display: flex;
+    /* Flexbox kullanarak düzenleme */
+    width: 100%;
+    justify-content: center;
+    /* Yatayda ortalama */
+    align-items: center;
+    /* Dikeyde ortalama */
+    background-color: var(--advertaise-color);
+    border: 1px solid var(--advertaise-color);
+    padding: 10px 20px;
+    border-radius: 10px;
+    transition: background-color 0.2s ease-in;
+    opacity: 1;
+}
+
+
+.plan-features-content:hover {
+    background-color: var(--chat-header);
+    cursor: pointer;
+}
+
+/* İçerik alanı */
+.content {
+    height: 100vh;
+    background-color: rebeccapurple;
+    flex-grow: 1;
+    /* Sidebar kapanınca içerik alanı büyüsün */
+    transition: all 0.3s ease-in-out;
+    display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
-   }
-.logo{
-    width: 100px;
-    height: 100px;   
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-    border-radius: 30px;
-    border: 1px solid #dee2e6;
-}
-.sidebar-header{
-    margin-left: 10px;
-    margin-right: 10px;
-}
-.sidebar-content{
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-.sidebar-footer-menu {
-    padding: 10px;
-    background-color: #444;
 }
 
-.sidebar-footer-menu ul {
-    list-style: none;
+
+
+.chat-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    background-color: var(--chat-background);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 7px 11px 7px rgb(10 10 10 / 48%);
+    overflow-y: auto;
+}
+
+.chat-header {
+    position: absolute;
+    top: 0px;
+    background-color: var(--chat-header);
+    width: 100%;
+    color: white;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+    z-index: 1;
+
+}
+
+.chat-header-block {
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-messages {
+    position: absolute;
+    flex: 1;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    margin: 10px 0;
+    padding: 10px;
+    overflow-y: auto;
+    background-color: var(--chat-background);
+    width: 100%;
+    height: 80vh;
+    transition: opacity 0.5s ease, max-height 0.5s ease;
+    opacity: 1;
+    overflow: hidden;
+    overflow-y: auto;
+}
+
+.chat-messages.visible {
+    opacity: 1;
+    display: block;
+}
+
+.chat-messages.hidden {
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+
+.chat-messages ul {
+    list-style-type: none;
     padding: 0;
     margin: 0;
 }
 
-.sidebar-footer-menu li {
-    margin: 10px 0;
-}
-
-.sidebar-footer-menu a {
-    color: #fff;
-    text-decoration: none;
-    display: block;
-    padding: 5px;
-}
-
-.sidebar-footer-menu a:hover {
-    background-color: #555;
-}
-/* Ana içerik alanı için margin ekleyelim */
-.main-content {
-    margin-left: 30%;
-    padding: 20px;
-}
-
-.search-section{
+.chat-advertise {
     display: flex;
-    margin: auto;
-    width: 100%;
-    height: auto;
-
-}
-.search-section input{
-    width: 100%;
-    height: 50px;
-    border: 2px solid #dee2e6;
-    border-radius: 30px;
-    padding-left: 10px;
-}
- 
-.nav-item-divider{
-    width: 100%;
-    height: 1px;
-    background-color: #646464;
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-.nav-sub-list{
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: auto;
-}
-.nav-sub-item{
-    border-left: 2px solid #dee2e6;
-    padding: 5px;   
-}
-.nav-sub-item a{
-    color: #505050;
-}
-.nav-sub-item:hover{
-    background-color: #dee2e6;
-}
-.profil-section{
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 50px;
-    background-color: #dee2e6;
-    border-radius: 30px;
-    border: 1px solid #dee2e6;
-}
-.profil-section {
-    display: flex;
+    /* Flexbox kullanarak düzenleme */
     flex-direction: row;
+    /* Yatay yönde hizalama */
+    width: 100%;
+    /* Genişlik */
+    position: absolute;
+    height: 100vh;
+    overflow: hidden;
+    margin: auto;
+    padding: 0 100px;
+    background: linear-gradient(to bottom, var(--advertaise-color-dark) 0%, var(--advertaise-color-light) 100%);
+    background: -webkit-linear-gradient(top, var(--advertaise-color-dark) 0%, var(--advertaise-color-light) 100%);
+    /* Safari ve eski Chrome */
+    background: -moz-linear-gradient(top, var(--advertaise-color-dark) 0%, var(--advertaise-color-light) 100%);
+    /* Firefox */
+    background: -o-linear-gradient(top, var(--advertaise-color-dark) 0%, var(--advertaise-color-light) 100%);
+    /* Opera */
+    background: -ms-linear-gradient(top, var(--advertaise-color-dark) 0%, var(--advertaise-color-light) 100%);
+    /* Internet Explorer 10+ */
+    justify-content: center;
+    /* İçeriği dikeyde ortala */
     align-items: center;
+    /* İçeriği yatayda ortala */
+}
+
+.chat-advertise-text-content {
+    flex: 2;
+    /* 2 birim genişlik */
     padding: 10px;
-    gap: 12px;
-}
-
-.profil-image {
-    width: 40px;
-    height: 40px;
-    min-width: 40px; /* Resmin küçülmesini engellemek için */
-    border-radius: 50%;
-    overflow: hidden;
-}
-
-.profil-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.profil-info {
-    flex-grow: 1;
-    overflow: hidden; /* Uzun metinleri kontrol etmek için */
-}
-
-.profil-name {
-    font-weight: 600;
-    font-size: 14px;
-    color: #333;
-    margin-bottom: 2px;
-}
-
-.profil-name span {
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.profil-email {
-    font-size: 12px;
-    color: #666;
-}
-
-.profil-email span {
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.profil-section-make-account{
-    display: flex;
-    flex-direction: row;
+    /* İç boşluk */
+    text-align: center;
     margin: auto;
+    height: auto;
 }
-.profil-button {
-    background-color: #007bff;
+
+.chat-advertise-auth-content {
+    display: flex;
+    /* Flexbox kullanarak düzenleme */
+    flex-direction: column;
+    /* Dikey yönde hizalama */
+    justify-content: flex-start;
+    /* İçeriği yukarıdan başlat */
+    align-items: center;
+    /* Yatayda ortalama */
+    padding: 20px;
+    /* İç boşluk */
     width: 100%;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 6px;
-    margin-left: 10px;
-    margin: 10px 0;
-    transition: all 0.3s ease;
+    /* Genişlik */
+    height: auto;
+    max-width: 400px;
+    /* Maksimum genişlik */
+    background-color: var(--advertaise-color);
+    /* Arka plan rengi */
+    border-radius: 8px;
+    /* Kenar yuvarlama */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* Gölge efekti */
+}
+
+.chat-advertise.visible {
+    display: flex;
+    opacity: 1;
+}
+
+.chat-advertise.hidden {
+    opacity: 0;
+    display: none;
+    height: 0;
+}
+
+.chat-advertise-text-content .image-slider {
+    padding-top: 250px;
+    /* Üstten padding */
+}
+
+#login-form {
+    display: flex;
+    /* Flexbox kullanarak düzenleme */
+    flex-direction: column;
+    /* Dikey yönde hizalama */
+}
+
+#login-form label {
+    margin-bottom: 5px;
+    /* Alt boşluk */
+    font-weight: bold;
+    /* Kalın yazı */
+}
+
+#login-form .icon-control {
+    padding: 10px;
+    padding-left: 40px;
+    /* İç boşluk */
+    margin-bottom: 15px;
+    /* Alt boşluk */
+    border: 1px solid var(--border-color);
+    /* Kenar rengi */
+    border-radius: 15px;
+    /* Kenar yuvarlama */
+    font-size: 16px;
+    /* Yazı boyutu */
+    background-color: var(--background-color);
+    &::placeholder {
+        color: var(--text-placeholder-color);
+    }
+    color:var(--text-light-color)
+}
+
+#login-form button {
+    padding: 10px;
+    /* İç boşluk */
+    /* Yazı rengi */
+    /* Kenar yok */
+    border-radius: 15px;
+    /* Kenar yuvarlama */
     cursor: pointer;
+    /* İmleç değişimi */
+    transition: background-color 0.3s;
+    /* Geçiş efekti */
+    font-size: 14px;
+    line-height: 20px;
+}
+
+#login-form .text-container{
+    font-size: 12px;
+  
+}
+#login-form .text-container a{
+    color:var(--text-color);
+    line-height: 14px;
+    margin-top: 10px;
+}
+#login-form button:hover {
+    background-color: var(--button-hover);
+    color: var(--text-color);
+    border: 2px solid var(--button-hover);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Hafif gölge efekti */
+    /* Hover durumunda arka plan rengi */
+}
+.form-check {
+    display: flex;
+    align-items: center; /* Checkbox ve label'ı dikey olarak ortalar */
+}
+
+.form-check-box {
+    width: 20px; /* Checkbox genişliği */
+    height: 20px; /* Checkbox yüksekliği */
+    margin-right: 10px; /* Checkbox ile label arasında boşluk */
+    cursor: pointer; /* Üzerine gelindiğinde imleci değiştir */
+}
+
+.form-check-label {
+    font-size: 14px; /* Label yazı boyutu */
+    color: var(--text-placeholder-color);; /* Label yazı rengi */
+}
+#login-form .form-check-box{
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    /* Kenar rengi */
+    border-radius: 15px;
+    /* Kenar yuvarlama */
+    font-size: 16px;
+    /* Yazı boyutu */
+    background-color: var(--background-color);
+    &::placeholder {
+        color: var(--text-placeholder-color);
+    }
+    color:var(--text-light-color)
+}
+.icon-container{
+    position: relative; /* Üstteki öğelerin konumunu ayarlamak için */
+}
+.input-icon-left-container{
+    position: absolute; /* İkonları üst üste getirmek için */ 
+    top: 15px; /* Yatayda konumlandırma */
+    left: 20px; /* Dikeyde konumlandırma */
+    /* İkon boyutunu ayarlamak için */
+    width: 30px; 
+    height: 30px; 
+}
+.btn-mail-login{
+    font-weight: 300; /* İnce font */
+    background-color: var(--secondary-color); /* Arka plan rengi beyaz */
+    border:2px solid var(--text-dark-color);
+    color: var(--text-dark-color); /* Yazı rengi */
+}
+.btn-google-login{
+    font-weight: 300; /* İnce font */
+    background-color: var(--background-color); /* Arka plan rengi beyaz */
+    border:2px solid var(--border-color);
+    color: var(--text-light-color); /* Yazı rengi */
+
+}
+.input-icon-right-container{
+    position: absolute; /* İkonları üst üste getirmek için */ 
+    top: 15px; /* Yatayda konumlandırma */
+    right: 20px; /* Dikeyde konumlandırma */
+    /* İkon boyutunu ayarlamak için */
+    width: 30px; 
+    height: 30px; 
+}
+.input-icon-left-container span{
+    color:var(--text-placeholder-color)
+}
+
+.login-form-text{
+    color:var(--standart-text-light-color);
+    font-size: 0.4rem;
+}
+
+.chat-advertise h1 {
+    font-size: 6.5em;
+    margin: 10px 0;
+    font-family: 'Roboto', sans-serif;
+    /* H1 için font ayarı */
+    font-weight: 900;
+    /* Kalın yazı */
+}
+
+.chat-advertise h2 {
+    font-size: 4em;
+    margin: 14px 0;
+    line-height: 50px;
+    font-family: 'Roboto', sans-serif;
+    /* H2 için font ayarı */
+    font-weight: 600;
+    /* Kalın yazı */
+}
+
+.chat-advertise h3 {
+    font-size: 2.5em;
+    margin: 6px 0;
+    font-family: 'Roboto', sans-serif;
+    /* H3 için font ayarı */
+    font-weight: 500;
+    /* Kalın yazı */
+}
+
+.chat-advertise .site-title {
+    font-size: 2.5em;
+    margin: 6px 0;
+    font-family: "Roboto Slab", serif;
+    font-optical-sizing: auto;
+    /* H3 için font ayarı */
+    font-weight: 500;
+    /* Kalın yazı */
+}
+.chat-advertise p {
+    font-size: 1.2em;
+    margin: 10px 0;
+    font-family: 'Roboto', sans-serif;
+    /* Paragraf için font ayarı */
+    font-weight: 400;
+    /* Normal yazı */
+}
+
+.message {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: var(--chat-header);
+    color: white;
+}
+
+.human-message {
+    margin-left: auto;
+    text-align: left;
+}
+.system-message {
+    margin-right: auto;
+    text-align: left;
+}
+
+.message-content {
+    padding: 10px;
+}
+.human-message h3 {
+    margin: 0 0 5px 0;
+    font-size: 1em;
+    font-weight: bold;
+}
+.system-message h3 {
+    margin: 0 0 5px 0;
+    font-size: 1em;
+    font-weight: bold;
+}
+
+.system-message-container {
+    background-color: var(--chat-header); /* Açık gri arka plan */
+    border-radius: 5px; /* Yuvarlatılmış köşeler */
+    padding: 5px; /* İç boşluk */
+    margin-top: 5px; /* Üstten boşluk */
+}
+
+.message-title {
+    font-weight: bold; /* Kalın yazı */
+    margin-bottom: 10px; /* Alt boşluk */
+}
+
+.system-content {
+    color: #333; /* Koyu gri yazı rengi */
+}
+
+.product-group-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 10px 0;
+    background-color: var(--background-color);
+}
+
+.product-group {
+    margin-bottom: 20px;
+}
+.accordion{
+    background-color: transparent !important;
+}
+.accordion-item {
+    border: 1px solid var(--border-color); /* Kenarlık rengi, sitenin genel renk değişkeni */
+    border-radius: 8px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+/* Accordion Header Stili */
+.accordion-header {
+    height: 50px;
+    line-height: 10px;
+    background-color: var(--background-color); /* Ana renk değişkeni */
+    color: var(--text-light-color); /* Yazı rengi */
+    font-weight: bold;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Accordion Header Hover Stili */
+.accordion-header:hover {
+    background-color: var(--chat-background); /* İkinci renk değişkeni */
+}
+
+/* Accordion Body Stili */
+.accordion-body {
+    background-color: var(--background-color); /* Arka plan rengi, sitenin genel renk değişkeni */
+    color: var(--text-color); /* Yazı rengi */
+    padding: 15px;
+}
+
+.accordion-button {
+    background-color: var(--background-color); /* Ana renk değişkeni */
+    color: var(--text-color); /* Yazı rengi */
+    transition: all 1 ease;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: var(--background-color);
+    color: var(--text-color); /* Yazı rengi */
+
+}
+
+.product-group-title {
+    background-color: var(--background-color);
+}
+
+.product-group-title h4 {
+    margin: 0 0 10px 0;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: var(--text-light-color);
+}
+
+.product-list {
+    display: grid;
+    grid-template-columns: repeat(5, 13.5rem); /* Her satırda 3 sütun */
+    gap: 25px; /* Ürünler arasındaki boşluk */
+    padding: 15px; /* Üstten ve alttan boşluk */
+}
+
+.product-card {
+    background-color: #ffffff; /* Ürün kartı arka plan rengi */
+    border: 1px solid #ddd; /* Ürün kartı kenarlığı */
+    border-radius: 5px; /* Ürün kartı kenarlarını yuvarlama */
+    overflow: hidden; /* Taşmayı önlemek için */
+    transition: transform 0.2s; /* Hover efekti için geçiş */
+}
+
+.product-card:hover {
+    transform: scale(1.05); /* Hover sırasında büyütme efekti */
+}
+
+.product-image-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 180px;
+    margin: auto;
+    background-color: red;
+    overflow: hidden;
+}
+
+.product-card img {
+    width: 100%;
+    height: auto;
+}
+
+.product-info {
     text-align: center;
 }
 
-.profil-button:hover {
-    background-color: #0056b3;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.product-info h4 {
+    margin: 0 0 5px 0;
+    font-size: 1em;
+    font-weight: bold;
 }
 
-.profil-button span {
-    font-size: 14px;
-    font-weight: 500;
+.product-info p {
+    margin: 5px 0;
+    font-size: 0.9em;
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+
+
+.details-button,
+.go-to-product-button {
+    flex: 1;
+    padding: 8px 0;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.details-button:hover,
+.go-to-product-button:hover {
+    background-color: var(--button-hover);
+}
+
+.details-button+.go-to-product-button {
+    margin-left: 5px;
+}
+
+.chat-input {
+    position: absolute;
+    bottom: 20px;
+    width: 60%;
+    display: flex;
+    align-items: center;
+    background-color: #333;
+    padding: 10px;
+    border-radius: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: visibility 0.5 ease;
+}
+
+.chat-input.hidden {
+    display: none;
+    visibility: hidden;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 20px;
+    background-color: #444;
+    color: var(--text-color);
+    margin-right: 10px;
+    outline: none;
+}
+
+.chat-input button {
+    padding: 10px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chat-input .icon {
+    margin-right: 10px;
+    cursor: pointer;
+    color: var(--text-color);
+}
+
+.search-history {
+    list-style-type: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.search-history li {
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    transition: background-color 0.5s ease;
+    border-radius: 10px;
+    position: relative;
+}
+
+.search-history li:hover {
+    background-color: var(--chat-header);
+}
+
+.search-history li a {
+    text-decoration: none;
+    color: var(--text-color);
+    flex-grow: 1;
+}
+
+.text-container .bold {
+    font-weight: 700;
+    color: #c1c1c1;
+    /* Koyu ton */
+}
+
+.text-container .light {
+    font-weight: 400;
+    color: #989898;
+    /* Daha açık koyu ton */
+}
+
+.icon-container {
+    padding: 3px;
+}
+
+.menu-icon {
+    color: var(--text-color);
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.menu {
+    display: none;
+    position: absolute;
+    right: 20px;
+    top: 40px;
+    background-color: var(--chat-background);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    list-style-type: none;
+    padding: 5px 0;
+    z-index: 1000;
+    height: 10%;
+    overflow-y: auto;
+}
+
+.menu li {
+    padding: 5px 20px;
+}
+
+.menu li a {
+    text-decoration: none;
+    color: var(--text-color);
     display: block;
 }
-.middle-section{
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
-   
-}
-.main-search-section-container{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    border: 1px solid #ddd  ;
-    border-radius: 20px;
-}
-.main-search-section {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 15px;
-   
-  }
-  
-  .main-search-section input {
-    width: 100%;
-    padding: 10px 15px;
-    border: 1px solid #ddd;
-    border-radius: 30px 0 0 30px;
-    font-size: 16px;
-  }
-  
-  .main-search-section input:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 2px rgba(0,123,255,.25);
-  }
-  .main-search-button{
-    width: 20%;
-    height: 50px;
-    background-color: #007bff;
-    border-radius: 0 30px 30px 0;
-  }
-  .main-search-button span{
-    display: flex;
-    height: 100%;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    margin: auto;
-    color: #fff;
-  }
 
-  .main-sample-section{
-    display: flex;
-    flex-direction: row;
+.menu li:hover {
+    background-color: var(--chat-header);
+}
+
+.sidebar-details {
+    position: absolute;
+    top: 0;
+    right: -100%;
     width: 100%;
     height: 100%;
-  }
-  ul.main-sample-list{
-    padding-left: 0;
-  }
-  .main-sample-section ul{
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    height: 100%;
-  }
-  .main-sample-item{
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    height: 100%;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 10px;
-    margin: 10px;
+    background-color: #333;
+    color: white;
+    padding: 0;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+    transition: transform 0.5s ease;
+    overflow: hidden;
+    transform: translateX(100%);
+}
+
+.sidebar-details.open {
+    display: block;
+    transform: translateX(-100%);
+}
+
+
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
-  }
-  .main-sample-item{
-    width: 100%;
-    height: 100%;
-    background-color: #fff;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease;
+}
 
-  }
-  .main-sample-item:hover{
-    background-color: #dee2e6;
-  }
+.back-button:hover {
+    background-color: var(--button-hover);
+}
+
+.product-detail {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.product-image {
+    width: 100px;
+    height: auto;
+    margin-right: 20px;
+}
+
+.product-text {
+    flex: 1;
+}
+
+.product-text h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.5em;
+}
+
+.product-text p {
+    margin: 0 0 20px 0;
+    font-size: 1.2em;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+
+.details-button,
+.go-to-product-button {
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.details-button:hover,
+.go-to-product-button:hover {
+    background-color: var(--button-hover);
+}
+
+
+
+
+
+.image-slider {
+    position: relative;
+    width: 100%;
+    height: 100px;
+    /* Bant yüksekliği */
+    overflow: hidden;
+    /* Taşmayı gizle */
+}
+
+.image-track {
+    display: flex;
+    animation: slide 20s linear infinite;
+    /* Animasyon süresi ve hızı */
+}
+
+@keyframes slide {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-100%);
+        /* Resimlerin kayma mesafesi */
+    }
+}
+
+.modal {
+    display: flex;
+    /* Flexbox ile ortala */
+    justify-content: center;
+    /* Yatayda ortala */
+    align-items: center;
+    /* Dikeyde ortala */
+    z-index: 1000;
+    /* Üstte görünmesi için */
+}
+
+.modal-content {
+    width: 400px;
+    /* Modal genişliği */
+    max-width: 90%;
+    /* Ekran boyutuna göre ayarla */
+}
+
+
+

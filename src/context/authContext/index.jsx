@@ -12,7 +12,6 @@ export function AuthProvider({ children }) {
         userLoggedIn: false, user: {}, isLoading: false,
         logout: () => {
             let _token = localStorage.getItem("token")
-         
         }
     })
 
