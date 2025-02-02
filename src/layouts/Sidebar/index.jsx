@@ -9,7 +9,7 @@ import {
 import logo from "../../assets/logo.png"
 import { Button, Modal, Dropdown, DropdownButton, } from 'react-bootstrap'
 import FeaturesPrice from "../../components/Modals/FeaturesPriceModal"
-export default function Sidebar({ toggleSidebar }) {
+export default function Sidebar({ resetAll,toggleSidebar }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sideBarToggle, setSideBarToggle] = useState(true)
 
@@ -32,7 +32,7 @@ export default function Sidebar({ toggleSidebar }) {
           </div>
         </div>
         <div className="chat-release">
-          <button>Konuşmayı yenile</button>
+          <button onClick={resetAll}>Konuşmayı yenile</button>
         </div>
         <div className="history-title">
           <h3>Arama Geçmişi</h3>

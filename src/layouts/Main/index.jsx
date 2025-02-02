@@ -17,14 +17,15 @@ export function MainLayout() {
     const { isLogin } = useAuth();  // 🔥 HATA OLMAYACAK ÇÜNKÜ AuthProvider ÜSTTE!
     const [isOpenFavorite, setOpenFavoite] = useState(false)
 
+    const resetAll = () => {
 
+    }
     const { data } = useSelector(
         (state) => {
             return state.product
         }
     )
     useEffect(() => {
-        console.log("data", data)
         if (data) {
             setOpenFavoite(!isOpenFavorite)
         }
@@ -37,7 +38,7 @@ export function MainLayout() {
         <AuthProvider>
             <div data-bs-spy="scroll" data-bs-target="#navbar-example" >
                 <Container fluid className="main-container">
-                    {isLogin ? <Sidebar /> : <></>}
+                    {isLogin ? <Sidebar resetAll={resetAll} /> : <></>}
                     <div className="content">
                         <Header />
                         <div className="chat-section">
