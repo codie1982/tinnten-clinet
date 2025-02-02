@@ -8,9 +8,16 @@ const routes =  createBrowserRouter([
         errorElement : "Home Error Page",
         children:[
             {
+                path:"/",
                 index:true,
                 element:<Home/>
             },
+            {
+                path:"about",
+                index:true,
+                element:"Hakkımızda"
+            },
+           
         ]
     }
 ])
