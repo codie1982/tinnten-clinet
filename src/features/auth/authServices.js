@@ -1,21 +1,15 @@
 import axios from "axios";
-const API_URL = "api/v10/users/"
 
-const fakeRegister = async (userData) => {
-    const response = { data: true }
+const API_URL = "http://localhost:5001/api/v10/users/"
+
+const Login = async (userData) => {
+    const response = await axios.post(API_URL + "login", userData);
     if (response.data) {
         localStorage.setItem("user", JSON.stringify(response.data))
     }
     return response.data
 }
-const fakeLogin = async (userData) => {
-    const response = { data: true }
-    if (response.data) {
-        localStorage.setItem("user", JSON.stringify(response.data))
-    }
-    return response.data
-}
-const register = async (userData) => {
+const Register = async (userData) => {
     const response = await axios.post(API_URL, userData);
     if (response.data) {
         localStorage.setItem("user", JSON.stringify(response.data))
@@ -50,6 +44,6 @@ const me = async (token) => {
     return response.data
 }
 const authService = {
-    fakeRegister,fakeLogin, register, registerWithGoogle, me, logoutUser
+    Register,Login, registerWithGoogle, me, logoutUser
 }
 export default authService

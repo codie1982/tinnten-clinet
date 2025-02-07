@@ -419,13 +419,15 @@ body {
     display: flex;
     /* Flexbox kullanarak düzenleme */
     flex-direction: row;
+    justify-content: space-around;
+    align-items: start;
     /* Yatay yönde hizalama */
     width: 100%;
     /* Genişlik */
     position: absolute;
     height: 100vh;
     overflow: hidden;
-    margin: auto;
+
     padding: 0 100px;
     background: linear-gradient(to bottom, var(--advertaise-color-dark) 0%, var(--advertaise-color-light) 100%);
     background: -webkit-linear-gradient(top, var(--advertaise-color-dark) 0%, var(--advertaise-color-light) 100%);
@@ -435,11 +437,6 @@ body {
     background: -o-linear-gradient(top, var(--advertaise-color-dark) 0%, var(--advertaise-color-light) 100%);
     /* Opera */
     background: -ms-linear-gradient(top, var(--advertaise-color-dark) 0%, var(--advertaise-color-light) 100%);
-    /* Internet Explorer 10+ */
-    justify-content: center;
-    /* İçeriği dikeyde ortala */
-    align-items: center;
-    /* İçeriği yatayda ortala */
 }
 
 .chat-advertise-text-content {
@@ -448,7 +445,7 @@ body {
     padding: 10px;
     /* İç boşluk */
     text-align: center;
-    margin: auto;
+    line-height: 20px;
     height: auto;
 }
 
@@ -730,7 +727,6 @@ body {
 .chat-advertise h2 {
     font-size: 4em;
     margin: 14px 0;
-    line-height: 50px;
     font-family: 'Roboto', sans-serif;
     /* H2 için font ayarı */
     font-weight: 600;

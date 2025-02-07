@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '../../context/authContext'
 import { useSelector, useDispatch } from "react-redux"
-import { fakeRegister, fakeLogin } from "../../features/auth/authSlicer"
+import { login,register } from "../../features/auth/authSlicer"
 import { useNavigate, } from "react-router-dom";
 import { Badge } from 'react-bootstrap'
 
@@ -10,6 +10,7 @@ import RegisterForm from "../RegisterForm"
 import MailVerifyForm from "../MailVerifyForm"
 import ForgotPasswordFrom from "../ForgotPasswordFrom"
 import { LOGIN, REGISTER, MAILVERIFY, GOOGLE, FORGOTPASSWORD } from '../../constant'
+import ProductCard from '../Chat/ProductCard';
 
 export default function Advertaise() {
     const navigate = useNavigate()
@@ -59,12 +60,12 @@ export default function Advertaise() {
         }
 
         if (isLoading) {
-            
+
             simulateNetworkRequest().then(() => {
                 setLoading(false);
 
             });
-           
+
         }
     }, [isLoading]);
 
@@ -126,8 +127,6 @@ export default function Advertaise() {
             case LOGIN:
                 const loginemail = e.target.email.value;
                 const loginpassword = e.target.password.value;
-                console.log("Kullanıcı Email:", loginemail);
-                console.log("Şifre:", loginpassword);
 
                 if (loginemail === "") {
                     setFormValidation(prev => ({
@@ -148,7 +147,7 @@ export default function Advertaise() {
                     }));
                 }
                 if (loginemail !== "" && loginpassword !== "") {
-                    dispatch(fakeLogin({ email: loginemail, password: loginpassword }))
+                    dispatch(login({ email: loginemail, password: loginpassword }))
                 }
 
                 return;
@@ -163,7 +162,7 @@ export default function Advertaise() {
                 if (registerpassword == registerrepassword) {
 
                 }
-                dispatch(fakeRegister({
+                dispatch(register({
                     email: registeremail, password: registerpassword, repassword: registerrepassword
                 }))
                 return;
@@ -195,21 +194,66 @@ export default function Advertaise() {
     };
 
     return (
-        <div className={`chat-advertise visible`}>
-            <div className="chat-advertise-text-content">
-                <div id="carouselExampleControls" className="carousel slide" data-bs-ride="carousel">
+        <>
+            <div className={`chat-advertise visible`}>
+
+                <div className="chat-advertise-text-content">
+
+
+                    <h1 class="display-4 mb-4 text-left">Akıllı Alışveriş</h1>
+                    <h2 class="display-5 mb-2 text-left">İhtiyacınız Olan Ürünler, Beklediğinizden Hızlı</h2>
+                    <h3 class="h5 mb-2 text-left">Yapay Zeka Destekli Keşif</h3>
+                    <p class="lead text-left">Aradığınız ürünü basit bir cümleyle tanımlayın, gerisini sistemimize bırakın. Gelişmiş dil anlama yeteneğimiz, aramanızın ardındaki niyeti çözümleyerek size <strong>hem doğrudan eşleşmeler hem de yaratıcı alternatifler</strong> sunar. "Ofis için minimalist masa" aramasıyla sadece masaları değil, çalışma alanınıza uygun aksesuar önerilerini de görebileceksiniz.</p>
+                </div>
+                <div className="chat-advertise-auth-content">
+
+                    <div className="row align-items-center">
+                        <div className="col d-flex justify-content-center">
+                            <div className="site-title ms-1">TINNTEN</div>
+                            <h6 className=' align-content-center ps-2'>
+                                <Badge bg="light mt-2" style={{ color: "#111" }}>Platform</Badge></h6>
+                        </div>
+                    </div>
+                    {renderForm()}
+                </div>
+               
+            </div>
+        </>
+    )
+}
+
+
+/**
+ *  <div id="carouselExampleControls" className="carousel slide" data-bs-ride="carousel">
                     <div className="carousel-inner">
-                        <div className="carousel-item active">
-                            <img src="resim1.jpg" className="d-block w-100" alt="Resim 1" />
+
+                        <div className="carousel-item">
+                            <img src="https://productimages.hepsiburada.net/s/424/960-1280/110000454576458.jpg" className="d-block w-100" alt="Bisiklet Kaskı" />
                         </div>
                         <div className="carousel-item">
-                            <img src="resim2.jpg" className="d-block w-100" alt="Resim 2" />
+                            <ProductCard product={{
+                                product_name: "18 Jant Erkek Bisikleti Siyah",
+                                product_image: "https://productimages.hepsiburada.net/s/424/960-1280/110000454576458.jpg",
+                                product_price: "2.500,00 TL",
+                                product_brand: "Bisiklet Markası"
+                            }} openDetail={null} />
+                        </div>
+
+                        <div className="carousel-item">
+                            <ProductCard product={{
+                                product_name: "Bisiklet Kaskı",
+                                product_image: "bisiklet_kaski.jpg",
+                                product_price: "150,00 TL",
+                                product_brand: "Aksesuar Markası",
+                            }} openDetail={null} />
                         </div>
                         <div className="carousel-item">
-                            <img src="resim3.jpg" className="d-block w-100" alt="Resim 3" />
-                        </div>
-                        <div className="carousel-item">
-                            <img src="resim4.jpg" className="d-block w-100" alt="Resim 4" />
+                            <ProductCard product={{
+                                product_name: "Bisiklet Kaskı",
+                                product_image: "bisiklet_kaski.jpg",
+                                product_price: "150,00 TL",
+                                product_brand: "Aksesuar Markası",
+                            }} openDetail={null} />
                         </div>
                     </div>
                     <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
@@ -221,23 +265,4 @@ export default function Advertaise() {
                         <span className="visually-hidden">Sonraki</span>
                     </button>
                 </div>
-
-                <h1 class="display-4 mb-4 text-left">Akıllı Alışveriş</h1>
-                <h2 class="display-5 mb-2 text-left">İhtiyacınız Olan Ürünler, Beklediğinizden Hızlı</h2>
-                <h3 class="h5 mb-2 text-left">Yapay Zeka Destekli Keşif</h3>
-                <p class="lead text-left">Aradığınız ürünü basit bir cümleyle tanımlayın, gerisini sistemimize bırakın. Gelişmiş dil anlama yeteneğimiz, aramanızın ardındaki niyeti çözümleyerek size <strong>hem doğrudan eşleşmeler hem de yaratıcı alternatifler</strong> sunar. "Ofis için minimalist masa" aramasıyla sadece masaları değil, çalışma alanınıza uygun aksesuar önerilerini de görebileceksiniz.</p>
-            </div>
-            <div className="chat-advertise-auth-content">
-
-                <div className="row align-items-center">
-                    <div className="col d-flex justify-content-center">
-                        <div className="site-title ms-1">TINNTEN</div>
-                        <h6 className=' align-content-center ps-2'>
-                            <Badge bg="light mt-2" style={{ color: "#111" }}>Platform</Badge></h6>
-                    </div>
-                </div>
-                {renderForm()}
-            </div>
-        </div>
-    )
-}
+ */

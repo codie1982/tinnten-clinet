@@ -24,7 +24,7 @@ export function AuthProvider({ children }) {
             });
         } else {
             setAuthState({
-                isLogin: true,
+                isLogin: false,
                 user: null,
             });
         }

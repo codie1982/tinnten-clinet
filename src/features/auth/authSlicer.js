@@ -12,29 +12,13 @@ const initialState = {
     isLoading: false,
     message: '',
 }
+
 // FAKE Register user
-export const fakeRegister = createAsyncThunk(
-    'auth/fakeRegister',
+export const login = createAsyncThunk(
+    'auth/login',
     async (user, thunkAPI) => {
         try {
-            return await authService.fakeRegister(user)
-        } catch (error) {
-            const message =
-                (error.response &&
-                    error.response.data &&
-                    error.response.data.message) ||
-                error.message ||
-                error.toString()
-            return thunkAPI.rejectWithValue(message)
-        }
-    }
-)
-// FAKE Register user
-export const fakeLogin = createAsyncThunk(
-    'auth/fakeLogin',
-    async (user, thunkAPI) => {
-        try {
-            return await authService.fakeLogin(user)
+            return await authService.Login(user)
         } catch (error) {
             const message =
                 (error.response &&
@@ -51,7 +35,7 @@ export const register = createAsyncThunk(
     'auth/register',
     async (user, thunkAPI) => {
         try {
-            return await authService.register(user)
+            return await authService.Register(user)
         } catch (error) {
             const message =
                 (error.response &&
@@ -80,23 +64,7 @@ export const registerWithGoogle = createAsyncThunk(
         }
     }
 )
-// get User information
-export const getMe = createAsyncThunk(
-    'auth/me',
-    async (token, thunkAPI) => {
-        try {
-            return await authService.me(token)
-        } catch (error) {
-            const message =
-                (error.response &&
-                    error.response.data &&
-                    error.response.data.message) ||
-                error.message ||
-                error.toString()
-            return thunkAPI.rejectWithValue(message)
-        }
-    }
-)
+
 // Logout user
 export const logoutUser = createAsyncThunk(
     'auth/logout',
@@ -127,24 +95,6 @@ export const authSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(fakeRegister.pending, (state) => {
-                state.isLoading = true
-            })
-            .addCase(fakeRegister.fulfilled, (state, action) => {
-                state.isLoading = false
-                state.isSuccess = true
-                state.isError = false
-                state.data = action.payload
-            })
-            .addCase(fakeLogin.pending, (state) => {
-                state.isLoading = true
-            })
-            .addCase(fakeLogin.fulfilled, (state, action) => {
-                state.isLoading = false
-                state.isSuccess = true
-                state.isError = false
-                state.data = action.payload
-            })
             .addCase(register.pending, (state) => {
                 state.isLoading = true
             })
@@ -154,12 +104,14 @@ export const authSlice = createSlice({
                 state.isError = false
                 state.data = action.payload
             })
-            .addCase(register.rejected, (state, action) => {
+            .addCase(login.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(login.fulfilled, (state, action) => {
                 state.isLoading = false
-                state.isSuccess = false
-                state.isError = true
-                state.message = action.payload
-                state.data = null
+                state.isSuccess = true
+                state.isError = false
+                state.data = action.payload
             })
             .addCase(registerWithGoogle.pending, (state, action) => {
                 state.isLoading = true
@@ -169,16 +121,6 @@ export const authSlice = createSlice({
                 state.isSuccess = true
                 state.isError = false
                 state.redirecturl = action.payload.data.url
-                state.statusCode = action.payload.status
-            })
-            .addCase(getMe.pending, (state) => {
-                state.isLoading = true
-            })
-            .addCase(getMe.fulfilled, (state, action) => {
-                state.isLoading = false
-                state.isSuccess = true
-                state.isError = false
-                state.data = action.payload.data
                 state.statusCode = action.payload.status
             })
             .addCase(logoutUser.pending, (state, action) => {
