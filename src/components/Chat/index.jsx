@@ -144,12 +144,11 @@ export default function Chat({ openDetail }) {
     )
 
 
-
     return (
-        <div className={`chat-messages hidden`}>
+        <div className={`chat-messages`}>
             <ul>
                 {
-                    systemResponse.map((item, index) => {
+                    [].map((item, index) => {
                         return (
                             <li className="message ">
                                 <HumanMessage message={item.human_message} />

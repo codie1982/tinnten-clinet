@@ -9,7 +9,7 @@ import SettingsComponent from '../../components/Modals/SettingsModal';
 import ContactUsComponent from '../../components/Modals/ContactUsModal';
 import DeleteAllChatsComponent from '../../components/Modals/AllDeleteModal';
 import LogoutComponent from '../../components/Modals/LogoutModal';
-export default function Header() {
+export default function Header({ toggleSidebar }) {
   const [t, i18n] = useTranslation("global")
   const [isOpenProfil, setIsOpenProfil] = useState(false)
   const [isOpenSettings, setIsOpenSettings] = useState(false)
@@ -69,7 +69,7 @@ export default function Header() {
       <div className="chat-header-block">
         <Navbar bg="dark" variant="dark" expand="lg" className="w-100">
           <Container fluid>
-            <Navbar.Brand id="toggleButton" /* onClick={toggleSidebar} */ href="#">
+            <Navbar.Brand id="toggleButton" onClick={toggleSidebar} href="#">
               <FontAwesomeIcon icon={faBars} />
             </Navbar.Brand>
             <Navbar.Toggle aria-controls="navbarNav" />

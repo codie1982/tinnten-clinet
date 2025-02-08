@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '../../context/authContext'
 import {
-    Form, Button, ButtonGroup, Badge
+    Form, Button, ButtonGroup, Badge,
+    Nav
 } from 'react-bootstrap'
+import { useNavigate, Link } from "react-router-dom";
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock, faEye, faEnvelope, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { REGISTER, FORGOTPASSWORD } from '../../constant'
 
 export default function LoginForm({ setState, handleLoginSubmit, validation, reset, isLoading }) {
     const [showPassword, setShowPassword] = useState(false);
+    const navigate = useNavigate();
 
-    useEffect(() => {
-        console.log("isLoading", isLoading)
-    }, [isLoading])
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword); // Şifre görünürlüğünü değiştir
@@ -92,8 +93,17 @@ export default function LoginForm({ setState, handleLoginSubmit, validation, res
                             Google ile Giriş Yap</Button>
                     </ButtonGroup>
                     <div className="d-flex align-content-center justify-content-between text-container">
-                        <p><a className="text-decoration-none" href='#' onClick={() => { setState(REGISTER) }}>Kayıt olmak için tıklayın</a></p>
-                        <p><a href="#" className="text-decoration-none" onClick={() => { setState(FORGOTPASSWORD) }}>Şifremi Unuttum?</a></p>
+
+                        <p>
+                            <Link to="/register" className="text-decoration-none">
+                                Kayıt olmak için tıklayın
+                            </Link>
+                        </p>
+                        <p>
+                            <Link to="/forgotpassword" className="text-decoration-none">
+                                Şifremi unuttum
+                            </Link>
+                        </p>
                     </div>
                 </Form>
             </div>

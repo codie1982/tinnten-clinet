@@ -3,11 +3,14 @@ import { useAuth } from '../../context/authContext'
 import {
     Form, Button, ButtonGroup, Badge
 } from 'react-bootstrap'
+import { useNavigate,Link } from "react-router-dom";
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock, faEye, faEnvelope, faEyeSlash, faCodeFork } from '@fortawesome/free-solid-svg-icons';
 import { LOGIN } from '../../constant'
 
-export default function RegisterForm({ setState, handleRegisterSubmit, isSendCode }) {
+export default function RegisterForm({ handleRegisterSubmit, isSendCode }) {
+    const navigate = useNavigate
     const [showPassword, setShowPassword] = useState(false);
     const [_isSendCode, setIsSendCode] = useState(false)
     useEffect(() => {
@@ -89,7 +92,11 @@ export default function RegisterForm({ setState, handleRegisterSubmit, isSendCod
                         }
                     </ButtonGroup>
                     <div className="d-flex align-content-center text-container">
-                        <p><a onClick={() => { setState(LOGIN) }} className="text-decoration-none" href='#'>Giriş yapmak için tıklayın</a></p>
+                        <p>
+                            <Link to="/login" className="text-decoration-none">
+                                Giriş yapmak için tıklayın
+                            </Link>
+                        </p>
                     </div>
                 </Form>
             </div>

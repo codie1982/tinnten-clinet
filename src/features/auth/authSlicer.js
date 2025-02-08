@@ -5,7 +5,7 @@ import authService from './authServices'
 
 const initialState = {
     redirecturl: null,
-    data: null,
+    data: {},
     statusCode: null,
     isError: false,
     isSuccess: false,
@@ -13,13 +13,29 @@ const initialState = {
     message: '',
 }
 
-// FAKE Register user
+
 export const login = createAsyncThunk(
     'auth/login',
     async (user, thunkAPI) => {
         try {
-            return await authService.Login(user)
+            return await authService.login(user);
         } catch (error) {
+            const message =
+                (error.response?.data?.message) ||
+                error.message ||
+                error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+// Register user
+export const register = createAsyncThunk(
+    'auth/register',
+    async (user, thunkAPI) => {
+        try {
+            return await authService.register(user)
+        } catch (error) {
+
             const message =
                 (error.response &&
                     error.response.data &&
@@ -31,12 +47,13 @@ export const login = createAsyncThunk(
     }
 )
 // Register user
-export const register = createAsyncThunk(
-    'auth/register',
-    async (user, thunkAPI) => {
+export const ingo = createAsyncThunk(
+    'auth/info',
+    async (thunkAPI) => {
         try {
-            return await authService.Register(user)
+            return await authService.info()
         } catch (error) {
+
             const message =
                 (error.response &&
                     error.response.data &&
@@ -47,6 +64,20 @@ export const register = createAsyncThunk(
         }
     }
 )
+export const checkSession = createAsyncThunk(
+    'auth/session',
+    async (thunkAPI) => {
+        try {
+            return await authService.checkSession();;
+        } catch (error) {
+            const message =
+                (error.response?.data?.message) ||
+                error.message ||
+                error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
 // Register user With Google 
 export const registerWithGoogle = createAsyncThunk(
     'auth/registerWithGoogle',
@@ -102,27 +133,34 @@ export const authSlice = createSlice({
                 state.isLoading = false
                 state.isSuccess = true
                 state.isError = false
-                state.data = action.payload
+                state.data = action.payload.data.data
             })
+            .addCase(register.rejected, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = false
+                state.isError = true
+                state.data = action.payload.data.data
+            })
+
+
             .addCase(login.pending, (state) => {
-                state.isLoading = true
+                state.isLoading = true;
+                state.isError = false;
+                state.isSuccess = false;
             })
             .addCase(login.fulfilled, (state, action) => {
-                state.isLoading = false
-                state.isSuccess = true
-                state.isError = false
-                state.data = action.payload
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.data = action.payload.data;
             })
-            .addCase(registerWithGoogle.pending, (state, action) => {
-                state.isLoading = true
+            .addCase(login.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.data = action.payload.data;
             })
-            .addCase(registerWithGoogle.fulfilled, (state, action) => {
-                state.isLoading = false
-                state.isSuccess = true
-                state.isError = false
-                state.redirecturl = action.payload.data.url
-                state.statusCode = action.payload.status
-            })
+
+
+
             .addCase(logoutUser.pending, (state, action) => {
                 state.isLoading = true
             })

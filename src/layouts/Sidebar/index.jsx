@@ -9,9 +9,9 @@ import {
 import logo from "../../assets/logo.png"
 import { Button, Modal, Dropdown, DropdownButton, } from 'react-bootstrap'
 import FeaturesPrice from "../../components/Modals/FeaturesPriceModal"
-export default function Sidebar({ resetAll,toggleSidebar }) {
+export default function Sidebar({ resetAll,openSidebar }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [sideBarToggle, setSideBarToggle] = useState(true)
+
 
 
 
@@ -19,13 +19,10 @@ export default function Sidebar({ resetAll,toggleSidebar }) {
     setIsModalOpen(!isModalOpen);
   };
 
-  const toggleMenu = () => {
-
-  }
 
   return (
-    <div className={`sidebar ${sideBarToggle ? "open" : "closed"}`}>
-      <div className={`sidebar-content ${sideBarToggle ? "" : "closed"}`}>
+    <div className={`sidebar ${openSidebar ? "open" : "closed"}`}>
+      <div className={`sidebar-content ${openSidebar ? "" : "closed"}`}>
         <div className='site-logo-container'>
           <div className="site-logo">
             <img src={logo} alt="Logo" className="logo" />

@@ -69,11 +69,53 @@ body {
     font-style: normal;
 }
 
+
+.notification {
+    margin: 20px;
+    padding: 15px;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.toast {
+    font-size: 16px;
+    color: #fff;
+}
+
+.toast-success {
+    background-color: #4caf50;
+}
+
+.toast-error {
+    background-color: #f44336;
+}
+
 .main-container {
     display: flex;
     /* Sidebar ve content'i yan yana koy */
     height: 100vh;
     width: 100vw;
+}
+
+.auth-container {
+    display: flex;
+    /* Sidebar ve content'i yan yana koy */
+    height: 100vh;
+    width: 100vw;
+}
+
+/* İçerik alanı */
+.auth-content {
+    width: 100%;
+    height: 100vh;
+    background-color: var(--background-color);
+    flex-grow: 1;
+    /* Sidebar kapanınca içerik alanı büyüsün */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease-in-out;
 }
 
 /* Sidebar */
@@ -299,6 +341,7 @@ body {
 /* İçerik alanı */
 .chat-section {
     display: flex;
+    flex: 1;
     width: 100%;
     flex-direction: row;
     justify-content: center;
@@ -314,11 +357,10 @@ body {
     display: block;
     flex: 1;
     width: 100%;
-    height: 90vh;
+    height: 100vh;
     margin: auto;
     margin-left: 0px;
     background-color: var(--chat-background);
-    padding: 20px;
     border-radius: 10px;
     box-shadow: 0px 7px 11px 7px rgb(10 10 10 / 48%);
     overflow-y: auto;
@@ -397,7 +439,6 @@ body {
 
 .chat-messages {
     display: block;
-    border: 1px solid var(--border-color);
     border-radius: 14px;
     padding: 10px;
     background-color: var(--chat-background);

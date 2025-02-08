@@ -1,6 +1,7 @@
 {
   "name": "tinnten-clinet",
   "version": "0.1.0",
+  "proxy": "http://localhost:5001",
   "private": true,
   "dependencies": {
     "@fontsource/roboto": "^5.1.0",

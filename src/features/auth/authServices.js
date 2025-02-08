@@ -1,49 +1,33 @@
 import axios from "axios";
+import axiosInstance from "../../api/axiosinstance";
 
-const API_URL = "http://localhost:5001/api/v10/users/"
 
-const Login = async (userData) => {
-    const response = await axios.post(API_URL + "login", userData);
-    if (response.data) {
-        localStorage.setItem("user", JSON.stringify(response.data))
-    }
-    return response.data
+const info = async (userData) => {
+    console.log("userData", userData)
+    const response = await axiosInstance.post("info")
+    return response.data;
 }
-const Register = async (userData) => {
-    const response = await axios.post(API_URL, userData);
-    if (response.data) {
-        localStorage.setItem("user", JSON.stringify(response.data))
-    }
-    return response.data
-}
-const logoutUser = async (token) => {
-    const config = {
-        headers: { Authorization: `Bearer ${token}` }
-    };
-    const response = await axios.post(API_URL + "logout", {}, config);
-    return response.data
-}
-const registerWithGoogle = async () => {
-    const response = await axios.post(API_URL + "google");
-    if (response.data) {
-        localStorage.setItem("url", JSON.stringify(response.data))
-    }
-    return response.data
-}
-const me = async (token) => {
-    const config = {
-        headers: { Authorization: `Bearer ${token}` }
-    };
 
-    const bodyParameters = {};
-    const response = await axios.post(API_URL + "me",
-        bodyParameters,
-        config
-    );
-
+const login = async (data) => {
+    const response = await axiosInstance.post("users/login", data, { skipAuth: true });
     return response.data
 }
+
+const register = async (data) => {
+    const response = await axiosInstance.post("users/register", data, { skipAuth: true });
+    return response.data
+}
+const logout = async () => {
+    const response = await axiosInstance.post("users/logout");
+    return response.data
+}
+const checkSession = async () => {
+    const response = await axiosInstance.post("users/checksession");
+    return response.data
+}
+
+
 const authService = {
-    Register,Login, registerWithGoogle, me, logoutUser
+    register, login, logout, info, checkSession,
 }
 export default authService
