@@ -1107,16 +1107,17 @@ body {
     overflow-y: auto;
 }
 
-.search-history li {
+.search-history .search-history-item {
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     padding: 5px 15px;
     transition: background-color 0.5s ease;
     border-radius: 14px;
     position: relative;
-    border: 1px solid var(--border-color);
+    margin-top: 3px;
+    margin-bottom: 3px;
 
 }
 
@@ -1128,6 +1129,20 @@ body {
     text-decoration: none;
     color: var(--text-color);
     flex-grow: 1;
+}
+.search-history-all-see{
+    text-decoration: none;
+    cursor: pointer;
+}
+.search-history-all-see span:hover{
+    pointer-events: none;
+}
+
+.search-history li:hover {
+    pointer-events: auto;
+}
+.search-history-all-see span{
+    font-size: 1rem;
 }
 
 .text-container .bold {

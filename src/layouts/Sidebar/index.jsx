@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from "react-router-dom";
 import logo_text_transparent from "../../assets/logo.png"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -6,12 +6,34 @@ import {
   faShoppingCart, faEllipsisV,
   faSearch
 } from '@fortawesome/free-solid-svg-icons'
+import { useDispatch, useSelector } from 'react-redux'
 import logo from "../../assets/logo.png"
 import { Button, Modal, Dropdown, DropdownButton, } from 'react-bootstrap'
 import FeaturesPrice from "../../components/Modals/FeaturesPriceModal"
-export default function Sidebar({ resetAll,openSidebar }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+import RenameHistoryModal from '../../components/Modals/RenameHistoryModal';
+import HistorySearchModal from '../../components/Modals/HistorySearchModal';
+import { deleteConversition, changeConversitionName } from "../../api/conversation/conversationSlicer"
 
+
+export default function Sidebar({ startNewconversation, openSidebar }) {
+  const MAXITEM = 3;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isOpenRenameHistory, setIsOpenRenameHistory] = useState(false)
+  const [isHistorySearch, setIsHistorySearch] = useState(false)
+  const [historyList, setHistoryList] = useState([])
+  const [allSee, setAllSee] = useState(false)
+  const { isSuccess, isError, isLoading, historyies } = useSelector(
+    (state) => {
+      return state.conversation
+    }
+  )
+
+  useEffect(() => {
+    if (!isLoading)
+      if (isSuccess)
+        if (historyies?.size != 0)
+          setHistoryList(historyies)
+  }, [isSuccess, isError, isLoading, historyies])
 
 
 
@@ -19,6 +41,13 @@ export default function Sidebar({ resetAll,openSidebar }) {
     setIsModalOpen(!isModalOpen);
   };
 
+  const openRenameHistoryModal = () => {
+    setIsOpenRenameHistory(!isOpenRenameHistory)
+  }
+
+  const openHistorySearchModal = () => {
+    setIsHistorySearch(!isHistorySearch)
+  }
 
   return (
     <div className={`sidebar ${openSidebar ? "open" : "closed"}`}>
@@ -29,42 +58,48 @@ export default function Sidebar({ resetAll,openSidebar }) {
           </div>
         </div>
         <div className="chat-release">
-          <button onClick={resetAll}>Konuşmayı yenile</button>
+          <button onClick={startNewconversation}>Konuşmayı yenile</button>
         </div>
         <div className="history-title">
           <h3>Arama Geçmişi</h3>
         </div>
         <div className="history-input">
-          <input type="text" placeholder="Geçmiş" />
+          <input type="text" placeholder="Geçmiş" onClick={() => { openHistorySearchModal() }} />
           <span><FontAwesomeIcon icon={faSearch} /></span>
         </div>
         <ul className={`search-history `}>
-          <li>
-            <a href="#">Arama 1</a>
-            <DropdownButton className={`filter-dropdown-button`} id="dropdown-item-button"
-              key={""}
-              title={""}>
-              <Dropdown.Item
-                className={`filter-dropdown-button-item`} // Seçiliyse 'selected' sınıfını ekle
-                as="button"
-              >
-                {"Yeniden Adlandır"}
-              </Dropdown.Item>
-              <Dropdown.Item
-                className={`filter-dropdown-button-item`} // Seçiliyse 'selected' sınıfını ekle
-                as="button"
-              >
-                {"Paylaş"}
-              </Dropdown.Item>
-              <Dropdown.Item
-                className={`filter-dropdown-button-item`} // Seçiliyse 'selected' sınıfını ekle
-                as="button"
-              >
-                {"Aramayı sil"}
-              </Dropdown.Item>
-            </DropdownButton>
-          </li>
+          {historyList?.slice(0, allSee ? historyList.length : MAXITEM).map((history, index) => (
+            <li key={index} className='search-history-item'>
+              <Link to={`/conversation/${history.id}`}>{history.title}</Link>
+              <a href="#"></a>
+              <DropdownButton className={`filter-dropdown-button`} id="dropdown-item-button"
+                key={""}
+                title={""}>
+                <Dropdown.Item
+                  className={`filter-dropdown-button-item`} // Seçiliyse 'selected' sınıfını ekle
+                  as="button"
+                  onClick={() => { openRenameHistoryModal() }}
+                >
+                  {"Yeniden Adlandır"}
+                </Dropdown.Item>
+                <Dropdown.Item
+                  className={`filter-dropdown-button-item`} // Seçiliyse 'selected' sınıfını ekle
+                  as="button"
+                >
+                  {"Aramayı sil"}
+                </Dropdown.Item>
+              </DropdownButton>
+            </li>
+          ))}
+
+          {historyList?.length > MAXITEM && (
+            <div className="search-history-all-see" onClick={() => setAllSee(!allSee)}>
+              <span>{allSee ? "Daha Az Gör" : "Tümünü Gör"}</span>
+            </div>
+          )}
+
         </ul>
+
         <div className={`plan-features  align-items-center justify-content-between`} onClick={openModal}>
           <div className="plan-features-content">
             <div className="row p-10">
@@ -89,6 +124,9 @@ export default function Sidebar({ resetAll,openSidebar }) {
       </div>
 
       <FeaturesPrice isModalOpen={isModalOpen} setIsModalOpen={openModal} />
+      <RenameHistoryModal isModalOpen={isOpenRenameHistory} setIsModalOpen={openRenameHistoryModal} />
+      <HistorySearchModal isModalOpen={isHistorySearch} setIsModalOpen={openHistorySearchModal} />
+
     </div>
   )
 }

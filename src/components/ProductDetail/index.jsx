@@ -5,7 +5,7 @@ import { useCookies } from 'react-cookie';
 import { Row, Col, Button, CloseButton, Carousel } from 'react-bootstrap'
 import { useTranslation } from "react-i18next"
 import { useAuth } from '../../context/authContext'
-import { addFavorite,resetProduct } from '../../features/product/productSlicer';
+import { addFavorite,resetProduct } from '../../api/product/productSlicer';
 
 export default function ProductDetail({ openDetail }) {
     const dispatch = useDispatch()

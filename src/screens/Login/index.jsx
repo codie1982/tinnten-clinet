@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from "react-redux";
-import { login } from "../../features/auth/authSlicer";
+import { login } from "../../api/auth/authSlicer";
 import LoginForm from '../../components/LoginForm';
 import { useNavigate } from "react-router-dom";
 import { Badge } from 'react-bootstrap';
@@ -8,7 +8,7 @@ import { useAuth } from '../../context/authContext';
 import { Navigate } from "react-router-dom";
 
 export default function Login() {
-    const { isLogin, isLoading: reduxLoading } = useAuth();
+    const { isLogin, isLoading: authLoading } = useAuth();
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [formValidation, setFormValidation] = useState({
@@ -24,9 +24,9 @@ export default function Login() {
 
     useEffect(() => {
         if (isSuccess && data) {
-            navigate("/conversition");  // Başarılı giriş sonrası yönlendirme
+            navigate("conversation");  // Başarılı giriş sonrası yönlendirme
         }
-    }, [isSuccess, data, navigate]);
+    }, [isSuccess, data]);
 
     const resetValidation = () => {
         setFormValidation({
@@ -75,13 +75,14 @@ export default function Login() {
         dispatch(login({ email, password, device: "web" }));
     };
     // ✅ Yüklenme tamamlanana kadar beklet
-    if (reduxLoading) {
+    console.log("authLoading", authLoading)
+    if (authLoading) {
         return <div>Loading...</div>;  // Burada Spinner gösterebilirsiniz
     }
 
     // ✅ Kullanıcı giriş yapmamışsa login sayfasına yönlendir
     if (isLogin) {
-        return <Navigate to="/conversition" replace />;
+        return <Navigate to="/conversation" replace />;
     }
     return (
         <div className="chat-advertise-auth-content">

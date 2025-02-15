@@ -39,20 +39,18 @@ ReactGA.initialize("G-6N1Q7S5NLP");
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <GoogleReCaptchaProvider>
-      <CookiesProvider defaultSetOptions={{ path: '/' }}>
-        <I18nextProvider i18n={i18next}>
-          <Provider store={store}>
-            <AuthProvider>  {/* ✅ RouterProvider'ın içinde */}
-              <RouterProvider router={routes} future={{ v7_startTransition: true }}  />
-            </AuthProvider>
-          </Provider>
-        </I18nextProvider>
-      </CookiesProvider>
-      <ToastContainer />
-    </GoogleReCaptchaProvider>
-  </React.StrictMode>
+  <GoogleReCaptchaProvider>
+    <CookiesProvider defaultSetOptions={{ path: '/' }}>
+      <I18nextProvider i18n={i18next}>
+        <Provider store={store}>
+          <AuthProvider>
+            <RouterProvider router={routes} future={{ v7_startTransition: true }} />
+          </AuthProvider>
+        </Provider>
+      </I18nextProvider>
+    </CookiesProvider>
+    <ToastContainer />
+  </GoogleReCaptchaProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

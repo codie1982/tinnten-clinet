@@ -8,7 +8,7 @@ const addFavorite = async (userData) => {
     if (response.data) {
         localStorage.setItem("user", JSON.stringify(response.data))
     }
-    console.log("response", response)
+
     return response.data
 }
 const productService = {

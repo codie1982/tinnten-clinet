@@ -10,6 +10,7 @@ const initialState = {
     isError: false,
     isSuccess: false,
     isLoading: false,
+    isLogout:false,
     message: '',
 }
 
@@ -47,7 +48,7 @@ export const register = createAsyncThunk(
     }
 )
 // Register user
-export const ingo = createAsyncThunk(
+export const info = createAsyncThunk(
     'auth/info',
     async (thunkAPI) => {
         try {
@@ -64,11 +65,11 @@ export const ingo = createAsyncThunk(
         }
     }
 )
-export const checkSession = createAsyncThunk(
-    'auth/session',
+export const checkToken = createAsyncThunk(
+    'auth/token',
     async (thunkAPI) => {
         try {
-            return await authService.checkSession();;
+            return await authService.checkToken();
         } catch (error) {
             const message =
                 (error.response?.data?.message) ||
@@ -101,7 +102,7 @@ export const logoutUser = createAsyncThunk(
     'auth/logout',
     async (token) => {
         try {
-            return await authService.logoutUser(token)
+            return await authService.logout(token)
         } catch (error) {
             const message =
                 (error.response &&
@@ -160,7 +161,6 @@ export const authSlice = createSlice({
             })
 
 
-
             .addCase(logoutUser.pending, (state, action) => {
                 state.isLoading = true
             })
@@ -168,9 +168,31 @@ export const authSlice = createSlice({
                 state.isLoading = false
                 state.isSuccess = true
                 state.isError = false
-                state.data = null
+                state.isLogout = true
                 state.statusCode = null
             })
+            .addCase(logoutUser.rejected, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = false
+                state.isError = true
+                state.isLogout = false
+                state.statusCode = null
+            })
+
+
+            .addCase(checkToken.pending, (state, action) => {
+                state.isLoading = true
+            })
+            .addCase(checkToken.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+            })
+            .addCase(checkToken.rejected, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = false
+            })
+
+
     }
 })
 

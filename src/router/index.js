@@ -6,35 +6,34 @@ import ProtectedRoute from "../components/ProtectedRoute";
 import Login from "../screens/Login"
 import Register from "../screens/Register"
 import Advertaise from "../components/Advertaise";
+import { AuthProvider } from "../context/authContext";  // ✅ AuthProvider'ı ekleyin
 
 const routes = createBrowserRouter([
     {
         path: "/",
-        element: <MainLayout />,
+        element: (
+            <MainLayout />
+        ),
         children: [
             { path: "/", element: <Advertaise /> },
-
             {
                 element: <ProtectedRoute />,
                 children: [
-                    { path: "/conversition", element: <Home /> },
-                    { path: "/profile", element: "Profile" },
-                    { path: "/dashboard", element: "DashBoard" },
-                    { path: "/add", element: "Firmanı Ekle" },
-                    { path: "/pricing", element: "Firmanı Ekle" }
-
-                ]
-            }
-        ]
+                    { path: "conversation", element: <Home /> },
+                    { path: "conversation/:id", element: <Home /> },
+                ],
+            },
+            { path: "*", element: <h1>404 - Sayfa Bulunamadı</h1> },
+        ],
     },
     {
-        element: <AuthLayout />,  // ✅ AuthLayout da artık AuthProvider ile çalışır
+        element: (
+            <AuthLayout />
+        ),
         children: [
-            { path: "/login", element: <Login /> },
-            { path: "/register", element: <Register /> },
-            { path: "/policies/terms-of-use/", element: "policies/terms-of-use/" },
-            { path: "/policies/privacy-policy/", element: "policies/privacy-policy/" },
-        ]
+            { path: "login", element: <Login /> },
+            { path: "register", element: <Register /> },
+        ],
     },
 ])
 

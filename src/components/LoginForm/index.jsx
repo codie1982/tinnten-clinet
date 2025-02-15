@@ -12,8 +12,6 @@ import { REGISTER, FORGOTPASSWORD } from '../../constant'
 
 export default function LoginForm({ setState, handleLoginSubmit, validation, reset, isLoading }) {
     const [showPassword, setShowPassword] = useState(false);
-    const navigate = useNavigate();
-
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword); // Şifre görünürlüğünü değiştir

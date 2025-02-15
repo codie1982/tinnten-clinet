@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '../../context/authContext'
 import { useSelector, useDispatch } from "react-redux"
-import { login, register } from "../../features/auth/authSlicer"
+import { login, register } from "../../api/auth/authSlicer"
 import RegisterForm from '../../components/RegisterForm'
 import { useNavigate, } from "react-router-dom";
 import { Badge } from 'react-bootstrap'
@@ -59,7 +59,7 @@ export default function Register() {
 
     // ✅ Kullanıcı giriş yapmamışsa login sayfasına yönlendir
     if (isLogin) {
-        return <Navigate to="/conversition" replace />;
+        return <Navigate to="/conversation" replace />;
     }
     return (
         <div className="chat-advertise-auth-content">

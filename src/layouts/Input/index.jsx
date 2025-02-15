@@ -4,13 +4,28 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
     faElevator,
 } from '@fortawesome/free-solid-svg-icons'
-export default function Input({ position, sendPromtToTinnten }) {
+import{Form} from "react-bootstrap"
+export default function Input({ position, sendPromt, }) {
+    const [promt, setPromt] = useState('');
 
+    const handleInputChange = (e) => {
+        setPromt(e.target.value);
+    };
+
+    const handleSubmit = () => {
+        sendPromt(promt);
+        setPromt('');
+    };
 
     return (
-        <div className={`chat-input ${position}`}>
-            <input type="text" placeholder="Tinnten uygulamasına ileti gönder" />
-            <button onClick={sendPromtToTinnten}><FontAwesomeIcon icon={faElevator} /></button>
-        </div>
+        <Form className={`chat-input ${position}`} onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+            <Form.Control 
+                type="text" 
+                placeholder="Tinnten uygulamasına ileti gönder" 
+                value={promt}
+                onChange={handleInputChange}
+            />
+            <button type="submit"><FontAwesomeIcon icon={faElevator} /></button>
+        </Form>
     )
 }

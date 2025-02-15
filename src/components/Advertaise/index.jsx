@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '../../context/authContext'
 import { useSelector, useDispatch } from "react-redux"
-import { login, register } from "../../features/auth/authSlicer"
+import { login, register } from "../../api/auth/authSlicer"
 import { useNavigate, } from "react-router-dom";
 import { Badge } from 'react-bootstrap'
 
@@ -60,17 +60,6 @@ export default function Advertaise() {
 
 
 
-
-
-
-
-
-
-    const { data } = useSelector(
-        (state) => {
-            return state.auth
-        }
-    )
 
     const resetValidation = () => {
         setFormValidation({
@@ -148,9 +137,6 @@ export default function Advertaise() {
                 const registerpassword = e.target.password.value;
                 const registerrepassword = e.target.password.value;
 
-                console.log("Kullanıcı Email:", registeremail);
-                console.log("Şifre:", registerpassword);
-                console.log("RE Şifre:", registerrepassword);
                 if (registerpassword == registerrepassword) {
 
                 }

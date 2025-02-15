@@ -10,7 +10,6 @@ import { faLock, faEye, faEnvelope, faEyeSlash, faCodeFork } from '@fortawesome/
 import { LOGIN } from '../../constant'
 
 export default function RegisterForm({ handleRegisterSubmit, isSendCode }) {
-    const navigate = useNavigate
     const [showPassword, setShowPassword] = useState(false);
     const [_isSendCode, setIsSendCode] = useState(false)
     useEffect(() => {

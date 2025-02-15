@@ -1,8 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from 'react-toastify';
-import { checkSession } from "../../features/auth/authSlicer"
-
+import { checkToken, logoutUser } from "../../api/auth/authSlicer"
 
 const AuthContext = createContext(null);
 
@@ -13,11 +12,16 @@ export function useAuth() {
     }
     return context;
 }
-
 export function AuthProvider({ children }) {
-
     const dispatch = useDispatch()
-    const { data, isError, isLoading: reduxLoading, isSuccess } = useSelector((state) => state.auth);
+    const {
+        data,
+        isError,
+        isLoading: reduxLoading,
+        isSuccess,
+        isLogout
+    } = useSelector((state) => state.auth);
+
 
 
     const [authState, setAuthState] = useState({
@@ -26,57 +30,78 @@ export function AuthProvider({ children }) {
         isLoading: true,
     });
 
-    // ✅ Uygulama ilk yüklendiğinde session kontrolü yap
     useEffect(() => {
-        checkTokenValidity();
-    }, []);
-    // ✅ Belirli aralıklarla session kontrolü (örn: 5 dakikada bir)
-    useEffect(() => {
+        const init = async () => {
+            await checkTokenValidity();
+        };
+        init();
+
         const interval = setInterval(() => {
             checkTokenValidity();
-        }, 5 * 60 * 1000); // 5 dakika
-
-        return () => clearInterval(interval);
+        }, 5 * 60 * 1000);
+        return () => clearInterval(interval); // Temizlik önemli
     }, []);
     // ✅ Token Süresi ve Session Kontrolü
     const checkTokenValidity = async () => {
         const token = localStorage.getItem('access_token');
-        const user = JSON.parse(localStorage.getItem('user'));
+        const user = JSON.parse(localStorage.getItem('user')) || null;
 
-        if (token) {
-            const isValid = dispatch(checkSession()); // 🔒 API'ye session kontrolü yap
-
-            if (isValid) {
-                setAuthState({ isLogin: true, user, isLoading: false });
+        console.log("user", user)
+        if (user) {
+            if (token) {
+                const isValid = dispatch(checkToken()); // 🔒 API'ye session kontrolü yap
+                if (isValid) {
+                    setAuthState({ isLogin: true, user, isLoading: false });
+                } else {
+                    logout(); // ⛔ Token geçersizse çıkış yap
+                }
             } else {
-                logout(); // ⛔ Token geçersizse çıkış yap
+                setAuthState((prev) => ({
+                    ...prev,
+                    isLogin: false,
+                    user: null,
+                    isLoading: false,  // ✅ Token yoksa da loading false
+                }));
             }
         } else {
-            setAuthState({ isLogin: false, user: null, isLoading: false });
+            setAuthState((prev) => ({
+                ...prev,
+                isLogin: false,
+                user: null,
+                isLoading: false,  // ✅ Token yoksa da loading false
+            }));
         }
+
     };
 
     // ✅ Çıkış Yapma Fonksiyonu
     const logout = () => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('user');
-        setAuthState({ isLogin: false, user: null, isLoading: false });
-        toast.info("Oturumunuz sonlandırıldı.");
+        dispatch(logoutUser()); // 🔒 API'ye session kontrolü yap
     };
 
-    // ✅ Redux durumuna göre kontrol
     useEffect(() => {
         if (!reduxLoading) {
-            if (isError) {
+            if (isError && authState.isLogin) {  // ✅ Sadece login ise çalıştır
                 toast.error(data);
                 logout();
-            } else if (isSuccess && data) {
-                localStorage.setItem('access_token', data.token);
-                localStorage.setItem('user', JSON.stringify(data.user));
+            }
+
+            if (isSuccess && data && !authState.isLogin) {  // ✅ Zaten login ise tekrar set etme
+                localStorage.setItem('access_token', data.access_token);
+                localStorage.setItem('user', JSON.stringify(data.info));
+                localStorage.setItem('profile', JSON.stringify(data.profile));
                 setAuthState({ isLogin: true, user: data.user, isLoading: false });
             }
+
+            if (isLogout && authState.isLogin) {  // ✅ Zaten logout ise tekrar çalıştırma
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('user');
+                localStorage.removeItem('proifle');
+                setAuthState({ isLogin: false, user: null, isLoading: false });
+                toast.info("Oturumunuz sonlandırıldı.");
+            }
         }
-    }, [isError, reduxLoading, isSuccess, data]);
+    }, [isError, isLogout, reduxLoading, isSuccess, data]);
 
     return (
         <AuthContext.Provider value={{ ...authState, logout }}>

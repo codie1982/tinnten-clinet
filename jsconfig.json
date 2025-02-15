@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+      "baseUrl": "src",
+      "paths": {
+        "@auth/*": ["api/auth/*"],
+        "@conversation/*": ["api/conversation/*"],
+        "@product/*": ["api/product/*"],
+        "@components/*": ["components/*"],
+        "@utils/*": ["utils/*"]
+      }
+    },
+    "include": ["src"]
+  }
