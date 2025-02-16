@@ -10,7 +10,8 @@ const initialState = {
     isError: false,
     isSuccess: false,
     isLoading: false,
-    isLogout:false,
+    isLogout: false,
+    isValid: true,
     message: '',
 }
 
@@ -186,10 +187,13 @@ export const authSlice = createSlice({
             .addCase(checkToken.fulfilled, (state, action) => {
                 state.isLoading = false
                 state.isSuccess = true
+                state.isValid = true
             })
             .addCase(checkToken.rejected, (state, action) => {
                 state.isLoading = false
                 state.isSuccess = false
+                state.isValid = false
+
             })
 
 

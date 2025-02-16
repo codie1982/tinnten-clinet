@@ -1,11 +1,17 @@
 import axiosInstance from "../axiosinstance";
 
 const create = async () => {
-    const response = await axiosInstance.post("conversation/create",{})
+    const response = await axiosInstance.post("conversation/create", {})
     return response.data;
 }
-const chat = async (data) => {
-    const response = await axiosInstance.post("conversation/chat",data)
+const detail = async (data) => {
+    console.log("detail", "conversation/" + data.conversationid,)
+    const response = await axiosInstance.get("conversation/" + data.conversationid, {})
+    return response.data;
+}
+const conversation = async (data) => {
+    console.log("data", data)
+    const response = await axiosInstance.post("conversation", data)
     return response.data;
 }
 const history = async () => {
@@ -13,6 +19,6 @@ const history = async () => {
     return response.data;
 }
 const conversationService = {
-    create,chat,history
+    create, conversation, history, detail
 }
 export default conversationService

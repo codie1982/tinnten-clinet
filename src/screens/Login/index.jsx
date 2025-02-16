@@ -75,7 +75,6 @@ export default function Login() {
         dispatch(login({ email, password, device: "web" }));
     };
     // ✅ Yüklenme tamamlanana kadar beklet
-    console.log("authLoading", authLoading)
     if (authLoading) {
         return <div>Loading...</div>;  // Burada Spinner gösterebilirsiniz
     }

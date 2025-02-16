@@ -27,6 +27,6 @@ const checkToken = async () => {
 
 
 const authService = {
-    register, login, logout, info,checkToken,
+    register, login, logout, info, checkToken,
 }
 export default authService

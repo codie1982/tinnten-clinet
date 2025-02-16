@@ -22,12 +22,30 @@ export const createconversation = createAsyncThunk(
         }
     }
 )
+export const conversationDetail = createAsyncThunk(
+    'conversation/detail',
+    async (data, thunkAPI) => {
+        try {
+            console.log("conversation/detail", data)
+            const response = await conversationService.detail(data)
+            return response
+        } catch (error) {
+            const message =
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    }
+)
 // conversation send promt user
-export const chat = createAsyncThunk(
+export const conversation = createAsyncThunk(
     'conversation/chat',
     async (data, thunkAPI) => {
         try {
-            const response = await conversationService.chat(data)
+            const response = await conversationService.conversation(data)
             return response
         } catch (error) {
             const message =
@@ -120,10 +138,13 @@ export const conversationSlice = createSlice({
     name: 'conversation',
     initialState: {
         data: null,
+        detail: null,
+        conversation:null,
         human_message: null,
         system_message: null,
         recommendations: null,
         historyies: null,
+        conversationid: null,
         statusCode: null,
         isError: false,
         isSuccess: false,
@@ -158,27 +179,27 @@ export const conversationSlice = createSlice({
                 state.isLoading = false
                 state.isSuccess = true
                 state.isError = false
-                state.data = action.payload.data
+                state.conversationid = action.payload.data.conversationid
             })
             .addCase(createconversation.rejected, (state, action) => {
                 state.isLoading = false
                 state.isSuccess = false
                 state.isError = true
             })
-            .addCase(chat.pending, (state) => {
+            .addCase(conversation.pending, (state) => {
                 state.isLoading = true
             })
-            .addCase(chat.fulfilled, (state, action) => {
+            .addCase(conversation.fulfilled, (state, action) => {
                 state.isLoading = false
                 state.isSuccess = true
                 state.isError = false
-                state.system_message = action.payload.data.system_message
+                state.system_message = action.payload.data.conversation
             })
-            .addCase(chat.rejected, (state, action) => {
+            .addCase(conversation.rejected, (state, action) => {
                 state.isLoading = false
                 state.isSuccess = false
                 state.isError = true
-                state.data = action.payload
+                state.system_message = null
             })
             .addCase(conversationHistory.pending, (state) => {
                 state.isLoading = true
@@ -242,6 +263,22 @@ export const conversationSlice = createSlice({
                 state.isSuccess = false
                 state.isError = true
                 state.data = null
+            })
+
+            .addCase(conversationDetail.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(conversationDetail.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.isError = false
+                state.detail = action.payload.data
+            })
+            .addCase(conversationDetail.rejected, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = false
+                state.isError = true
+                state.detail = null
             })
     }
 })

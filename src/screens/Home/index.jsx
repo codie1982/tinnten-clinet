@@ -9,7 +9,7 @@ import Chat from "../../components/Chat"
 import ProductDetail from '../../components/ProductDetail'
 import Favorite from '../../layouts/Favorite'
 import ChatInput from "../../layouts/Input"
-import { createconversation, chat, resetConversation,conversationHistory } from "../../api/conversation/conversationSlicer"
+import { createconversation, conversation, resetConversation, conversationHistory, conversationDetail } from "../../api/conversation/conversationSlicer"
 import { faL } from '@fortawesome/free-solid-svg-icons'
 
 export default function Home() {
@@ -25,13 +25,13 @@ export default function Home() {
   const [openChatMessage, setOpenChatMessage] = useState(false)
   const [openSidebar, setOpenSidebar] = useState(true)
   const [chatInputPosition, setChatInputPosition] = useState("middle")
-  const [userPromt, setUserPromt] = useState("")
+  const [HumanMessage, setHumanMessage] = useState(null)
   const [systemMessage, setSystemMessage] = useState([])
 
   const openDetailSidebar = () => {
     setOpenProductDetail(!openProductDetail)
   }
-  const { data, isSuccess, isError, isLoading, system_message } = useSelector(
+  const { data, isSuccess, isError, isLoading, system_message, conversationid: createdConversationid, detail, conversation } = useSelector(
     (state) => {
       return state.conversation
     }
@@ -43,19 +43,31 @@ export default function Home() {
       if (conversationid != undefined) {
         setOpenSidebar(false)
         setChatInputPosition("bottom")
-        dispatch(chat({ id: conversationid, promt:"" }))
+        console.log("BURADA")
+        dispatch(conversationDetail({ conversationid: conversationid }))
       }
     }
   }, []);
 
   useEffect(() => {
-    if (!isLoading)
+    if (!isLoading) {
       if (isSuccess) {
-        if (data?.conversationid != null) {
-          navigate(`/conversation/${data?.conversationid}`);
+        if (detail != null) {
+          console.log("conversationDetail", detail)
         }
       }
-  }, [data, isSuccess, isError, isLoading, system_message])
+    }
+  }, [isSuccess, isError, isLoading, detail])
+  useEffect(() => {
+    if (!isLoading) {
+      if (isSuccess) {
+        if (conversation != null) {
+          console.log("conversationDetail", conversation)
+        }
+      }
+    }
+  }, [isSuccess, isError, isLoading, conversation])
+
 
 
   useEffect(() => {
@@ -66,9 +78,30 @@ export default function Home() {
           setSystemMessage(system_message)
 
         }
+
       }
+
     }
   }, [isSuccess, isError, isLoading, system_message])
+
+  useEffect(() => {
+    console.log("isSuccess, isError, isLoading, conversationid", isSuccess, isError, isLoading, conversationid)
+    if (!isLoading) {
+      if (isSuccess) {
+        if (conversationid) {
+          //dispatch(conversation({ conversationid, human_message: HumanMessage }))
+        } else {
+          if (createdConversationid != null) {
+            if (HumanMessage != null) {
+              navigate("/conversation" + "/" + createdConversationid)
+              dispatch(conversation({ conversationid, human_message: HumanMessage }))
+              setOpenChatMessage(true)
+            }
+          }
+        }
+      }
+    }
+  }, [isSuccess, isError, isLoading, createdConversationid])
 
 
   const [isOpenFavorite, setOpenFavoite] = useState(false)
@@ -91,16 +124,17 @@ export default function Home() {
   const toggleSidebar = () => {
     setOpenSidebar(!openSidebar)
   }
-  const sendPromt = (promt) => {
-    setUserPromt(promt)
+  const sendPromt = (human_message) => {
+    setHumanMessage(human_message)
     setOpenSidebar(false)
     setChatInputPosition("bottom")
     if (conversationid != null) {
       if (conversationid != undefined) {
-        dispatch(chat({ id: conversationid, promt }))
+        dispatch(conversation({ conversationid, human_message }))
       }
+    } else {
+      dispatch(createconversation())
     }
-
   }
 
   return (
