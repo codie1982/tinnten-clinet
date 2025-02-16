@@ -139,7 +139,6 @@ export const conversationSlice = createSlice({
     initialState: {
         data: null,
         detail: null,
-        conversation:null,
         human_message: null,
         system_message: null,
         recommendations: null,
@@ -272,7 +271,7 @@ export const conversationSlice = createSlice({
                 state.isLoading = false
                 state.isSuccess = true
                 state.isError = false
-                state.detail = action.payload.data
+                state.detail = action.payload.data.conversation
             })
             .addCase(conversationDetail.rejected, (state, action) => {
                 state.isLoading = false

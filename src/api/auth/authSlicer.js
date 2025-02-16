@@ -5,7 +5,7 @@ import authService from './authServices'
 
 const initialState = {
     redirecturl: null,
-    data: {},
+    data: null,
     statusCode: null,
     isError: false,
     isSuccess: false,
@@ -179,24 +179,6 @@ export const authSlice = createSlice({
                 state.isLogout = false
                 state.statusCode = null
             })
-
-
-            .addCase(checkToken.pending, (state, action) => {
-                state.isLoading = true
-            })
-            .addCase(checkToken.fulfilled, (state, action) => {
-                state.isLoading = false
-                state.isSuccess = true
-                state.isValid = true
-            })
-            .addCase(checkToken.rejected, (state, action) => {
-                state.isLoading = false
-                state.isSuccess = false
-                state.isValid = false
-
-            })
-
-
     }
 })
 

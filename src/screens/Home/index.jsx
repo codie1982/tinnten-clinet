@@ -6,11 +6,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import Header from '../../layouts/Header'
 import Sidebar from '../../layouts/Sidebar'
 import Chat from "../../components/Chat"
+import Paginations from '../../components/Paginations'
 import ProductDetail from '../../components/ProductDetail'
 import Favorite from '../../layouts/Favorite'
 import ChatInput from "../../layouts/Input"
 import { createconversation, conversation, resetConversation, conversationHistory, conversationDetail } from "../../api/conversation/conversationSlicer"
-import { faL } from '@fortawesome/free-solid-svg-icons'
+
 
 export default function Home() {
 
@@ -27,11 +28,15 @@ export default function Home() {
   const [chatInputPosition, setChatInputPosition] = useState("middle")
   const [HumanMessage, setHumanMessage] = useState(null)
   const [systemMessage, setSystemMessage] = useState([])
+  const [groupedMessages, setGroupedMessages] = useState({});
 
+
+  const [totalCount, setTotalCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const openDetailSidebar = () => {
     setOpenProductDetail(!openProductDetail)
   }
-  const { data, isSuccess, isError, isLoading, system_message, conversationid: createdConversationid, detail, conversation } = useSelector(
+  const { data, isSuccess, isError, isLoading, system_message, conversationid: createdConversationid, detail } = useSelector(
     (state) => {
       return state.conversation
     }
@@ -43,7 +48,6 @@ export default function Home() {
       if (conversationid != undefined) {
         setOpenSidebar(false)
         setChatInputPosition("bottom")
-        console.log("BURADA")
         dispatch(conversationDetail({ conversationid: conversationid }))
       }
     }
@@ -53,36 +57,41 @@ export default function Home() {
     if (!isLoading) {
       if (isSuccess) {
         if (detail != null) {
-          console.log("conversationDetail", detail)
+
+          setMessageBlok(detail)
+          console.log("total page", totalCount)
         }
       }
     }
   }, [isSuccess, isError, isLoading, detail])
-  useEffect(() => {
-    if (!isLoading) {
-      if (isSuccess) {
-        if (conversation != null) {
-          console.log("conversationDetail", conversation)
-        }
-      }
-    }
-  }, [isSuccess, isError, isLoading, conversation])
 
-
+  const setMessageBlok = (message) => {
+    const groupedMessages = groupMessagesByGroupId(message.messages);
+    console.log("groupedMessages", groupedMessages)
+    setGroupedMessages(groupedMessages);
+    setTotalCount(Object.keys(groupedMessages).length);
+    setSystemMessage(groupedMessages[Object.keys(groupedMessages)[currentPage - 1]] || []);
+    setOpenChatMessage(true)
+  }
+  const groupMessagesByGroupId = (messages) => {
+    return messages.reduce((groups, message) => {
+      const group = groups[message.groupid] || [];
+      group.push(message);
+      groups[message.groupid] = group;
+      return groups;
+    }, {});
+  };
 
   useEffect(() => {
     if (!isLoading) {
       if (isSuccess) {
         if (system_message != null) {
-          setOpenChatMessage(true)
-          setSystemMessage(system_message)
-
+          setCurrentPage(currentPage + 1)
+          setMessageBlok(system_message)
         }
-
       }
-
     }
-  }, [isSuccess, isError, isLoading, system_message])
+  }, [isSuccess, isError, isLoading, system_message, currentPage])
 
   useEffect(() => {
     console.log("isSuccess, isError, isLoading, conversationid", isSuccess, isError, isLoading, conversationid)
@@ -137,11 +146,19 @@ export default function Home() {
     }
   }
 
+
+
+  const changePage = (page) => {
+    setCurrentPage(page);
+    setSystemMessage(groupedMessages[Object.keys(groupedMessages)[page - 1]] || []);
+  };
+
   return (
     <>
       {isLogin ? <Sidebar startNewconversation={newconversation} openSidebar={openSidebar} /> : <></>}
       <div className="content">
         {isLogin ? <Header toggleSidebar={toggleSidebar} /> : <></>}
+        {isLogin && totalCount != 0 ? <Paginations totalCount={totalCount} currentPage={currentPage} changePage={changePage} /> : <></>}
         <div className="chat-section">
           <div className={`chat-container ${isOpenFavorite ? 'open-favorite' : ''}`}>
             <div className="chat-blok">
@@ -152,10 +169,9 @@ export default function Home() {
           </div>
           <Favorite isOpenFavorite={isOpenFavorite} closeFavoriteSection={closeFavoriteSection} />
         </div>
+
         {isLogin ? <ChatInput position={chatInputPosition} sendPromt={sendPromt} /> : <></>}
       </div>
-
-
     </>
   )
 

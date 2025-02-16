@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux"
 import { useNavigate, } from "react-router-dom";
 import { useCookies } from 'react-cookie';
@@ -153,41 +153,45 @@ export default function Chat({ openDetail, response }) {
         <div className={`chat-messages`}>
             <ul>
                 {
-
                     response.map((item, index) => {
                         return (
                             <li className="message ">
-                                <HumanMessage message={item.human_message} />
-                                <SystemMessage message={item.system_message} />
+                                {item.type == "human_message'" ? <HumanMessage message={item.content} /> : <SystemMessage message={item.content} />}
                                 {
-                                    item.recommendation_products != null ? <>
-                                        <p>Önerilen Ürünler:</p>
-                                        <Accordion defaultActiveKey="0" alwaysOpen>
-                                            {item.recommendation_products.map((item, index) => {
-                                                return (
-                                                    <Accordion.Item eventKey={index} className="product-group-list" key={index}>
-                                                        <Accordion.Header className="product-group-title"><h4>{item.productGroup.product_group_name}</h4></Accordion.Header>
-                                                        <Accordion.Body>
-                                                            <Row>
-                                                                <Col>
-                                                                    <p>Filtre Uygulayın</p>
-                                                                    {item.productGroup.filter != null || item.productGroup.filter.length != 0 ?
-                                                                        <Filter item={item} />
-                                                                        : <></>}
-                                                                </Col>
-                                                            </Row>
-                                                            <div className="product-list">
-                                                                {item.productGroup.product_list.map((product) => {
-                                                                    return (
-                                                                        <ProductCard product={product} openDetail={openDetail} />
-                                                                    );
-                                                                })}
-                                                            </div>
-                                                        </Accordion.Body>
-                                                    </Accordion.Item>
-                                                );
-                                            })}
-                                        </Accordion>
+                                    item.systemData.recommendations != null && item.systemData.recommendations.length != 0 ? <>
+                                        {item.systemData.recommendations.type == "productRecommendation" ?
+                                            <>
+                                                <p>Önerilen Ürünler:</p>
+                                                <Accordion defaultActiveKey="0" alwaysOpen>
+                                                    {item.recommendation_products.map((item, index) => {
+                                                        return (
+                                                            <Accordion.Item eventKey={index} className="product-group-list" key={index}>
+                                                                <Accordion.Header className="product-group-title"><h4>{item.productGroup.product_group_name}</h4></Accordion.Header>
+                                                                <Accordion.Body>
+                                                                    <Row>
+                                                                        <Col>
+                                                                            <p>Filtre Uygulayın</p>
+                                                                            {item.productGroup.filter != null || item.productGroup.filter.length != 0 ?
+                                                                                <Filter item={item} />
+                                                                                : <></>}
+                                                                        </Col>
+                                                                    </Row>
+                                                                    <div className="product-list">
+                                                                        {item.productGroup.product_list.map((product) => {
+                                                                            return (
+                                                                                <ProductCard product={product} openDetail={openDetail} />
+                                                                            );
+                                                                        })}
+                                                                    </div>
+                                                                </Accordion.Body>
+                                                            </Accordion.Item>
+                                                        );
+                                                    })}
+                                                </Accordion>
+                                            </>
+                                            :
+                                            <></>}
+
                                     </>
                                         :
                                         <></>
@@ -200,3 +204,7 @@ export default function Chat({ openDetail, response }) {
         </div>
     )
 }
+
+
+
+

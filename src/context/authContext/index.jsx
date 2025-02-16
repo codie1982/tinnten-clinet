@@ -14,16 +14,7 @@ export function useAuth() {
 }
 export function AuthProvider({ children }) {
     const dispatch = useDispatch()
-    const {
-        data,
-        isError,
-        isLoading: reduxLoading,
-        isSuccess,
-        isLogout,
-        isValid
-    } = useSelector((state) => state.auth);
-
-
+    const { data, isError, isLoading: reduxLoading, isSuccess, isLogout } = useSelector((state) => state.auth);
 
     const [authState, setAuthState] = useState({
         isLogin: false,
@@ -33,93 +24,48 @@ export function AuthProvider({ children }) {
 
     useEffect(() => {
         const init = async () => {
-            await checkTokenValidity();
+            const token = localStorage.getItem('access_token');
+            const user = JSON.parse(localStorage.getItem('user'));
+
+            if (token && user) {
+                setAuthState({ isLogin: true, user, isLoading: false });
+            } else {
+                setAuthState({ isLogin: false, user: null, isLoading: false });
+            }
         };
         init();
-
-        const interval = setInterval(async () => {
-            await checkTokenValidity();
-        }, 5 * 60 * 1000);
-        return () => clearInterval(interval); // Temizlik önemli
-    }, []);
+    }, [dispatch]);
 
     useEffect(() => {
-        console.log("reduxLoading, isSuccess, isValid", reduxLoading, isSuccess, isValid)
-        if (!reduxLoading)
-            if (isSuccess)
-                if (!isValid) {
-                    console.log("DENEME4")
-                    logout()
-                } else {
-                    console.log("DENEME5")
-                    const user = JSON.parse(localStorage.getItem('user')) || null;
-                    setAuthState({ isLogin: true, user, isLoading: false });
-                }
-    }, [reduxLoading, isSuccess, isValid])
-
-    // ✅ Token Süresi ve Session Kontrolü
-    const checkTokenValidity = async () => {
-        const token = localStorage.getItem('access_token');
-        const user = JSON.parse(localStorage.getItem('user'));
-        console.log("user", user)
-        if (user) {
-            if (token) {
-                console.log("DENEME1")
-                dispatch(checkToken()); // 🔒 API'ye session kontrolü yap
-            } else {
-                console.log("DENEME2")
-                setAuthState((prev) => ({
-                    ...prev,
-                    isLogin: false,
-                    user: null,
-                    isLoading: false,  // ✅ Token yoksa da loading false
-                }));
-            }
-        } else {
-            toast.error("Oturumunuz sonlandırıldı.");
-            console.log("DENEME3")
-            setAuthState((prev) => ({
-                ...prev,
-                isLogin: false,
-                user: null,
-                isLoading: false,  // ✅ Token yoksa da loading false
-            }));
-        }
-
-    };
-
-    // ✅ Çıkış Yapma Fonksiyonu
-    const logout = () => {
-        dispatch(logoutUser()); // 🔒 API'ye session kontrolü yap
-    };
-
-    useEffect(() => {
+        console.log("data", data)
         if (!reduxLoading) {
-            if (isError && authState.isLogin) {  // ✅ Sadece login ise çalıştır
-                console.log("DENEME8")
-                toast.error(data);
+            if (isError && authState.isLogin) {
+                toast.error("Oturum süreniz doldu.");
                 logout();
             }
-
-            if (isSuccess && data && !authState.isLogin) {  // ✅ Zaten login ise tekrar set etme
-                console.log("DENEME7")
-                console.log("data", data)
+            if (isSuccess && data) {
                 localStorage.setItem('access_token', data.access_token);
                 localStorage.setItem('user', JSON.stringify(data.info));
                 localStorage.setItem('profiles', JSON.stringify(data.profiles));
-                setAuthState({ isLogin: true, user: data.user, isLoading: false });
+            }
+            if (isSuccess) {
+                const user = JSON.parse(localStorage.getItem('user')) || null;
+                const profiles = JSON.parse(localStorage.getItem('profiles')) || null;
+                setAuthState({ isLogin: true, user, profiles, isLoading: false });
             }
 
-            if (isLogout && authState.isLogin) {  // ✅ Zaten logout ise tekrar çalıştırma
-                console.log("DENEME6")
-                localStorage.removeItem('access_token');
-                localStorage.removeItem('user');
-                localStorage.removeItem('profiles');
+
+            if (isLogout) {
+                localStorage.clear()
                 setAuthState({ isLogin: false, user: null, isLoading: false });
                 toast.info("Oturumunuz sonlandırıldı.");
             }
         }
     }, [isError, isLogout, reduxLoading, isSuccess, data]);
+
+    const logout = () => {
+        dispatch(logoutUser());
+    };
 
     return (
         <AuthContext.Provider value={{ ...authState, logout }}>

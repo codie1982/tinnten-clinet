@@ -17,7 +17,7 @@ const silentAuth = async () => {
     try {
         const response = await axios.post(`${API_URL}auth/refresh-token`, {}, {
             withCredentials: true, // ✅ Cookie'nin gönderilmesi için gerekli
-          });
+        });
         const newToken = response.data.access_token;
         localStorage.setItem('access_token', newToken);
         return newToken;
@@ -39,7 +39,26 @@ axiosInstance.interceptors.request.use(
     },
     (error) => Promise.reject(error)
 );
+// ✅ Response Interceptor
+axiosInstance.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        if ((error.response && error.response.status === 401) && !error.config._retry) {
+            error.config._retry = true;
+            const newToken = await silentAuth();
 
+            if (newToken) {
+                error.config.headers['Authorization'] = `Bearer ${newToken}`;
+                return axiosInstance(error.config);
+            } else {
+                toast.error("Oturum süreniz doldu. Lütfen tekrar giriş yapın.");
+                localStorage.clear();
+                window.location.href = '/login';
+            }
+        }
+        return Promise.reject(error);
+    }
+);
 // ❌ Response Interceptor (401 durumunda Silent Auth çalışır)
 axiosInstance.interceptors.response.use(
     (response) => response,
@@ -48,9 +67,16 @@ axiosInstance.interceptors.response.use(
             error.config._retry = true; // Sonsuz döngüyü engellemek için
             try {
                 const newToken = await silentAuth();
-                error.config.headers['Authorization'] = `Bearer ${newToken}`;
-                return axiosInstance(error.config); // İsteği yeniden gönder
+                if (newToken) {
+                    error.config.headers['Authorization'] = `Bearer ${newToken}`;
+                    return axiosInstance(error.config);
+                } else {
+                    toast.error("Oturum süreniz doldu. Lütfen tekrar giriş yapın.");
+                    localStorage.clear();
+                    window.location.href = '/login';
+                }
             } catch (silentAuthError) {
+                console.log("silentAuthError", silentAuthError)
                 toast.error('Oturum süreniz doldu. Lütfen tekrar giriş yapın.');
                 localStorage.clear();
                 window.location.href = '/login';
