@@ -37,7 +37,6 @@ export function AuthProvider({ children }) {
     }, [dispatch]);
 
     useEffect(() => {
-        console.log("data", data)
         if (!reduxLoading) {
             if (isError && authState.isLogin) {
                 toast.error("Oturum süreniz doldu.");

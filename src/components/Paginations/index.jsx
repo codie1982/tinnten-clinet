@@ -1,5 +1,6 @@
 import React from 'react';
-import { Pagination } from 'react-bootstrap'
+import { Pagination } from 'react-bootstrap';
+
 const Paginations = ({ totalCount, currentPage, changePage }) => {
     console.log("totalPages",totalCount)
     const totalPages = Math.ceil(totalCount); // Assuming 10 items per page
@@ -9,7 +10,7 @@ const Paginations = ({ totalCount, currentPage, changePage }) => {
     };
 
     return (
-        <div className="center-horizantal mt-2">
+        <div className="pagination-content center-horizantal mt-2">
             <Pagination>
                 <Pagination.First onClick={() => handlePageChange(1)} />
                 <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />

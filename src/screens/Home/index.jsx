@@ -1,179 +1,210 @@
-import React, { useState, useEffect } from 'react'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { useTranslation } from "react-i18next"
-import { useAuth } from '../../context/authContext'
-import { useDispatch, useSelector } from 'react-redux'
-import Header from '../../layouts/Header'
-import Sidebar from '../../layouts/Sidebar'
-import Chat from "../../components/Chat"
-import Paginations from '../../components/Paginations'
-import ProductDetail from '../../components/ProductDetail'
-import Favorite from '../../layouts/Favorite'
-import ChatInput from "../../layouts/Input"
-import { createconversation, conversation, resetConversation, conversationHistory, conversationDetail } from "../../api/conversation/conversationSlicer"
-
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { useAuth } from "../../context/authContext";
+import Header from "../../layouts/Header";
+import Sidebar from "../../layouts/Sidebar";
+import Chat from "../../components/Chat";
+import Paginations from "../../components/Paginations";
+import ProductDetail from "../../components/ProductDetail";
+import Favorite from "../../layouts/Favorite";
+import ChatInput from "../../layouts/Input";
+import {
+  createconversation,
+  conversation,
+  resetConversation,
+  conversationHistory,
+  conversationDetail,
+} from "../../api/conversation/conversationSlicer";
 
 export default function Home() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { id: conversationparamid } = useParams();
+  const { isLogin } = useAuth();
+  const [t] = useTranslation("global");
 
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
-  const { id: conversationid } = useParams();
-
-  //ReactGA.send({ hitType: "pageview", page: "/", title: "Home Page" });
-  const { isLogin } = useAuth()
-  const [t, i18n] = useTranslation("global")
-  const [openProductDetail, setOpenProductDetail] = useState(false)
-  const [openChatMessage, setOpenChatMessage] = useState(false)
-  const [openSidebar, setOpenSidebar] = useState(true)
-  const [chatInputPosition, setChatInputPosition] = useState("middle")
-  const [HumanMessage, setHumanMessage] = useState(null)
-  const [systemMessage, setSystemMessage] = useState([])
+  // Local state
+  const [openProductDetail, setOpenProductDetail] = useState(false);
+  const [openChatMessage, setOpenChatMessage] = useState(false);
+  const [openSidebar, setOpenSidebar] = useState(true);
+  const [chatInputPosition, setChatInputPosition] = useState("middle");
+  const [humanMessage, setHumanMessage] = useState(null);
+  const [systemMessage, setSystemMessage] = useState(null);
   const [groupedMessages, setGroupedMessages] = useState({});
-
-
   const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const openDetailSidebar = () => {
-    setOpenProductDetail(!openProductDetail)
-  }
-  const { data, isSuccess, isError, isLoading, system_message, conversationid: createdConversationid, detail } = useSelector(
-    (state) => {
-      return state.conversation
-    }
-  )
-  // Konuşma ID varsa geçmişi yükle
-  useEffect(() => {
-    dispatch(conversationHistory())
-    if (conversationid) {
-      if (conversationid != undefined) {
-        setOpenSidebar(false)
-        setChatInputPosition("bottom")
-        dispatch(conversationDetail({ conversationid: conversationid }))
-      }
-    }
-  }, []);
+  const [isOpenFavorite, setOpenFavorite] = useState(false);
 
-  useEffect(() => {
-    if (!isLoading) {
-      if (isSuccess) {
-        if (detail != null) {
+  // Redux state
+  const { isSuccess, isLoading, system_message, detail, conversationid, conversationCreated } = useSelector(
+    (state) => state.conversation
+  );
 
-          setMessageBlok(detail)
-          console.log("total page", totalCount)
-        }
-      }
-    }
-  }, [isSuccess, isError, isLoading, detail])
-
-  const setMessageBlok = (message) => {
-    const groupedMessages = groupMessagesByGroupId(message.messages);
-    console.log("groupedMessages", groupedMessages)
-    setGroupedMessages(groupedMessages);
-    setTotalCount(Object.keys(groupedMessages).length);
-    setSystemMessage(groupedMessages[Object.keys(groupedMessages)[currentPage - 1]] || []);
-    setOpenChatMessage(true)
-  }
-  const groupMessagesByGroupId = (messages) => {
-    return messages.reduce((groups, message) => {
+  // Helper: Group messages by group id
+  const groupMessagesByGroupId = (messages = []) =>
+    messages.reduce((groups, message) => {
       const group = groups[message.groupid] || [];
       group.push(message);
       groups[message.groupid] = group;
       return groups;
     }, {});
+
+  // Update message block based on new messages
+  const updateMessageBlock = useCallback(
+    (messages) => {
+      const grouped = groupMessagesByGroupId(messages);
+      setGroupedMessages(grouped);
+      const pages = Object.keys(grouped);
+      const lastPage = pages.length; // Son sayfa sayısını belirle
+
+      console.log("lastPage", lastPage)
+      setTotalCount(lastPage);
+      setCurrentPage(lastPage); // Sayfayı her zaman son sayfaya ayarla
+
+      setOpenChatMessage(true);
+      setOpenSidebar(false);
+      setChatInputPosition("bottom");
+      
+    },
+    []
+  );
+  useEffect(() => {
+    console.log("groupedMessages", groupedMessages)
+    const pages = Object.keys(groupedMessages);
+    console.log("grouped[pages[currentPage - 1]]", groupedMessages[pages[currentPage - 1]])
+    setSystemMessage(groupedMessages[pages[currentPage - 1]] || []);
+  }, [groupedMessages])
+
+
+  useEffect(() => {
+    dispatch(conversationHistory());
+  }, [])
+
+  // İlk yükleme: Eğer conversationid varsa sadece detayını al, yoksa geçmişi getir
+  useEffect(() => {
+    if (conversationparamid) {
+      console.log("conversationparamid", conversationparamid)
+      setOpenSidebar(false);
+      setChatInputPosition("bottom");
+      dispatch(conversationDetail({ conversationid: conversationparamid }));
+    } else {
+
+    }
+  }, [dispatch, conversationparamid]);
+
+  // Detaylar güncellendiğinde mesaj bloğunu güncelle
+  /*   useEffect(() => {
+      if (!isLoading && isSuccess && detail) {
+        updateMessageBlock(detail.messages);
+      }
+    }, [isLoading, isSuccess, detail]); */
+
+  // Eğer yeni bir mesaj varsa ve konuşma devam ediyorsa mesajları güncelle
+  useEffect(() => {
+    if (!isLoading && isSuccess && system_message) {
+      console.log("system_message", system_message)
+      updateMessageBlock(system_message.messages || []);
+    }
+  }, [isLoading, isSuccess, system_message]);
+
+
+  useEffect(() => {
+    if (!isLoading && isSuccess && conversationCreated) {
+      if (conversationid != undefined && conversationid) {
+        setChatInputPosition("middle");
+        setOpenSidebar(true);
+        setOpenChatMessage(false);
+        setOpenProductDetail(false);
+        setTotalCount(0);
+        setSystemMessage(null);
+        navigate("/conversation" + "/" + conversationid)
+      }
+    }
+  }, [isLoading, isSuccess, conversationid, conversationCreated])
+
+
+
+
+  // Handlers
+  const handleSetConversation = (convId) => {
+
+    if (convId) {
+      setOpenSidebar(false);
+      setOpenChatMessage(true);
+      setChatInputPosition("bottom");
+      dispatch(conversationDetail({ conversationid: convId }));
+    } else {
+      console.log("convId", convId)
+      setChatInputPosition("middle");
+      dispatch(resetConversation());
+      dispatch(createconversation());
+      setOpenChatMessage(false);
+      setOpenProductDetail(false);
+      setTotalCount(0);
+      setSystemMessage(null);
+    }
   };
 
-  useEffect(() => {
-    if (!isLoading) {
-      if (isSuccess) {
-        if (system_message != null) {
-          setCurrentPage(currentPage + 1)
-          setMessageBlok(system_message)
-        }
-      }
-    }
-  }, [isSuccess, isError, isLoading, system_message, currentPage])
+  const toggleSidebar = () => setOpenSidebar((prev) => !prev);
 
-  useEffect(() => {
-    console.log("isSuccess, isError, isLoading, conversationid", isSuccess, isError, isLoading, conversationid)
-    if (!isLoading) {
-      if (isSuccess) {
-        if (conversationid) {
-          //dispatch(conversation({ conversationid, human_message: HumanMessage }))
-        } else {
-          if (createdConversationid != null) {
-            if (HumanMessage != null) {
-              navigate("/conversation" + "/" + createdConversationid)
-              dispatch(conversation({ conversationid, human_message: HumanMessage }))
-              setOpenChatMessage(true)
-            }
-          }
-        }
-      }
-    }
-  }, [isSuccess, isError, isLoading, createdConversationid])
-
-
-  const [isOpenFavorite, setOpenFavoite] = useState(false)
-
-  const newconversation = () => {
-    setChatInputPosition("middle")
-    dispatch(resetConversation())
-    dispatch(createconversation())
-    setOpenChatMessage(false)
-    setOpenProductDetail(false)
-    setSystemMessage([])
-
-
-
-  }
-  const closeFavoriteSection = () => {
-    setOpenFavoite(false)
-  }
-
-  const toggleSidebar = () => {
-    setOpenSidebar(!openSidebar)
-  }
-  const sendPromt = (human_message) => {
-    setHumanMessage(human_message)
-    setOpenSidebar(false)
-    setChatInputPosition("bottom")
-    if (conversationid != null) {
-      if (conversationid != undefined) {
-        dispatch(conversation({ conversationid, human_message }))
-      }
+  const sendPrompt = (message) => {
+    setHumanMessage(message);
+    setOpenSidebar(false);
+    setOpenChatMessage(true);
+    setChatInputPosition("bottom");
+    console.log("{ conversationid, human_message: message }", { conversationid, human_message: message })
+    if (conversationid) {
+      dispatch(conversation({ conversationid, human_message: message }));
     } else {
-      dispatch(createconversation())
+      dispatch(createconversation());
     }
-  }
-
-
+  };
 
   const changePage = (page) => {
-    setCurrentPage(page);
-    setSystemMessage(groupedMessages[Object.keys(groupedMessages)[page - 1]] || []);
+    if (page >= 1 && page <= totalCount) {
+      setCurrentPage(page);
+      const pages = Object.keys(groupedMessages);
+      setSystemMessage(groupedMessages[pages[page - 1]] || []);
+    }
   };
 
   return (
     <>
-      {isLogin ? <Sidebar startNewconversation={newconversation} openSidebar={openSidebar} /> : <></>}
+      {isLogin && (
+        <Sidebar setConversation={handleSetConversation} openSidebar={openSidebar} />
+      )}
       <div className="content">
-        {isLogin ? <Header toggleSidebar={toggleSidebar} /> : <></>}
-        {isLogin && totalCount != 0 ? <Paginations totalCount={totalCount} currentPage={currentPage} changePage={changePage} /> : <></>}
+        {isLogin && <Header toggleSidebar={toggleSidebar} />}
+        {isLogin && totalCount !== 0 && (
+          <Paginations
+            totalCount={totalCount}
+            currentPage={currentPage}
+            changePage={changePage}
+          />
+        )}
         <div className="chat-section">
-          <div className={`chat-container ${isOpenFavorite ? 'open-favorite' : ''}`}>
+          <div className={`chat-container ${isOpenFavorite ? "open-favorite" : ""}`}>
             <div className="chat-blok">
-              <div className={`message-blok ${openChatMessage ? '' : 'hidden'}`}><Chat response={systemMessage} openDetail={openDetailSidebar} /></div>
-              <div className={`detail-blok ${openProductDetail ? '' : 'hidden'}`}><ProductDetail openDetail={openDetailSidebar} />
+              <div className={`message-blok ${openChatMessage ? "" : "hidden"}`}>
+                <Chat
+                  response={systemMessage}
+                  openDetail={() => setOpenProductDetail((prev) => !prev)}
+                />
+              </div>
+              <div className={`detail-blok ${openProductDetail ? "" : "hidden"}`}>
+                <ProductDetail openDetail={() => setOpenProductDetail((prev) => !prev)} />
               </div>
             </div>
           </div>
-          <Favorite isOpenFavorite={isOpenFavorite} closeFavoriteSection={closeFavoriteSection} />
+          <Favorite
+            isOpenFavorite={isOpenFavorite}
+            closeFavoriteSection={() => setOpenFavorite(false)}
+          />
         </div>
-
-        {isLogin ? <ChatInput position={chatInputPosition} sendPromt={sendPromt} /> : <></>}
+        {isLogin && <ChatInput position={chatInputPosition} sendPromt={sendPrompt} />}
       </div>
     </>
-  )
-
-
+  );
 }

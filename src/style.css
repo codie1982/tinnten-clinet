@@ -1111,7 +1111,7 @@ body {
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     padding: 5px 15px;
     transition: background-color 0.5s ease;
     border-radius: 14px;
@@ -1121,14 +1121,19 @@ body {
 
 }
 
-.search-history li:hover {
+.search-history .search-history-item:hover {
     background-color: var(--chat-header);
 }
-
-.search-history li a {
-    text-decoration: none;
+.search-history .search-history-item li{
+    display: flex;
+    justify-content: space-between;
     color: var(--text-color);
     flex-grow: 1;
+}
+.search-history .search-history-item a {
+    text-decoration: none;
+    flex:1
+
 }
 .search-history-all-see{
     text-decoration: none;
@@ -1960,4 +1965,9 @@ h3 {
     justify-content: center;
     width: 100%;
     margin: auto;
+}
+
+
+.pagination-content {
+    background-color: var(--background-color); /* change/choose desired color */
 }

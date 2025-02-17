@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import conversationService from "./conversationServices"
+import { act } from "react"
 //const user = JSON.parse(localStorage.getItem('user'))
 //const url = JSON.parse(localStorage.getItem('url'))
 
@@ -144,6 +145,7 @@ export const conversationSlice = createSlice({
         recommendations: null,
         historyies: null,
         conversationid: null,
+        conversationCreated:false,
         statusCode: null,
         isError: false,
         isSuccess: false,
@@ -157,6 +159,7 @@ export const conversationSlice = createSlice({
             state.isError = false
             state.system_message = null
             state.data = null
+            state.system_message = null
 
         },
         resetHistory: (state) => {
@@ -179,19 +182,24 @@ export const conversationSlice = createSlice({
                 state.isSuccess = true
                 state.isError = false
                 state.conversationid = action.payload.data.conversationid
+                state.conversationCreated = true;
             })
             .addCase(createconversation.rejected, (state, action) => {
                 state.isLoading = false
                 state.isSuccess = false
                 state.isError = true
+                state.conversationCreated = false;
             })
             .addCase(conversation.pending, (state) => {
                 state.isLoading = true
             })
             .addCase(conversation.fulfilled, (state, action) => {
+                console.log("conversation.fulfilled",action)
                 state.isLoading = false
                 state.isSuccess = true
                 state.isError = false
+                state.conversationCreated = false;
+                state.conversationid = action.payload.data.conversation.conversationid
                 state.system_message = action.payload.data.conversation
             })
             .addCase(conversation.rejected, (state, action) => {
@@ -271,13 +279,17 @@ export const conversationSlice = createSlice({
                 state.isLoading = false
                 state.isSuccess = true
                 state.isError = false
-                state.detail = action.payload.data.conversation
+                state.conversationCreated = false;
+                state.conversationid = action.payload.data.conversation.conversationid
+                state.system_message = action.payload.data.conversation
             })
             .addCase(conversationDetail.rejected, (state, action) => {
                 state.isLoading = false
                 state.isSuccess = false
                 state.isError = true
-                state.detail = null
+                state.conversationCreated = false;
+                state.conversationid = null
+                state.system_message = null
             })
     }
 })
