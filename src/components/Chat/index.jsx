@@ -10,11 +10,12 @@ import {
 } from 'react-bootstrap'
 import { useTranslation } from "react-i18next"
 import { useAuth } from '../../context/authContext'
-import charLogo from '../../assets/char-logo.png'
 import HumanMessage from './HumanMessage'
 import SystemMessage from './SystemMessage';
 
-import ProductRecommendation from '../../components/Recommendation/ProductRecommendation';
+import Recommendation from '../../components/Recommendation';
+import Question from '../../components/QuestionComponent';
+
 export default function Chat({ openDetail, response }) {
     const [t, i18n] = useTranslation("global")
     const [isOpenProductDetail, setIsOpenProductDetail] = useState(false)
@@ -23,7 +24,24 @@ export default function Chat({ openDetail, response }) {
         console.log("response", response)
     }, [response])
 
+    const selectedAction = (item) => {
+        switch (item.action) {
+            case "none":
+                return <></>
+            case "question":
+                let questions = { productionQuestions: item.productionQuestions, servicesQuestions: item.servicesQuestions }
+                return <Question questions={questions} />
 
+            case "recommendation":
+                if (item?.recommendations != null) {
+                    return <Recommendation recommendations={item?.recommendations} />
+                }
+                break;
+            default:
+                break;
+        }
+
+    }
     if (response?.size == 0 || response == null)
         return <></>
     return (
@@ -31,34 +49,11 @@ export default function Chat({ openDetail, response }) {
             <ul>
                 {
                     response.map((item, index) => {
+                        console.log("item",item)
                         return (
                             <li className="message " key={index}>
                                 {item.type == "human_message'" ? <HumanMessage message={item.content} /> : <SystemMessage message={item.content} />}
-                                {
-                                    item.systemData.recommendations != null && item.systemData.recommendations.length != 0 ? <>
-                                        {item.systemData?.recommendations.type == "productRecommendation" ?
-                                            <>
-                                                <ProductRecommendation recommendation={item} />
-                                            </>
-                                            :
-                                            <></>}
-                                        {item.systemData?.recommendations.type == "productRecommendation" ?
-                                            <>
-                                                <ProductRecommendation recommendation={item} />
-                                            </>
-                                            :
-                                            <></>}
-                                        {item.systemData?.recommendations.type == "productRecommendation" ?
-                                            <>
-                                                <ProductRecommendation recommendation={item} />
-                                            </>
-                                            :
-                                            <></>}
-
-                                    </>
-                                        :
-                                        <></>
-                                }
+                                {item.action != null ? <>{selectedAction(item)}</> : <></>}
                             </li>
                         )
                     })

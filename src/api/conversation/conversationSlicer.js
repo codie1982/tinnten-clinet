@@ -23,6 +23,40 @@ export const createconversation = createAsyncThunk(
         }
     }
 )
+export const deleteQuestion = createAsyncThunk(
+    'conversation/deleteQuestion',
+    async (id,thunkAPI) => {
+        try {
+            const response = await conversationService.deleteQuestion(id)
+            return response
+        } catch (error) {
+            const message =
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    }
+)
+export const setAnswerToQuestion = createAsyncThunk(
+    'conversation/answer',
+    async (data,thunkAPI) => {
+        try {
+            const response = await conversationService.answer(data)
+            return response
+        } catch (error) {
+            const message =
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    }
+)
 export const conversationDetail = createAsyncThunk(
     'conversation/detail',
     async (data, thunkAPI) => {
@@ -146,10 +180,12 @@ export const conversationSlice = createSlice({
         historyies: null,
         conversationid: null,
         conversationCreated:false,
+        question:null,
         statusCode: null,
         isError: false,
         isSuccess: false,
         isLoading: false,
+        deletedQuestionid:null,
         message: '',
     },
     reducers: {
@@ -279,7 +315,6 @@ export const conversationSlice = createSlice({
                 state.isLoading = false
                 state.isSuccess = true
                 state.isError = false
-                state.conversationCreated = false;
                 state.conversationid = action.payload.data.conversation.conversationid
                 state.system_message = action.payload.data.conversation
             })
@@ -290,6 +325,35 @@ export const conversationSlice = createSlice({
                 state.conversationCreated = false;
                 state.conversationid = null
                 state.system_message = null
+            })
+            .addCase(setAnswerToQuestion.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(setAnswerToQuestion.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.isError = false
+                state.message = action.payload.message;
+                state.question = action.payload.data.question;
+            })
+            .addCase(setAnswerToQuestion.rejected, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = false
+                state.isError = true
+            })
+            .addCase(deleteQuestion.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(deleteQuestion.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.isError = false
+                state.deletedQuestionid = action.payload.data.deleteid;
+            })
+            .addCase(deleteQuestion.rejected, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = false
+                state.isError = true
             })
     }
 })

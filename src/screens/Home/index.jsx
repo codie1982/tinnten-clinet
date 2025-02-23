@@ -36,39 +36,52 @@ export default function Home() {
   const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [isOpenFavorite, setOpenFavorite] = useState(false);
+  const [conversationid, setConversationid] = useState(null)
 
   // Redux state
-  const { isSuccess, isLoading, system_message, detail, conversationid, conversationCreated } = useSelector(
+  const { isSuccess, isLoading, system_message, detail, conversationid: selectedConversationid, conversationCreated } = useSelector(
     (state) => state.conversation
   );
 
   // Helper: Group messages by group id
-  const groupMessagesByGroupId = (messages = []) =>
-    messages.reduce((groups, message) => {
-      const group = groups[message.groupid] || [];
-      group.push(message);
-      groups[message.groupid] = group;
-      return groups;
+  const groupMessagesByGroupId = (messages = []) => {
+    console.log("messages.length", messages.length);
+
+    if (messages.length === 0) {
+        return {};
+    }
+
+    return messages.reduce((groups, message) => {
+        if (!groups[message.groupid]) {
+            groups[message.groupid] = [];
+        }
+        groups[message.groupid].push(message);
+        return groups;
     }, {});
+};
+
 
   // Update message block based on new messages
   const updateMessageBlock = useCallback(
-    (messages) => {
-      const grouped = groupMessagesByGroupId(messages);
-      setGroupedMessages(grouped);
-      const pages = Object.keys(grouped);
-      const lastPage = pages.length; // Son sayfa sayısını belirle
+    (message) => {
+      if (message.length != 0) {
+        const grouped = groupMessagesByGroupId(message);
+        console.log("grouped", grouped)
+        setGroupedMessages(grouped);
+        console.log("Object.keys(grouped)", Object.keys(grouped))
+        const pages = Object.keys(grouped);
+        const lastPage = pages.length; // Son sayfa sayısını belirle
 
-      console.log("lastPage", lastPage)
-      setTotalCount(lastPage);
-      setCurrentPage(lastPage); // Sayfayı her zaman son sayfaya ayarla
+        console.log("lastPage", lastPage)
+        setTotalCount(lastPage);
+        setCurrentPage(lastPage); // Sayfayı her zaman son sayfaya ayarla
 
-      setOpenChatMessage(true);
-      setOpenSidebar(false);
-      setChatInputPosition("bottom");
-      
-    },
-    []
+        setOpenChatMessage(true);
+        setOpenSidebar(false);
+        setChatInputPosition("bottom");
+      }
+    }
+    , []
   );
   useEffect(() => {
     console.log("groupedMessages", groupedMessages)
@@ -86,11 +99,10 @@ export default function Home() {
   useEffect(() => {
     if (conversationparamid) {
       console.log("conversationparamid", conversationparamid)
+      setConversationid(conversationparamid)
       setOpenSidebar(false);
       setChatInputPosition("bottom");
       dispatch(conversationDetail({ conversationid: conversationparamid }));
-    } else {
-
     }
   }, [dispatch, conversationparamid]);
 
@@ -112,17 +124,18 @@ export default function Home() {
 
   useEffect(() => {
     if (!isLoading && isSuccess && conversationCreated) {
-      if (conversationid != undefined && conversationid) {
+      if (selectedConversationid != undefined && selectedConversationid) {
+        setConversationid(selectedConversationid)
         setChatInputPosition("middle");
         setOpenSidebar(true);
         setOpenChatMessage(false);
         setOpenProductDetail(false);
         setTotalCount(0);
         setSystemMessage(null);
-        navigate("/conversation" + "/" + conversationid)
+        navigate("/conversation" + "/" + selectedConversationid)
       }
     }
-  }, [isLoading, isSuccess, conversationid, conversationCreated])
+  }, [isLoading, isSuccess, selectedConversationid, conversationCreated])
 
 
 
