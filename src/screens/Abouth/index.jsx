@@ -2,8 +2,8 @@ import React from 'react'
 
 export default function Abouth() {
   return (
-    <div>
-      
-    </div>
+    <>
+      <div className="page-inside"></div>
+    </>
   )
 }
