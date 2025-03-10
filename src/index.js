@@ -19,12 +19,10 @@ import global_tr from './transitions/TR/global.json';
 import ReactGA from "react-ga4";
 import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 import { AuthProvider } from './context/authContext';
-import { Tab } from 'react-bootstrap';
-import MainLayout from './layouts/Main';
 import './style.css';
 i18next.init({
   interpolation: { escapeValue: false },
-  lng: "en",
+  lng: "tr",
   resources: {
     en: {
       global: global_en
@@ -35,7 +33,7 @@ i18next.init({
   }
 })
 
-ReactGA.initialize("G-6N1Q7S5NLP");
+ReactGA.initialize("G-LX9WRSM2E1");
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

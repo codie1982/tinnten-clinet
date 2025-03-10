@@ -1,2 +1,134 @@
 {
+    "appname": "TINNTEN",
+    "beta": "BETA",
+    "headerNoAuth": {
+        "menu": {
+            "abouth": "Hakkımızda",
+            "works": "Nasıl Çalışır?",
+            "contact": "İletişim"
+        },
+        "login": "Giriş Yap",
+        "register": "Kayıt Ol"
+    },
+    "advertaise": {
+        "hero": {
+            "title": "Yapay Zeka Destekli Ürün Keşfi",
+            "description": "İhtiyacınız olan ürünü hızlı ve kolayca bulun, gereksiz detaylarla vakit kaybetmeyin.",
+            "cta": "Keşfetmeye Başla"
+        },
+        "subhero": {
+            "title": "Akıllı ve Hedefe Odaklı",
+            "subtitle": "Sadece İlgilendiğiniz Ürünleri Görün",
+            "description": "Karmaşaya girmeden, sadece ilgilendiğiniz ürün gruplarına odaklanın. Tinnten AI, ihtiyacınıza uygun seçenekleri analiz ederek, en doğru ve alakalı sonuçları sizin için sıralar."
+        },
+        "supporting": {
+            "title": "Tinnten AI Nasıl Çalışır?",
+            "description": "Üç basit adımda ihtiyacınız olan ürünü hızla keşfedin."
+        },
+        "feature": {
+            "one": {
+                "tilte": "Aramanızı Yapın",
+                "description": "Basit bir cümle ile ihtiyacınızı tanımlayın. Yapay zeka, aramanızın bağlamını anlar."
+            },
+            "two": {
+                "tilte": "AI Analiz Etsin",
+                "description": "Tinnten AI, en iyi eşleşmeleri belirleyerek size en uygun ürünleri sunar."
+            },
+            "three": {
+                "tilte": "Net Seçimler",
+                "description": "Sadece ilgilendiğiniz ürünleri görün, karar vermeyi hızlandırın."
+            }
+        },
+        "business": {
+            "title": "Firmanızı Tinnten AI'ye Ekleyin",
+            "description": "Tinnten AI ile işletmenizi dijital dünyaya taşıyın. Ürünlerinizi ve hizmetlerinizi ekleyin. Müşterileriniz ile TINNTEN AI sizin adınıza konuşsun .",
+            "cta": "İşletme Kaydı Oluştur"
+        },
+        "faq": {
+            "title": "Sıkça Sorulan Sorular",
+            "one": {
+                "title": "Tinnten AI nedir?",
+                "description": "Tinnten AI, yapay zeka destekli ürün ve hizmet keşif platformudur. Kullanıcılar, doğal dil ile arama yaparak en uygun ürünlere ve hizmetlere kolayca ulaşabilirler."
+            },
+            "two": {
+                "title": "Tinnten AI ücretsiz mi?",
+                "description": "Evet, Tinnten AI'nin temel sürümünü ücretsiz kullanabilirsiniz. Ancak, işletmeler için gelişmiş özellikler sunan premium planlar da mevcuttur."
+            },
+            "three": {
+                "title": "Tinnten AI hangi kategorilerde hizmet veriyor?",
+                "description": "Elektronik, moda, mobilya, sağlık, hizmet sektörü gibi birçok alanda ürün ve hizmet keşfi yapabilirsiniz."
+            },
+            "four": {
+                "title": "İşletmemi Tinnten AI'ye nasıl ekleyebilirim?",
+                "description": "İşletmenizi eklemek için \"İşletme Kaydı Oluştur\" butonuna tıklayarak ürünlerinizi ve hizmetlerinizi sisteme yükleyebilirsiniz."
+            }
+        }
+    },
+    "footerNoAuth": {
+        "menu": {
+            "abouth": "Hakkımızda",
+            "privatepolicy": "Gizlilik Politikası",
+            "terms": "Kullanım Şartları",
+            "support": "Bize ulaşın"
+        },
+        "copyright": {
+            "text": "2025 Tinnten AI - Tüm Hakları Saklıdır."
+        }
+    },
+    "header": {
+        "main": "Anasayfa",
+        "abouth": "hakkında",
+        "menu": {
+            "settings": "Ayarlar",
+            "logout": "Çıkış Yap",
+            "deleteallconversation": "Tüm Konuşmaları Sil",
+            "profile": "Profil"
+        }
+    },
+    "sidebar": {
+        "reconversation": "Konuşmayı yenile",
+        "history": "Arama Geçmişi",
+        "rename": "Yeniden Adlandır",
+        "removesearch": "Aramayı Kaldır",
+        "plans": "Planları Görüntüle",
+        "addCompany": "Firmanı Ekle"
+    },
+    "humanMessage": {
+        "you": "Siz"
+    },
+    "form": {
+        "login": {
+            "title": "mail adresi ve google ile giriş yapabilirsiniz.",
+            "login": "Giriş yap",
+            "loginWithGoogle": "Google ile Giriş Yap",
+            "or": "veya",
+            "register": "Kayıt olmak için tıklayın",
+            "forgotPassword": "Şifremi unuttum"
+        },
+        "mail": {
+            "title": "mail adresine gelen kodu girebilirsin!",
+            "terms": "Kullanım Şartları",
+            "and": "ve",
+            "privatePolicy": "Gizlilik Politikası",
+            "sendcode": "Kodu Gönder",
+            "angrement": " kabul ediyorum",
+            "resendcode": "Kodu Tekrar Gönder",
+            "login": "Giriş yapmak için tıklayın"
+        },
+        "register": {
+            "title": "mail adresine gelen kodu girebilirsin!",
+            "terms": "Kullanım Şartları",
+            "and": "ve",
+            "privatePolicy": "Gizlilik Politikası",
+            "sendcode": "Kodu Gönder",
+            "angrement": " kabul ediyorum",
+            "resendcode": "Kodu Tekrar Gönder",
+            "login": "Giriş yapmak için tıklayın"
+        },
+        "forgotPassword": {
+            "title": "Şifreni yenilemek için mail adresini girebilirsin.!.",
+            "repassword": "Şifremi yenile",
+            "relogin": "Giriş yapmak için tıklayın"
+        }
+    }
 }

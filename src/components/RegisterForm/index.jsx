@@ -3,13 +3,14 @@ import { useAuth } from '../../context/authContext'
 import {
     Form, Button, ButtonGroup, Badge
 } from 'react-bootstrap'
-import { useNavigate,Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock, faEye, faEnvelope, faEyeSlash, faCodeFork } from '@fortawesome/free-solid-svg-icons';
 import { LOGIN } from '../../constant'
-
+import { useTranslation } from "react-i18next"
 export default function RegisterForm({ handleRegisterSubmit, isSendCode }) {
+    const [t, i18n] = useTranslation("global")
     const [showPassword, setShowPassword] = useState(false);
     const [_isSendCode, setIsSendCode] = useState(false)
     useEffect(() => {
@@ -22,7 +23,7 @@ export default function RegisterForm({ handleRegisterSubmit, isSendCode }) {
     };
     return (
         <>
-            <p className="standart-dark-text">email ile kayıt olurken mail adresine gelen kodu girmelisin. şimdilik!.</p>
+            <p className="standart-dark-text">{t("form.register.title")}</p>
             <div className="container-fluid">
                 <Form id="login-form" className="form" onSubmit={handleRegisterSubmit}>
                     <div className="icon-container">
@@ -68,7 +69,7 @@ export default function RegisterForm({ handleRegisterSubmit, isSendCode }) {
                             <div className="form-check">
                                 <input type="checkbox" className="form-check-box" id="rememberMe" />
                                 <div className="custom-checkbox"></div>
-                                <label className="form-check-label" htmlFor="rememberMe">I confirm that I have read, consent and agree to DeepSeek's <a href='#'>Terms of Use</a> and <a href="#">Privacy Policy</a></label>
+                                <label className="form-check-label" htmlFor="rememberMe">{t("form.register.angrement")}<Link to='/consumer-terms'>{t("form.register.terms")}</Link> {t("form.register.and")} <Link to="/privatepolicy">{t("form.register.privatepolicy")}</Link></label>
                             </div>
                         </div>
                     </div>
@@ -82,18 +83,18 @@ export default function RegisterForm({ handleRegisterSubmit, isSendCode }) {
                                     width: '100%',
                                 }}
                             >
-                                Kodu Gönder
+                                {t("form.register.resendcode")}
                             </Button>
                             :
                             <Button size="lg" className="col btn m-t-2 btn-block btn-google-login" variant="outline-warning" style={{ width: '100%' }}>
-                                Kodu gönder
+                                {t("form.register.sendcode")}
                             </Button>
                         }
                     </ButtonGroup>
                     <div className="d-flex align-content-center text-container">
                         <p>
                             <Link to="/login" className="text-decoration-none">
-                                Giriş yapmak için tıklayın
+                            {t("form.register.login")}
                             </Link>
                         </p>
                     </div>

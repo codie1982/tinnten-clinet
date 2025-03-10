@@ -6,8 +6,11 @@ import RegisterForm from '../../components/RegisterForm'
 import { useNavigate, } from "react-router-dom";
 import { Badge } from 'react-bootstrap'
 import { Navigate } from "react-router-dom";
+import { useTranslation } from "react-i18next"
 
 export default function Register() {
+    const [t, i18n] = useTranslation("global")
+
     const { isLogin, isLoading: reduxLoading } = useAuth();
     const navigate = useNavigate()
     const dispatch = useDispatch()
@@ -66,9 +69,9 @@ export default function Register() {
 
             <div className="row align-items-center">
                 <div className="col d-flex justify-content-center">
-                    <div className="site-title ms-1">TINNTEN</div>
+                    <div className="site-title ms-1">{t("appname")}</div>
                     <h6 className=' align-content-center ps-2'>
-                        <Badge bg="light mt-2" style={{ color: "#111" }}>Platform</Badge></h6>
+                        <Badge bg="light mt-2" style={{ color: "#111" }}>{t("beta")}</Badge></h6>
                 </div>
             </div>
             <RegisterForm handleRegisterSubmit={handleSubmit} validation={formValidation.register} isSendCode={isSendCode} />

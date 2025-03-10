@@ -75,8 +75,8 @@ export default function Header({ toggleSidebar }) {
             <Navbar.Toggle aria-controls="navbarNav" />
             <Navbar.Collapse id="navbarNav">
               <Nav className="">
-                <Nav.Link href="#" className="active" aria-current="page">Ana Sayfa</Nav.Link>
-                <Nav.Link href="#">Hakkında</Nav.Link>
+                <Nav.Link href="#" className="active" aria-current="page">{t("header.main")}</Nav.Link>
+                <Nav.Link href="#">{t("header.abouth")}</Nav.Link>
               </Nav>
               <Nav className="ms-auto d-flex">
                 <Nav.Item>
@@ -85,11 +85,11 @@ export default function Header({ toggleSidebar }) {
                       <Dropdown.Toggle as={CustomToggle} id={`dropdown-custom-components`} />
                       <Dropdown.Menu>
                         <Dropdown.Item eventKey="1" onClick={openProfil}>Engin EROL</Dropdown.Item>
-                        <Dropdown.Item eventKey="2" onClick={openSettings}><FontAwesomeIcon icon={faGear} /> Ayarlar</Dropdown.Item>
-                        <Dropdown.Item eventKey="3" onClick={openDeleteAll}><FontAwesomeIcon icon={faTrash} /> Tüm Konuşmaları sil</Dropdown.Item>
-                        <Dropdown.Item eventKey="4" onClick={openContactUs}><FontAwesomeIcon icon={faEnvelopeSquare} /> Bizimle iletişime geçin</Dropdown.Item>
+                        <Dropdown.Item eventKey="2" onClick={openSettings}><FontAwesomeIcon icon={faGear} /> {t("header.menu.settings")}</Dropdown.Item>
+                        <Dropdown.Item eventKey="3" onClick={openDeleteAll}><FontAwesomeIcon icon={faTrash} /> {t("header.menu.deleteallconversation")}</Dropdown.Item>
+                        <Dropdown.Item eventKey="4" onClick={openContactUs}><FontAwesomeIcon icon={faEnvelopeSquare} /> {t("header.menu.contact")}</Dropdown.Item>
                         <Dropdown.Divider />
-                        <Dropdown.Item eventKey="5" onClick={openLogout}><FontAwesomeIcon icon={faSignOut} /> Çıkış</Dropdown.Item>
+                        <Dropdown.Item eventKey="5" onClick={openLogout}><FontAwesomeIcon icon={faSignOut} /> {t("header.logout")}</Dropdown.Item>
                       </Dropdown.Menu>
                     </Dropdown>
                   </Nav.Link>

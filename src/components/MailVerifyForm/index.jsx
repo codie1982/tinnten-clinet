@@ -3,11 +3,13 @@ import { useAuth } from '../../context/authContext'
 import {
     Form, Button, ButtonGroup, Badge
 } from 'react-bootstrap'
+import { useNavigate, Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock, faEye, faEnvelope, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { MAILVERIFY } from '../../constant'
-
+import { useTranslation } from "react-i18next"
 export default function RegisterForm({ setState }) {
+    const [t, i18n] = useTranslation("global")
     const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = (e) => {
@@ -23,7 +25,7 @@ export default function RegisterForm({ setState }) {
     };
     return (
         <>
-            <p className="standart-dark-text">mail adresine gelen kodu girebilirsin!.</p>
+            <p className="standart-dark-text">{t("form.mail.title")}</p>
             <div className="container-fluid">
                 <Form id="login-form" className="form" onSubmit={handleSubmit}>
                     <div className="icon-container">
@@ -40,7 +42,7 @@ export default function RegisterForm({ setState }) {
                             <div className="form-check">
                                 <input type="checkbox" className="form-check-box" id="rememberMe" />
                                 <div className="custom-checkbox"></div>
-                                <label className="form-check-label" htmlFor="rememberMe">I confirm that I have read, consent and agree to DeepSeek's <a href='#'>Terms of Use</a> and <a href="#">Privacy Policy</a></label>
+                                <label className="form-check-label" htmlFor="rememberMe">{t("form.mail.check")}I confirm that I have read, consent and agree to DeepSeek's <Link to='#'>{t("form.mail.consumer-terms")}Terms of Use</Link>{t("form.mail.and")} and <Link to="#">{t("form.mail.privatePolicy")}Privacy Policy</Link></label>
                             </div>
                         </div>
                     </div>
@@ -54,18 +56,18 @@ export default function RegisterForm({ setState }) {
 
                             }}
                         >
-                            Kayıt Ol
+                            {t("form.mail.register")}Kayıt Ol
                         </Button>
                         <div className="row">
                             <div className="col align-items-center">
-                                <p className="">veya</p>
+                                <p className="">{t("form.mail.or")}veya</p>
                             </div>
                         </div>
                         <Button size="lg" className="col btn m-t-2 btn-block btn-google-login" variant="outline-warning" style={{ width: '100%' }}>
-                            Google ile Kayıt Ol</Button>
+                        {t("form.mail.loginWithGoogle")}Google ile Kayıt Ol</Button>
                     </ButtonGroup>
                     <div className="d-flex align-content-center justify-content-between text-container">
-                        <p><a onClick={() => { setState(MAILVERIFY) }} className="text-decoration-none" href='#'>Giriş yapmak için tıklayın</a></p>
+                        <p><a onClick={() => { setState(MAILVERIFY) }} className="text-decoration-none" href='#'>{t("form.mail.login")}Giriş yapmak için tıklayın</a></p>
                     </div>
                 </Form>
             </div>

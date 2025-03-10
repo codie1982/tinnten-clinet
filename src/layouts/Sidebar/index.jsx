@@ -8,8 +8,11 @@ import logo from '../../assets/logo.png';
 import FeaturesPrice from '../../components/Modals/FeaturesPriceModal';
 import RenameHistoryModal from '../../components/Modals/RenameHistoryModal';
 import HistorySearchModal from '../../components/Modals/HistorySearchModal';
+import { useTranslation } from "react-i18next"
 
 export default function Sidebar({ setConversation, openSidebar }) {
+  const [t, i18n] = useTranslation("global")
+
   const MAXITEM = 3;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
@@ -44,11 +47,11 @@ export default function Sidebar({ setConversation, openSidebar }) {
         </div>
 
         <div className="chat-release">
-          <button onClick={() => setConversation()}>Konuşmayı yenile</button>
+          <button onClick={() => setConversation()}>{t("sidebar.reconversation")}</button>
         </div>
 
         <div className="history-title">
-          <h3>Arama Geçmişi</h3>
+          <h3>{t("sidebar.history")}</h3>
         </div>
 
         <div className="history-input">
@@ -83,13 +86,13 @@ export default function Sidebar({ setConversation, openSidebar }) {
                       as="button"
                       onClick={toggleRenameModal}
                     >
-                      Yeniden Adlandır
+                      {t("sidebar.rename")}
                     </Dropdown.Item>
                     <Dropdown.Item
                       className="filter-dropdown-button-item"
                       as="button"
                     >
-                      Aramayı sil
+                      {t("sidebar.removesearch")}
                     </Dropdown.Item>
                   </DropdownButton>
                 </span>
@@ -118,10 +121,10 @@ export default function Sidebar({ setConversation, openSidebar }) {
               <div className="col-9">
                 <div className="text-container">
                   <div className="row">
-                    <div className="col text-container-title">Planları Görüntüle</div>
+                    <div className="col text-container-title">{t("sidebar.plans")}</div>
                   </div>
                   <div className="row">
-                    <div className="col light">Firmanı Ekle</div>
+                    <div className="col light">{t("sidebar.addCompany")}</div>
                   </div>
                 </div>
               </div>

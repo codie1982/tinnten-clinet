@@ -4,20 +4,17 @@ import { useSelector, useDispatch } from "react-redux"
 import { login, register } from "../../api/auth/authSlicer"
 import { Link, useNavigate, } from "react-router-dom";
 import { Row, Col, Card, Button, Carousel, Accordion, Container } from 'react-bootstrap'
-
+import { useTranslation } from "react-i18next"
 import LoginForm from "../LoginForm"
 import RegisterForm from "../RegisterForm"
 import MailVerifyForm from "../MailVerifyForm"
 import ForgotPasswordFrom from "../ForgotPasswordFrom"
 import { LOGIN, REGISTER, MAILVERIFY, GOOGLE, FORGOTPASSWORD } from '../../constant'
-import demo from "../../assets/assets-one.gif"
-
-
-import ProductCard from '../Chat/ProductCard'
-import HeaderNoAuth from 'layouts/HeaderNoAuth';
 
 
 export default function Advertaise() {
+    const [t, i18n] = useTranslation("global")
+
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
@@ -29,7 +26,6 @@ export default function Advertaise() {
             return state.auth
         }
     )
-
 
     const [formValidation, setFormValidation] = useState({
         login: {
@@ -184,9 +180,9 @@ export default function Advertaise() {
                         <main className="hero-section">
                             <Row>
                                 <Col>
-                                    <h1 className="hero-title">Yapay Zeka Destekli Ürün Keşfi</h1>
-                                    <p className="hero-description">İhtiyacınız olan ürünü hızlı ve kolayca bulun, gereksiz detaylarla vakit kaybetmeyin.</p>
-                                    <a href="signup.html" className="btn btn-lg cta-button">Keşfetmeye Başla</a>
+                                    <h1 className="hero-title">{t("advertaise.hero.title")}</h1>
+                                    <p className="hero-description">{t("advertaise.hero.description")}</p>
+                                    <a href="signup.html" className="btn btn-lg cta-button">{t("advertaise.hero.cta")}</a>
                                 </Col>
                                 {/* <Col>
 
@@ -246,31 +242,31 @@ export default function Advertaise() {
 
                         </main>
                         <div className="chat-advertise-text-content">
-                            <h2 className="display-4 mb-4 text-left">Akıllı ve Hedefe Odaklı</h2>
-                            <h3 className="display-5 mb-2 text-left">Sadece İlgilendiğiniz Ürünleri Görün</h3>
-                            <p className="lead text-left">Karmaşaya girmeden, sadece ilgilendiğiniz ürün gruplarına odaklanın. Tinnten AI, ihtiyacınıza uygun seçenekleri analiz ederek, en doğru ve alakalı sonuçları sizin için sıralar.</p>
+                            <h2 className="display-4 mb-4 text-left">{t("advertaise.subhero.title")}</h2>
+                            <h3 className="display-5 mb-2 text-left">{t("advertaise.subhero.subtitle")}</h3>
+                            <p className="lead text-left">{t("advertaise.subhero.description")}</p>
                         </div>
                     </Col>
                 </Row>
                 <section className="supporting-section">
                     <div className="supporting-section-one">
-                        <h2 className="supporting-title">Tinnten AI Nasıl Çalışır?</h2>
-                        <p className="supporting-description">Üç basit adımda ihtiyacınız olan ürünü hızla keşfedin..</p>
+                        <h2 className="supporting-title">{t("advertaise.supporting.title")}</h2>
+                        <p className="supporting-description">{t("advertaise.supporting.description")}</p>
                     </div>
                     <div className="supporting-section-two">
                         <div className="features-grid">
                             <div className="feature-item">
-                                <h3 className="feature-title">Aramanızı Yapın</h3>
-                                <p className="feature-description">Basit bir cümle ile ihtiyacınızı tanımlayın. Yapay zeka, aramanızın bağlamını anlar.</p>
+                                <h3 className="feature-title">{t("advertaise.feature.one.tilte")}</h3>
+                                <p className="feature-description">{t("advertaise.feature.one.description")}</p>
                             </div>
 
                             <div className="feature-item">
-                                <h3 className="feature-title">AI Analiz Etsin</h3>
-                                <p className="feature-description">Tinnten AI, en iyi eşleşmeleri belirleyerek size en uygun ürünleri sunar.</p>
+                                <h3 className="feature-title">{t("advertaise.feature.two.title")}</h3>
+                                <p className="feature-description">{t("advertaise.feature.two.description")}</p>
                             </div>
                             <div className="feature-item">
-                                <h3 className="feature-title">Net Seçimler</h3>
-                                <p className="feature-description">Sadece ilgilendiğiniz ürünleri görün, karar vermeyi hızlandırın.</p>
+                                <h3 className="feature-title">{t("advertaise.feature.three.title")}</h3>
+                                <p className="feature-description">{t("advertaise.feature.three.description")}</p>
                             </div>
                         </div>
                     </div>
@@ -278,51 +274,48 @@ export default function Advertaise() {
 
                 <section className="statistics-section">
                     <div className="business-registration">
-                        <h2 className="business-title">Firmanızı Tinnten AI'ye Ekleyin</h2>
-                        <p className="business-description">Tinnten AI ile işletmenizi dijital dünyaya taşıyın. Ürünlerinizi ve hizmetlerinizi ekleyin. Müşterileriniz ile TINNTEN AI sizin adınıza konuşsun .</p>
+                        <h2 className="business-title">{t("advertaise.business.title")}</h2>
+                        <p className="business-description">{t("advertaise.business.description")}</p>
                     </div>
                     <div className="statistics-section-action">
-                        <a href="business-signup.html" className="business-signup-btn">
-                            <div className="btn btn-register-action">İşletme Kaydı Oluştur</div>
-                        </a>
+                        <Link to="/register" className="business-signup-btn">
+                            <div className="btn btn-register-action">{t("advertaise.business.cta")}</div>
+                        </Link>
 
                     </div>
                 </section>
                 <section className="faq-section">
-                    <h2 className="faq-title">Sıkça Sorulan Sorular</h2>
+                    <h2 className="faq-title">{t("advertaise.faq.title")}</h2>
                     <div className="faq-content">
                         <Accordion defaultActiveKey="0">
                             <Accordion.Item eventKey="0">
-                                <Accordion.Header>Tinnten AI nedir?</Accordion.Header>
+                                <Accordion.Header>{t("advertaise.faq.one.title")}</Accordion.Header>
                                 <Accordion.Body>
-                                    Tinnten AI, yapay zeka destekli ürün ve hizmet keşif platformudur. Kullanıcılar, doğal dil ile arama yaparak en uygun ürünlere ve hizmetlere kolayca ulaşabilirler.
+                                    {t("advertaise.faq.one.description")}
                                 </Accordion.Body>
                             </Accordion.Item>
                             <Accordion.Item eventKey="2">
-                                <Accordion.Header>Tinnten AI ücretsiz mi?</Accordion.Header>
+                                <Accordion.Header>{t("advertaise.faq.two.title")}</Accordion.Header>
                                 <Accordion.Body>
-                                    Evet, Tinnten AI'nin temel sürümünü ücretsiz kullanabilirsiniz. Ancak, işletmeler için gelişmiş özellikler sunan premium planlar da mevcuttur.
+                                    {t("advertaise.faq.two.description")}
                                 </Accordion.Body>
                             </Accordion.Item>
                             <Accordion.Item eventKey="3">
-                                <Accordion.Header>Tinnten AI hangi kategorilerde hizmet veriyor?</Accordion.Header>
+                                <Accordion.Header>{t("advertaise.faq.three.title")}</Accordion.Header>
                                 <Accordion.Body>
-                                    Elektronik, moda, mobilya, sağlık, hizmet sektörü gibi birçok alanda ürün ve hizmet keşfi yapabilirsiniz.
+                                    {t("advertaise.faq.three.description")}
                                 </Accordion.Body>
                             </Accordion.Item>
                             <Accordion.Item eventKey="4">
-                                <Accordion.Header>İşletmemi Tinnten AI'ye nasıl ekleyebilirim?</Accordion.Header>
+                                <Accordion.Header>{t("advertaise.faq.four.title")}</Accordion.Header>
                                 <Accordion.Body>
-                                    İşletmenizi eklemek için "İşletme Kaydı Oluştur" butonuna tıklayarak ürünlerinizi ve hizmetlerinizi sisteme yükleyebilirsiniz.
+                                    {t("advertaise.faq.four.description")}
                                 </Accordion.Body>
                             </Accordion.Item>
                         </Accordion>
                     </div>
-
                 </section>
-               
             </div>
-           
         </>
     )
 }
