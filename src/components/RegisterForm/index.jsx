@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '../../context/authContext'
 import {
-    Form, Button, ButtonGroup, Badge
+    Form, Button, ButtonGroup, Badge, Row, Col
 } from 'react-bootstrap'
 import { useNavigate, Link } from "react-router-dom";
 
@@ -9,6 +9,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock, faEye, faEnvelope, faEyeSlash, faCodeFork } from '@fortawesome/free-solid-svg-icons';
 import { LOGIN } from '../../constant'
 import { useTranslation } from "react-i18next"
+import logo from "../../assets/char-logo.png"
+
 export default function RegisterForm({ handleRegisterSubmit, isSendCode }) {
     const [t, i18n] = useTranslation("global")
     const [showPassword, setShowPassword] = useState(false);
@@ -24,6 +26,13 @@ export default function RegisterForm({ handleRegisterSubmit, isSendCode }) {
     return (
         <>
             <p className="standart-dark-text">{t("form.register.title")}</p>
+            <Link to={"/"}>
+                <div className="site-logo mb-2">
+                    <img src={logo} alt="Logo" className="tinnten logo" />
+                </div>
+            </Link>
+
+
             <div className="container-fluid">
                 <Form id="login-form" className="form" onSubmit={handleRegisterSubmit}>
                     <div className="icon-container">
@@ -94,7 +103,7 @@ export default function RegisterForm({ handleRegisterSubmit, isSendCode }) {
                     <div className="d-flex align-content-center text-container">
                         <p>
                             <Link to="/login" className="text-decoration-none">
-                            {t("form.register.login")}
+                                {t("form.register.login")}
                             </Link>
                         </p>
                     </div>

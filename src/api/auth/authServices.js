@@ -12,6 +12,15 @@ const login = async (data) => {
     return response.data
 }
 
+const createGoogleurl = async () => {
+    const response = await axiosInstance.post("auth/createurl");
+    return response.data
+}
+const googlelogin = async () => {
+    const response = await axiosInstance.post("auth/createurl");
+    return response.data
+}
+
 const register = async (data) => {
     const response = await axiosInstance.post("auth/register", data, { skipAuth: true });
     return response.data
@@ -27,6 +36,6 @@ const checkToken = async () => {
 
 
 const authService = {
-    register, login, logout, info, checkToken,
+    register, login,googlelogin,createGoogleurl, logout, info, checkToken,
 }
 export default authService

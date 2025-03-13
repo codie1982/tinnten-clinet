@@ -46,8 +46,6 @@ export function AuthProvider({ children }) {
                 localStorage.setItem('access_token', data.access_token);
                 localStorage.setItem('user', JSON.stringify(data.info));
                 localStorage.setItem('profiles', JSON.stringify(data.profiles));
-            }
-            if (isSuccess) {
                 const user = JSON.parse(localStorage.getItem('user')) || null;
                 const profiles = JSON.parse(localStorage.getItem('profiles')) || null;
                 setAuthState({ isLogin: true, user, profiles, isLoading: false });

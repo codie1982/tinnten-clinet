@@ -10,15 +10,17 @@ import FooterNoAuth from "layouts/FooterNoAuth";
 export default function MainLayout() {
     const dispatch = useDispatch()
     const [t, i18n] = useTranslation("global")
+    const { isLogin } = useAuth();
 
     return (
 
         <div data-bs-spy="scroll" data-bs-target="#navbar-example" >
-            <Container fluid className="page-container">
-                <div className="page-content">
-                    <HeaderNoAuth />
+            <Container fluid className={`page-container `}>
+                <div className={`page-content ${!isLogin ? "page-vertical" : "page-horizontal"}`}>
+                    {!isLogin ? <HeaderNoAuth /> : <></>}
                     <Outlet lang={global} />
-                    <FooterNoAuth />
+                    {!isLogin ? <FooterNoAuth /> : <></>}
+
                 </div>
             </Container>
         </div>

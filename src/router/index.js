@@ -26,6 +26,7 @@ const routes = createBrowserRouter([
             { path: "/consumer-terms", element: <ConsumerTerms /> },
             { path: "/privatepolicy", element: <PrivatePolicy /> },
             { path: "/contact", element: <Contact/> },
+            { path: "/google-auth", element: <Contact/> },
             {
                 element: <ProtectedRoute />,
                 children: [

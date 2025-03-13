@@ -14,7 +14,7 @@ import { LOGIN, REGISTER, MAILVERIFY, GOOGLE, FORGOTPASSWORD } from '../../const
 
 export default function Advertaise() {
     const [t, i18n] = useTranslation("global")
-
+    const { isLogin } = useAuth();
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
@@ -172,6 +172,7 @@ export default function Advertaise() {
         }
     };
 
+    if (isLogin) navigate("/conversation")
     return (
         <>
             <div className="page-inside page-fluid page-no-border page-no-background">

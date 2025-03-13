@@ -4,7 +4,7 @@ import authService from './authServices'
 //const url = JSON.parse(localStorage.getItem('url'))
 
 const initialState = {
-    redirecturl: null,
+    url: null,
     data: null,
     statusCode: null,
     isError: false,
@@ -21,6 +21,35 @@ export const login = createAsyncThunk(
     async (user, thunkAPI) => {
         try {
             return await authService.login(user);
+        } catch (error) {
+            const message =
+                (error.response?.data?.message) ||
+                error.message ||
+                error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+export const googlelogin = createAsyncThunk(
+    'auth/google/login',
+    async (thunkAPI) => {
+        try {
+            return await authService.googlelogin();
+        } catch (error) {
+            const message =
+                (error.response?.data?.message) ||
+                error.message ||
+                error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+// Register and Login user With Google 
+export const createGoogleurl = createAsyncThunk(
+    'auth/login/createurl',
+    async (thunkAPI) => {
+        try {
+            return await authService.createGoogleurl();
         } catch (error) {
             const message =
                 (error.response?.data?.message) ||
@@ -80,23 +109,8 @@ export const checkToken = createAsyncThunk(
         }
     }
 );
-// Register user With Google 
-export const registerWithGoogle = createAsyncThunk(
-    'auth/registerWithGoogle',
-    async (_, thunkAPI) => {
-        try {
-            return await authService.registerWithGoogle()
-        } catch (error) {
-            const message =
-                (error.response &&
-                    error.response.data &&
-                    error.response.data.message) ||
-                error.message ||
-                error.toString()
-            return thunkAPI.rejectWithValue(message)
-        }
-    }
-)
+
+
 
 // Logout user
 export const logoutUser = createAsyncThunk(
@@ -161,7 +175,40 @@ export const authSlice = createSlice({
                 state.data = action.payload.data;
             })
 
-
+            .addCase(googlelogin.pending, (state) => {
+                state.isLoading = true;
+                state.isError = false;
+                state.isSuccess = false;
+            })
+            .addCase(googlelogin.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.data = action.payload.data;
+            })
+            .addCase(googlelogin.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.data = action.payload.data;
+            })
+            .addCase(createGoogleurl.pending, (state, action) => {
+                state.isLoading = true
+            })
+            .addCase(createGoogleurl.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.isError = false
+                state.data = null
+                state.url = action.payload.data.url
+            })
+            .addCase(createGoogleurl.rejected, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = false
+                state.isError = true
+                state.isLogout = false
+                state.statusCode = null
+                state.data = null
+                state.url = null
+            })
             .addCase(logoutUser.pending, (state, action) => {
                 state.isLoading = true
             })

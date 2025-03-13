@@ -3,10 +3,11 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../../context/authContext";
 import { Outlet } from "react-router-dom";
 export default function ProtectedRoute() {
-    const { isLogin, isLoading } = useAuth();
+    const { isLogin, isLoading,data } = useAuth();
 
     console.log("isLogin:", isLogin, "isLoading:", isLoading);
-
+    
+    console.log("data:", data);
     // ✅ Yüklenme tamamlanana kadar beklet
     if (isLoading) {
         return <div>Loading...</div>;  // Burada Spinner gösterebilirsiniz

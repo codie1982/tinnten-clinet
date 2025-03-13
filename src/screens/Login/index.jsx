@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from "react-redux";
-import { login } from "../../api/auth/authSlicer";
+import { login, createGoogleurl } from "../../api/auth/authSlicer";
 import LoginForm from '../../components/LoginForm';
 import { useNavigate } from "react-router-dom";
 import { Badge } from 'react-bootstrap';
 import { useAuth } from '../../context/authContext';
 import { Navigate } from "react-router-dom";
-
+import { useTranslation } from "react-i18next"
 export default function Login() {
+    const [t, i18n] = useTranslation("global")
     const { isLogin, isLoading: authLoading } = useAuth();
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -18,15 +19,25 @@ export default function Login() {
         },
     });
 
-
-
-    const { isError, isLoading, isSuccess, data } = useSelector((state) => state.auth);
+    const { isError, isLoading, isSuccess, data, url } = useSelector((state) => state.auth);
 
     useEffect(() => {
         if (isSuccess && data) {
-            navigate("conversation");  // Başarılı giriş sonrası yönlendirme
+            console.log("isSuccess, data", isSuccess, data)
+            //navigate("conversation");  // Başarılı giriş sonrası yönlendirme
         }
     }, [isSuccess, data]);
+
+
+    useEffect(() => {
+        console.log("isLoading, isSuccess, url", isLoading, isSuccess, url)
+
+        if (!isLoading)
+            if (isSuccess && url)
+                window.location.replace(url)
+
+    }, [isLoading, isSuccess, url]);
+
 
     const resetValidation = () => {
         setFormValidation({
@@ -35,8 +46,12 @@ export default function Login() {
                 password: { error: false, message: "" },
             },
         });
+
     };
 
+    const handleCreateGoogleUrl = () => {
+        dispatch(createGoogleurl())
+    }
     const handleSubmit = (e) => {
         e.preventDefault();
         resetValidation();
@@ -87,13 +102,13 @@ export default function Login() {
         <div className="chat-advertise-auth-content">
             <div className="row align-items-center">
                 <div className="col d-flex justify-content-center">
-                    <div className="site-title ms-1">TINNTEN</div>
+                    <div className="site-title ms-1">{t("appname")}</div>
                     <h6 className='align-content-center ps-2'>
-                        <Badge bg="light mt-2" style={{ color: "#111" }}>Platform</Badge>
+                        <Badge bg="light mt-2" style={{ color: "#111" }}>{t("beta")}</Badge>
                     </h6>
                 </div>
             </div>
-            <LoginForm handleLoginSubmit={handleSubmit} validation={formValidation.login} isLoading={isLoading} />
+            <LoginForm handleLoginSubmit={handleSubmit} handleCreateGoogleUrl={handleCreateGoogleUrl} validation={formValidation.login} isLoading={isLoading} />
         </div>
     );
 }
