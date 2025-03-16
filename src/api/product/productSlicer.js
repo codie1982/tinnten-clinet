@@ -1,7 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import productServices from "./productServices"
-//const user = JSON.parse(localStorage.getItem('user'))
-//const url = JSON.parse(localStorage.getItem('url'))
 
 const initialState = {
     data: null,

@@ -1,8 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import conversationService from "./conversationServices"
-import { act } from "react"
-//const user = JSON.parse(localStorage.getItem('user'))
-//const url = JSON.parse(localStorage.getItem('url'))
 
 
 // conversation start user

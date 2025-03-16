@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '../../context/authContext'
-import {
-    Form, Button, ButtonGroup, Badge,
-    Nav
-} from 'react-bootstrap'
+import {    Form, Button, ButtonGroup, Badge,Nav} from 'react-bootstrap'
 import { useNavigate, Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock, faEye, faEnvelope, faEyeSlash } from '@fortawesome/free-solid-svg-icons';

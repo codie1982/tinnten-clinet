@@ -107,12 +107,11 @@
             "forgotPassword": "Şifremi unuttum"
         },
         "mail": {
-            "title": "mail adresine gelen kodu girebilirsin!",
-            "terms": "Kullanım Şartları",
-            "and": "ve",
-            "privatePolicy": "Gizlilik Politikası",
+            "title": "mail adresinizi onaylamanız gerekmektedir.",
             "sendcode": "Kodu Gönder",
-            "angrement": " kabul ediyorum",
+            "description": "mail adresine gelen kodu bu alana girip mail adresini onaylamalısın.",
+            "send_code_placeholder": " Mail kutunuza gelen 6 haneli mail kodunu giriniz.",
+            "send_code_placeholder": " Mail kutunuza gelen 6 haneli mail kodunu giriniz.",
             "resendcode": "Kodu Tekrar Gönder",
             "login": "Giriş yapmak için tıklayın"
         },
@@ -180,7 +179,7 @@
         "policy45": "İş Transferleri: Şirket birleşmeleri, devralmalar veya varlık satışları durumunda",
         "policy46": "4. Verilerin Saklanması ve Güvenliği",
         "policy47": "Veri Saklama Süresi: Kullanıcı hesabınız aktif olduğu sürece veya yasal yükümlülüklere uygun olarak verilerinizi saklıyoruz.",
-        "policy48": "Güvenlik Önlemleri: Tinnten, kullanıcı verilerini şifreleme, erişim kontrolleri ve güvenlik duvarları ile korur.", 
+        "policy48": "Güvenlik Önlemleri: Tinnten, kullanıcı verilerini şifreleme, erişim kontrolleri ve güvenlik duvarları ile korur.",
         "policy49": "Veri İhlalleri: Olası bir veri ihlali durumunda etkilenen kullanıcılara en kısa sürede bildirim yaparız.",
         "policy50": "5. Kullanıcı Hakları",
         "policy51": "Kullanıcılar, yürürlükteki veri koruma yasalarına uygun olarak aşağıdaki haklara sahiptir:",
@@ -201,6 +200,6 @@
         "policy66": "9. Gizlilik Politikası Güncellemeleri",
         "policy67": "Bu Gizlilik Politikası zaman zaman güncellenebilir. Önemli değişiklikler olması durumunda, e-posta veya platform üzerinden bildirimde bulunacağız. En güncel versiyonu her zaman web sitemizden inceleyebilirsiniz.",
         "policy68": "10. İletişim Bilgileri",
-        "policy69":"Herhangi bir soru veya talebiniz için bize ulaşabilirsiniz:"
+        "policy69": "Herhangi bir soru veya talebiniz için bize ulaşabilirsiniz:"
     }
 }

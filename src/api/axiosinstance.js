@@ -41,6 +41,7 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
+        console.log("error", error)
         if ((error.response && error.response.status === 401) && !error.config._retry) {
             error.config._retry = true;
             const newToken = await silentAuth();

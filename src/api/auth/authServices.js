@@ -16,13 +16,17 @@ const createGoogleurl = async () => {
     const response = await axiosInstance.post("auth/createurl");
     return response.data
 }
-const googlelogin = async () => {
-    const response = await axiosInstance.post("auth/createurl");
+const googlelogin = async (token) => {
+    const response = await axiosInstance.post("auth/google/login", { token });
     return response.data
 }
 
 const register = async (data) => {
     const response = await axiosInstance.post("auth/register", data, { skipAuth: true });
+    return response.data
+}
+const sendmailcode = async (data) => {
+    const response = await axiosInstance.post("auth/sendcode");
     return response.data
 }
 const logout = async () => {
@@ -36,6 +40,6 @@ const checkToken = async () => {
 
 
 const authService = {
-    register, login,googlelogin,createGoogleurl, logout, info, checkToken,
+    register, login, googlelogin, createGoogleurl, logout, info, checkToken, sendmailcode
 }
 export default authService

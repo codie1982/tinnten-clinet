@@ -1,15 +1,15 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import authService from './authServices'
-//const user = JSON.parse(localStorage.getItem('user'))
-//const url = JSON.parse(localStorage.getItem('url'))
 
 const initialState = {
     url: null,
     data: null,
+    sendCode: false,
     statusCode: null,
     isError: false,
     isSuccess: false,
     isLoading: false,
+    isSendCodeLoading: false,
     isLogout: false,
     isValid: true,
     message: '',
@@ -32,9 +32,9 @@ export const login = createAsyncThunk(
 );
 export const googlelogin = createAsyncThunk(
     'auth/google/login',
-    async (thunkAPI) => {
+    async (token, thunkAPI) => {
         try {
-            return await authService.googlelogin();
+            return await authService.googlelogin(token);
         } catch (error) {
             const message =
                 (error.response?.data?.message) ||
@@ -83,6 +83,23 @@ export const info = createAsyncThunk(
     async (thunkAPI) => {
         try {
             return await authService.info()
+        } catch (error) {
+
+            const message =
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    }
+)
+export const sendmailcode = createAsyncThunk(
+    'auth/sendcode',
+    async (thunkAPI) => {
+        try {
+            return await authService.sendmailcode()
         } catch (error) {
 
             const message =
@@ -149,13 +166,14 @@ export const authSlice = createSlice({
                 state.isLoading = false
                 state.isSuccess = true
                 state.isError = false
-                state.data = action.payload.data.data
+                state.data = action.payload.data
+                state.sendCode = action.payload.data.sendCode
             })
             .addCase(register.rejected, (state, action) => {
                 state.isLoading = false
                 state.isSuccess = false
                 state.isError = true
-                state.data = action.payload.data.data
+                state.data = action.payload.data
             })
 
 
@@ -168,6 +186,7 @@ export const authSlice = createSlice({
                 state.isLoading = false;
                 state.isSuccess = true;
                 state.data = action.payload.data;
+                state.sendCode = action.payload.data.sendCode
             })
             .addCase(login.rejected, (state, action) => {
                 state.isLoading = false;
@@ -189,6 +208,7 @@ export const authSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.data = action.payload.data;
+                state.sendCode = action.payload.data.sendCode
             })
             .addCase(createGoogleurl.pending, (state, action) => {
                 state.isLoading = true
@@ -225,6 +245,21 @@ export const authSlice = createSlice({
                 state.isError = true
                 state.isLogout = false
                 state.statusCode = null
+            })
+            .addCase(sendmailcode.pending, (state, action) => {
+                state.isSendCodeLoading = true
+            })
+            .addCase(sendmailcode.fulfilled, (state, action) => {
+                state.isSendCodeLoading = false
+                state.isSuccess = true
+                state.isError = false
+                state.isLogout = true
+            })
+            .addCase(sendmailcode.rejected, (state, action) => {
+                state.isSendCodeLoading = false
+                state.isSuccess = false
+                state.isError = true
+                state.isLogout = false
             })
     }
 })

@@ -14,7 +14,7 @@ export function useAuth() {
 }
 export function AuthProvider({ children }) {
     const dispatch = useDispatch()
-    const { data, isError, isLoading: reduxLoading, isSuccess, isLogout } = useSelector((state) => state.auth);
+    const { data, sendCode, isError, isLoading: reduxLoading, isSuccess, isLogout } = useSelector((state) => state.auth);
 
     const [authState, setAuthState] = useState({
         isLogin: false,
@@ -24,13 +24,14 @@ export function AuthProvider({ children }) {
 
     useEffect(() => {
         const init = async () => {
+
             const token = localStorage.getItem('access_token');
             const user = JSON.parse(localStorage.getItem('user'));
-
+            const profiles = JSON.parse(localStorage.getItem('profiles'));
             if (token && user) {
-                setAuthState({ isLogin: true, user, isLoading: false });
+                setAuthState({ isLogin: user.email_verified ? true : false, user, profiles, sendCode, isLoading: false });
             } else {
-                setAuthState({ isLogin: false, user: null, isLoading: false });
+                setAuthState({ isLogin: false, user: null, profiles: null, sendCode, isLoading: false });
             }
         };
         init();
@@ -43,11 +44,15 @@ export function AuthProvider({ children }) {
                 logout();
             }
             if (isSuccess && data) {
-                localStorage.setItem('access_token', data.access_token);
-                localStorage.setItem('user', JSON.stringify(data.info));
-                localStorage.setItem('profiles', JSON.stringify(data.profiles));
-                const user = JSON.parse(localStorage.getItem('user')) || null;
-                const profiles = JSON.parse(localStorage.getItem('profiles')) || null;
+                toast.success(data.message)
+                console.log("data:", data);
+                localStorage.setItem('access_token', data.data.accessToken);
+                localStorage.setItem('user', JSON.stringify(data.data.info));
+                localStorage.setItem('profiles', JSON.stringify(data.data.profiles));
+
+                const user = data.data.info || null;
+                const profiles = data.data.profiles || null;
+
                 setAuthState({ isLogin: true, user, profiles, isLoading: false });
             }
 

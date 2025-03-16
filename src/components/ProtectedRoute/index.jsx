@@ -2,22 +2,26 @@ import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../context/authContext";
 import { Outlet } from "react-router-dom";
+import MailVerify from "screens/MailVerify";
 export default function ProtectedRoute() {
-    const { isLogin, isLoading,data } = useAuth();
+    const { isLogin, isLoading, user, profiles, sendCode } = useAuth();
+    console.log("user, profiles", user)
 
-    console.log("isLogin:", isLogin, "isLoading:", isLoading);
-    
-    console.log("data:", data);
-    // ✅ Yüklenme tamamlanana kadar beklet
-    if (isLoading) {
-        return <div>Loading...</div>;  // Burada Spinner gösterebilirsiniz
-    }
-
+    if (user != null)
+        if (!user.email_verified) {
+            return <div className="form-section">
+                <div className="form-content form-content-left-side">
+                    <MailVerify sendCode={sendCode} />
+                </div>
+                <div className="form-content form-content-right-side">
+                    <div className="form-content-desctiption">Tinnten 1.0 burada</div>
+                </div>
+            </div>
+        }
     // ✅ Kullanıcı giriş yapmamışsa login sayfasına yönlendir
     if (!isLogin) {
         return <Navigate to="/login" replace />;
     }
-
     // ✅ Kullanıcı giriş yapmışsa içeriği göster
     return <Outlet />;
 }

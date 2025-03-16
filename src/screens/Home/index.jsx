@@ -84,9 +84,7 @@ export default function Home() {
     , []
   );
   useEffect(() => {
-    console.log("groupedMessages", groupedMessages)
     const pages = Object.keys(groupedMessages);
-    console.log("grouped[pages[currentPage - 1]]", groupedMessages[pages[currentPage - 1]])
     setSystemMessage(groupedMessages[pages[currentPage - 1]] || []);
   }, [groupedMessages])
 

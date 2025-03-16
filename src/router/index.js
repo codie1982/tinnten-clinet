@@ -12,6 +12,7 @@ import HowWorks from "screens/HowWorks";
 import ConsumerTerms from "screens/ConsumerTerms";
 import PrivatePolicy from "screens/PrivatePolicy";
 import Contact from "screens/Contact";
+import GoogleAuth from "screens/GoogleAuth";
 
 const routes = createBrowserRouter([
     {
@@ -26,7 +27,7 @@ const routes = createBrowserRouter([
             { path: "/consumer-terms", element: <ConsumerTerms /> },
             { path: "/privatepolicy", element: <PrivatePolicy /> },
             { path: "/contact", element: <Contact/> },
-            { path: "/google-auth", element: <Contact/> },
+            { path: "/google-auth", element: <GoogleAuth/> },
             {
                 element: <ProtectedRoute />,
                 children: [
