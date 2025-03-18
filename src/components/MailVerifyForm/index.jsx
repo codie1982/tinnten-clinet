@@ -10,13 +10,12 @@ import { MAILVERIFY } from '../../constant'
 import { useTranslation } from "react-i18next"
 import logo from "../../assets/char-logo.png"
 
-export default function MailVerifyForm({ handleLoginSubmit, validation, isLoading, isCodeSending, sendingCodeHandle }) {
+export default function MailVerifyForm({ remindingTime, validation, isLoading, isCodeSending, verifyMailCode, sendingCode }) {
     const [t, i18n] = useTranslation("global")
-    const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        sendingCodeHandle()
+        isCodeSending ? verifyMailCode(e.target.code.value) : sendingCode()
     }
 
     return (
@@ -32,11 +31,18 @@ export default function MailVerifyForm({ handleLoginSubmit, validation, isLoadin
                     {isCodeSending ? <>
                         <div className="icon-container">
                             <Form.Group controlId="username" className="mb-3">
-                                <Form.Control type="text" placeholder={`${isCodeSending ? t("form.mail.send_code_placeholder") : t("form.mail.normal_placeholder")}`} className="form-control icon-control" />
+                                <Form.Control type="text" name='code' placeholder={`${isCodeSending ? t("form.mail.send_code_placeholder") : t("form.mail.normal_placeholder")}`} className={`form-control icon-control  ${validation != null && validation.code.error ? "error-control" : ""}`} />
                                 <div className="input-icon-left-container">
                                     <span><FontAwesomeIcon size='lg' color='#656565' icon={faEnvelope} /></span>
                                 </div>
                             </Form.Group>
+                            {validation != null && validation.code.error ?
+                                <>
+                                    <div className="error-message visible">
+                                        <span>{validation.code.message}</span>
+                                    </div></>
+                                :
+                                <></>}
                         </div>
                     </> : <></>}
 
@@ -44,7 +50,7 @@ export default function MailVerifyForm({ handleLoginSubmit, validation, isLoadin
                         <div className="row">
                             <div className="col">
                                 <div className="form-check">
-                                    <p> Süre : 180 sn</p>
+                                    <p> {`Süre : ${remindingTime} sn`}</p>
                                 </div>
                             </div>
                         </div>
@@ -62,12 +68,13 @@ export default function MailVerifyForm({ handleLoginSubmit, validation, isLoadin
                         <Button
                             type="submit"
                             size="lg"
+                            disabled={isLoading}
                             className="col btn m-t-1 btn-block btn-mail-login"
                             style={{
                                 width: '100%',
 
                             }}
-                        >{t("form.mail.sendcode")}
+                        >{isLoading ? t("form.mail.loading") : t("form.mail.sendcode")}
                         </Button>
                     </ButtonGroup>
                 </Form>

@@ -19,6 +19,7 @@ import global_tr from './transitions/TR/global.json';
 import ReactGA from "react-ga4";
 import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 import { AuthProvider } from './context/authContext';
+import './app.css';
 import './style.css';
 i18next.init({
   interpolation: { escapeValue: false },

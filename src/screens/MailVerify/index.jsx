@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from "react-redux";
-import { sendmailcode } from "../../api/auth/authSlicer";
+import { sendmailcode, verifymailcode } from "../../api/auth/authSlicer";
 import MailVerifyForm from '../../components/MailVerifyForm';
 import { useNavigate } from "react-router-dom";
 import { Badge } from 'react-bootstrap';
@@ -14,7 +14,10 @@ export default function MailVerify({ sendCode }) {
     const dispatch = useDispatch();
     const { isError, isSendCodeLoading, isSuccess } = useSelector((state) => state.auth);
 
+
     const [isCodeSending, setIsCodeSending] = useState(sendCode)
+
+    const [remindingTime, setRemindingTime] = useState(180)
     const [formValidation, setFormValidation] = useState({
         mailVerify: {
             code: {
@@ -23,6 +26,9 @@ export default function MailVerify({ sendCode }) {
         }
     });
 
+useEffect(() => {
+    setIsCodeSending(sendCode)
+}, [sendCode])
 
 
     const resetValidation = () => {
@@ -36,17 +42,24 @@ export default function MailVerify({ sendCode }) {
     };
 
 
-    const handleSubmit = () => {
+    const sendingCode = () => {
+        //kod gönder
+        if (!isCodeSending) {
+            dispatch(sendmailcode())
+        }
+    };
+
+    const verifyMailCode = (code) => {
+        //gönderilen kodu doğrula
         if (isCodeSending) {
             resetValidation();
-            const code = e.target.code.value;
             let hasError = false;
             if (!code) {
                 setFormValidation((prev) => ({
                     ...prev,
                     mailVerify: {
                         code: {
-                            error: false, message: "kod alanı boş olamaz"
+                            error: true, message: "kod alanı boş olamaz"
                         },
                     }
                 }));
@@ -55,18 +68,15 @@ export default function MailVerify({ sendCode }) {
             console.log("hasError", hasError)
             if (hasError) return; // 🚩 Hata varsa işlemi durdur
             // Doğruysa login işlemi başlat
+            console.log("code",code)
+            dispatch(verifymailcode(code))
         }
-        dispatch(sendmailcode())
-    };
+    }
 
-    useEffect(() => {
-        if (!isSendCodeLoading) {
-            if (isSuccess) {
-                setIsCodeSending(true)
-            }
-        }
-    }, [isError, isSendCodeLoading, isSuccess])
 
+    const updateRemindingTime = {
+
+    }
 
     // ✅ Kullanıcı giriş yapmamışsa login sayfasına yönlendir
 
@@ -80,8 +90,12 @@ export default function MailVerify({ sendCode }) {
                     </h6>
                 </div>
             </div>
-            <MailVerifyForm handleLoginSubmit={handleSubmit}
-                validation={formValidation.mailVerify} isLoading={isSendCodeLoading} isCodeSending={isCodeSending} sendingCodeHandle={handleSubmit} />
+            <MailVerifyForm
+                validation={formValidation.mailVerify}
+                remindingTime={remindingTime}
+                isLoading={isSendCodeLoading}
+                isCodeSending={isCodeSending}
+                verifyMailCode={verifyMailCode} sendingCode={sendingCode} />
         </div>
     );
 }

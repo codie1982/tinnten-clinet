@@ -20,9 +20,6 @@ export default function Chat({ openDetail, response }) {
     const [t, i18n] = useTranslation("global")
     const [isOpenProductDetail, setIsOpenProductDetail] = useState(false)
 
-    useEffect(() => {
-        console.log("response", response)
-    }, [response])
 
     const selectedAction = (item) => {
         switch (item.action) {

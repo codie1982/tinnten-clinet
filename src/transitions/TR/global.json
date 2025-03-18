@@ -77,10 +77,11 @@
     },
     "header": {
         "main": "Anasayfa",
-        "abouth": "hakkında",
+        "abouth": "Hakkında",
+        "logout": "Çıkış Yap",
         "menu": {
             "settings": "Ayarlar",
-            "logout": "Çıkış Yap",
+            "contact": "İletişim",
             "deleteallconversation": "Tüm Konuşmaları Sil",
             "profile": "Profil"
         }
@@ -109,6 +110,7 @@
         "mail": {
             "title": "mail adresinizi onaylamanız gerekmektedir.",
             "sendcode": "Kodu Gönder",
+            "loading": "gönderiliyor...",
             "description": "mail adresine gelen kodu bu alana girip mail adresini onaylamalısın.",
             "send_code_placeholder": " Mail kutunuza gelen 6 haneli mail kodunu giriniz.",
             "send_code_placeholder": " Mail kutunuza gelen 6 haneli mail kodunu giriniz.",

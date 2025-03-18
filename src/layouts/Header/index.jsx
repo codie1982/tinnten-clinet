@@ -1,15 +1,18 @@
 import React, { useState } from 'react'
 import { useTranslation } from "react-i18next"
-import { Container, Navbar, Nav, Dropdown, Form } from 'react-bootstrap'
+import { Container, Navbar, Nav, Dropdown, Image } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faEnvelopeSquare, faGear, faSignOut, faTrash } from '@fortawesome/free-solid-svg-icons';
-import profilImage from "../../assets/profilImage.jpg"
+import tinntenLogo from "../../assets/char-logo.png"
+import HeaderMenu from '../../components/HeaderMenu';
 import ProfilComponent from '../../components/Modals/ProfilModal';
 import SettingsComponent from '../../components/Modals/SettingsModal';
 import ContactUsComponent from '../../components/Modals/ContactUsModal';
 import DeleteAllChatsComponent from '../../components/Modals/AllDeleteModal';
 import LogoutComponent from '../../components/Modals/LogoutModal';
+import { useAuth } from 'context/authContext';
 export default function Header({ toggleSidebar }) {
+  const { user, profiles } = useAuth()
   const [t, i18n] = useTranslation("global")
   const [isOpenProfil, setIsOpenProfil] = useState(false)
   const [isOpenSettings, setIsOpenSettings] = useState(false)
@@ -37,32 +40,19 @@ export default function Header({ toggleSidebar }) {
   }
   // The forwardRef is important!!
   // Dropdown needs access to the DOM node in order to position the Menu
-  const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
-    <img src={profilImage} alt="Kullanıcı Avatarı" className="rounded-circle" onClick={onClick} style={{ width: '30px', height: '30px' }} />
+  const CustomToggle = React.forwardRef(({ children, onClick }, ref) => {
 
-  ));
-  // forwardRef again here!
-  // Dropdown needs access to the DOM of the Menu to measure it
-  const CustomMenu = React.forwardRef(
-    ({ children, style, className, 'aria-labelledby': labeledBy }, ref) => {
-      const [value, setValue] = useState('');
-
+    console.log("user, profile", user, profiles)
+    if (profiles?.profileImage) {
+      console.log("profiles.profileImage.path", profiles.profileImage.path)
+      return <Image src={`${profiles.profileImage.path}`} alt="Kullanıcı Avatarı" className="rounded-circle" onClick={onClick} style={{ width: '30px', height: '30px' }} /> //<img src={profiles.profileImage.path} />
+    } else {
       return (
-        <div
-          ref={ref}
-          style={style}
-          className={className}
-          aria-labelledby={labeledBy}
-        >
-          <ul className="list-unstyled">
-            {React.Children.toArray(children).filter(
-              (child) =>
-                !value || child.props.children.toLowerCase().startsWith(value),
-            )}
-          </ul>
-        </div>
-      );
-    },
+        <img src={tinntenLogo} alt="Kullanıcı Avatarı" className="rounded-circle" onClick={onClick} style={{ width: '30px', height: '30px' }} />
+      )
+    }
+
+  }
   );
   return (
     <div className="chat-header">
@@ -76,22 +66,23 @@ export default function Header({ toggleSidebar }) {
             <Navbar.Collapse id="navbarNav">
               <Nav className="">
                 <Nav.Link href="#" className="active" aria-current="page">{t("header.main")}</Nav.Link>
-                <Nav.Link href="#">{t("header.abouth")}</Nav.Link>
               </Nav>
               <Nav className="ms-auto d-flex">
                 <Nav.Item>
                   <Nav.Link className="dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <Dropdown align={'end'}>
+                  <HeaderMenu  openLogout={openLogout} openContactUs={openContactUs} openDeleteAll={openDeleteAll} openSettings={openSettings} openProfil={openProfil}  />
+                 {/*    <Dropdown align={'end'}>
+                     
                       <Dropdown.Toggle as={CustomToggle} id={`dropdown-custom-components`} />
                       <Dropdown.Menu>
-                        <Dropdown.Item eventKey="1" onClick={openProfil}>Engin EROL</Dropdown.Item>
+                        <Dropdown.Item eventKey="1" onClick={openProfil}>{user.name}</Dropdown.Item>
                         <Dropdown.Item eventKey="2" onClick={openSettings}><FontAwesomeIcon icon={faGear} /> {t("header.menu.settings")}</Dropdown.Item>
                         <Dropdown.Item eventKey="3" onClick={openDeleteAll}><FontAwesomeIcon icon={faTrash} /> {t("header.menu.deleteallconversation")}</Dropdown.Item>
                         <Dropdown.Item eventKey="4" onClick={openContactUs}><FontAwesomeIcon icon={faEnvelopeSquare} /> {t("header.menu.contact")}</Dropdown.Item>
                         <Dropdown.Divider />
                         <Dropdown.Item eventKey="5" onClick={openLogout}><FontAwesomeIcon icon={faSignOut} /> {t("header.logout")}</Dropdown.Item>
                       </Dropdown.Menu>
-                    </Dropdown>
+                    </Dropdown> */}
                   </Nav.Link>
                 </Nav.Item>
               </Nav>

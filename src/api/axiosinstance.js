@@ -42,18 +42,11 @@ axiosInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
         console.log("error", error)
-        if ((error.response && error.response.status === 401) && !error.config._retry) {
+        if ((error.response && error.response.status === 404) && !error.config._retry) {
             error.config._retry = true;
-            const newToken = await silentAuth();
-
-            if (newToken) {
-                error.config.headers['Authorization'] = `Bearer ${newToken}`;
-                return axiosInstance(error.config);
-            } else {
-                toast.error("Oturum süreniz doldu. Lütfen tekrar giriş yapın.");
-                localStorage.clear();
-                window.location.href = '/login';
-            }
+            const response = error.response
+            const errorMessage = response.data.data.message
+            toast.error(errorMessage)
         }
         return Promise.reject(error);
     }
@@ -62,7 +55,8 @@ axiosInstance.interceptors.response.use(
 axiosInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
-        if ((error.response && (error.response.status === 401 || error.response.status === 403)) && !error.config._retry && !error.config.skipAuth) {
+        console.log("error.response",error.response)
+        if ((error.response && (error.response.status === 401 || error.response.status === 403 || error.response.status === 500)) && !error.config._retry && !error.config.skipAuth) {
             error.config._retry = true; // Sonsuz döngüyü engellemek için
             try {
                 const newToken = await silentAuth();

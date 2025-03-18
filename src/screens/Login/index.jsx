@@ -24,7 +24,7 @@ export default function Login() {
     useEffect(() => {
         if (isSuccess && data) {
             console.log("isSuccess, data", isSuccess, data)
-            //navigate("conversation");  // Başarılı giriş sonrası yönlendirme
+            navigate("/conversation");  // Başarılı giriş sonrası yönlendirme
         }
     }, [isSuccess, data]);
 

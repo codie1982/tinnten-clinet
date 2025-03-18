@@ -1,10 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import authService from './authServices'
+import { data } from "autoprefixer";
 
 const initialState = {
     url: null,
     data: null,
     sendCode: false,
+    mailverify: false,
     statusCode: null,
     isError: false,
     isSuccess: false,
@@ -100,6 +102,24 @@ export const sendmailcode = createAsyncThunk(
     async (thunkAPI) => {
         try {
             return await authService.sendmailcode()
+        } catch (error) {
+
+            const message =
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    }
+)
+export const verifymailcode = createAsyncThunk(
+    'auth/verifymailcode',
+    async (code,thunkAPI) => {
+        try {
+            console.log("code",code)
+            return await authService.verifymailcode(code)
         } catch (error) {
 
             const message =
@@ -238,6 +258,9 @@ export const authSlice = createSlice({
                 state.isError = false
                 state.isLogout = true
                 state.statusCode = null
+                state.sendCode=false
+                state.mailverify=false
+                state.data = null
             })
             .addCase(logoutUser.rejected, (state, action) => {
                 state.isLoading = false
@@ -245,6 +268,7 @@ export const authSlice = createSlice({
                 state.isError = true
                 state.isLogout = false
                 state.statusCode = null
+                state.data = null
             })
             .addCase(sendmailcode.pending, (state, action) => {
                 state.isSendCodeLoading = true
@@ -253,13 +277,28 @@ export const authSlice = createSlice({
                 state.isSendCodeLoading = false
                 state.isSuccess = true
                 state.isError = false
-                state.isLogout = true
+                state.sendCode = action.payload.data.sendcode
             })
             .addCase(sendmailcode.rejected, (state, action) => {
                 state.isSendCodeLoading = false
                 state.isSuccess = false
                 state.isError = true
-                state.isLogout = false
+            })
+            .addCase(verifymailcode.pending, (state, action) => {
+                state.isSendCodeLoading = true
+            })
+            .addCase(verifymailcode.fulfilled, (state, action) => {
+                state.isSendCodeLoading = false
+                state.isSuccess = true
+                state.isError = false
+                state.mailverify = true
+                state.message = action.payload.data.message
+            })
+            .addCase(verifymailcode.rejected, (state, action) => {
+                state.isSendCodeLoading = false
+                state.isSuccess = false
+                state.isError = true
+                state.sendCode = false
             })
     }
 })
