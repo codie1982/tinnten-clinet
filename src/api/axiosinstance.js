@@ -33,6 +33,10 @@ axiosInstance.interceptors.request.use(
                 config.headers['Authorization'] = `Bearer ${token}`;
             }
         }
+         // Sadece JSON istekleri için Content-Type
+         if (!(config.data instanceof FormData)) {
+            config.headers['Content-Type'] = 'application/json';
+        }
         return config;
     },
     (error) => Promise.reject(error)
@@ -42,10 +46,10 @@ axiosInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
         console.log("error", error)
-        if ((error.response && error.response.status === 404) && !error.config._retry) {
+        if ((error.response && error.response.status === 404) || (error.response && error.response.status === 400)  && !error.config._retry) {
             error.config._retry = true;
             const response = error.response
-            const errorMessage = response.data.data.message
+            const errorMessage = response.data.message
             toast.error(errorMessage)
         }
         return Promise.reject(error);

@@ -149,6 +149,7 @@ export const checkToken = createAsyncThunk(
 
 
 
+
 // Logout user
 export const logoutUser = createAsyncThunk(
     'auth/logout',

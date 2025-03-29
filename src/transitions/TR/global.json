@@ -203,5 +203,8 @@
         "policy67": "Bu Gizlilik Politikası zaman zaman güncellenebilir. Önemli değişiklikler olması durumunda, e-posta veya platform üzerinden bildirimde bulunacağız. En güncel versiyonu her zaman web sitemizden inceleyebilirsiniz.",
         "policy68": "10. İletişim Bilgileri",
         "policy69": "Herhangi bir soru veya talebiniz için bize ulaşabilirsiniz:"
+    },
+    "profile":{
+        "title":"Profil Bilgileri"
     }
 }

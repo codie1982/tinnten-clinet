@@ -15,7 +15,9 @@ export function useAuth() {
 export function AuthProvider({ children }) {
     const dispatch = useDispatch()
     const { data, sendCode, isError, isLoading: reduxLoading, isSuccess, isLogout, mailverify } = useSelector((state) => state.auth);
-
+    const [settings, setSettings] = useState({
+        language: "tr"
+    })
     const [authState, setAuthState] = useState({
         isLogin: false,
         user: null,
@@ -27,8 +29,9 @@ export function AuthProvider({ children }) {
             const token = localStorage.getItem('access_token');
             const user = JSON.parse(localStorage.getItem('user'));
             const profiles = JSON.parse(localStorage.getItem('profiles'));
+            const settings = JSON.parse(localStorage.getItem('settings'));
             if (token && user) {
-                setAuthState({ isLogin: true, user, profiles, sendCode, isLoading: false });
+                setAuthState({ isLogin: true, user, profiles,settings, sendCode, isLoading: false });
             } else {
                 setAuthState({ isLogin: false, user: null, profiles: null, sendCode, isLoading: false });
             }
@@ -37,7 +40,6 @@ export function AuthProvider({ children }) {
     }, [dispatch]);
 
     useEffect(() => {
-        console.log("isError, isLogout, reduxLoading, isSuccess, data, sendCode", isError, isLogout, reduxLoading, isSuccess, data, sendCode)
         if (!reduxLoading) {
             if (isSuccess && data) {
                 toast.success(data.message)
@@ -45,11 +47,11 @@ export function AuthProvider({ children }) {
                 localStorage.setItem('access_token', data.data.accessToken);
                 localStorage.setItem('user', JSON.stringify(data.data.info));
                 localStorage.setItem('profiles', JSON.stringify(data.data.profiles));
-
+                localStorage.setItem('settings', JSON.stringify(settings));
                 const user = data.data.info || null;
                 const profiles = data.data.profiles || null;
 
-                setAuthState({ isLogin: true, sendCode, user, profiles, isLoading: false });
+                setAuthState({ isLogin: true, sendCode, user, profiles,settings, isLoading: false });
             }
 
 
@@ -63,7 +65,6 @@ export function AuthProvider({ children }) {
 
 
     useEffect(() => {
-        console.log("mailverify", mailverify)
         if (mailverify) {
             const user = JSON.parse(localStorage.getItem('user'));
             user.email_verified = mailverify

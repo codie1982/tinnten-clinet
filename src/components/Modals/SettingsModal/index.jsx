@@ -2,11 +2,15 @@ import React, { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faDollar, faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import { Modal, Button, Form, ButtonGroup } from 'react-bootstrap'
+import { useAuth } from 'context/authContext';
 
 export default function SettingsComponent({ isOpen, setOpenModal }) {
     const [active, setActive] = useState(false);
+    const {settings} = useAuth()
 
-
+const handleSelectedLanguage = (e)=>{
+    console.log("handleSelectedLanguage", e.target.value)
+}
     return (
         <Modal
             size="xl"
@@ -25,19 +29,12 @@ export default function SettingsComponent({ isOpen, setOpenModal }) {
                         <h2 className="settings-title">Settings</h2>
                         <div className="settings-content">
                             <div className="settings-item">
-                                <span className="settings-item-title">Language</span>
+                                <span className="settings-item-title" onSelect={(e)=>{handleSelectedLanguage(e)}}>Language</span>
                                 <select className="settings-select">
                                     <option value="1">System</option>
-                                    <option value="2">Türkçe</option>
-                                    <option value="3">English</option>
-                                </select>
-                            </div>
-                            <div className="settings-item">
-                                <span className="settings-item-title">Theme</span>
-                                <select className="settings-select">
-                                    <option value="1">System</option>
-                                    <option value="2">Light</option>
-                                    <option value="3">Dark</option>
+                                    <option value="tr">Türkçe</option>
+                                    <option value="en">İngilizce</option>
+                                
                                 </select>
                             </div>
                         </div>

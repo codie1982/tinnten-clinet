@@ -34,6 +34,7 @@ const verifymailcode = async (code) => {
     const response = await axiosInstance.post("auth/mailverify", { code });
     return response.data
 }
+
 const logout = async () => {
     const response = await axiosInstance.post("auth/logout");
     return response.data

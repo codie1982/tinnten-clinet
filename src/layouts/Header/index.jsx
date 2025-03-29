@@ -24,6 +24,7 @@ export default function Header({ toggleSidebar }) {
   const [isLogOut, setIsLogOut] = useState(false)
 
   const openProfil = () => {
+
     setIsOpenProfil(!isOpenProfil)
   }
   const openSettings = () => {
@@ -71,18 +72,6 @@ export default function Header({ toggleSidebar }) {
                 <Nav.Item>
                   <Nav.Link className="dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   <HeaderMenu  openLogout={openLogout} openContactUs={openContactUs} openDeleteAll={openDeleteAll} openSettings={openSettings} openProfil={openProfil}  />
-                 {/*    <Dropdown align={'end'}>
-                     
-                      <Dropdown.Toggle as={CustomToggle} id={`dropdown-custom-components`} />
-                      <Dropdown.Menu>
-                        <Dropdown.Item eventKey="1" onClick={openProfil}>{user.name}</Dropdown.Item>
-                        <Dropdown.Item eventKey="2" onClick={openSettings}><FontAwesomeIcon icon={faGear} /> {t("header.menu.settings")}</Dropdown.Item>
-                        <Dropdown.Item eventKey="3" onClick={openDeleteAll}><FontAwesomeIcon icon={faTrash} /> {t("header.menu.deleteallconversation")}</Dropdown.Item>
-                        <Dropdown.Item eventKey="4" onClick={openContactUs}><FontAwesomeIcon icon={faEnvelopeSquare} /> {t("header.menu.contact")}</Dropdown.Item>
-                        <Dropdown.Divider />
-                        <Dropdown.Item eventKey="5" onClick={openLogout}><FontAwesomeIcon icon={faSignOut} /> {t("header.logout")}</Dropdown.Item>
-                      </Dropdown.Menu>
-                    </Dropdown> */}
                   </Nav.Link>
                 </Nav.Item>
               </Nav>
@@ -98,3 +87,17 @@ export default function Header({ toggleSidebar }) {
     </div>
   )
 }
+
+
+{/*    <Dropdown align={'end'}>
+                     
+                      <Dropdown.Toggle as={CustomToggle} id={`dropdown-custom-components`} />
+                      <Dropdown.Menu>
+                        <Dropdown.Item eventKey="1" onClick={openProfil}>{user.name}</Dropdown.Item>
+                        <Dropdown.Item eventKey="2" onClick={openSettings}><FontAwesomeIcon icon={faGear} /> {t("header.menu.settings")}</Dropdown.Item>
+                        <Dropdown.Item eventKey="3" onClick={openDeleteAll}><FontAwesomeIcon icon={faTrash} /> {t("header.menu.deleteallconversation")}</Dropdown.Item>
+                        <Dropdown.Item eventKey="4" onClick={openContactUs}><FontAwesomeIcon icon={faEnvelopeSquare} /> {t("header.menu.contact")}</Dropdown.Item>
+                        <Dropdown.Divider />
+                        <Dropdown.Item eventKey="5" onClick={openLogout}><FontAwesomeIcon icon={faSignOut} /> {t("header.logout")}</Dropdown.Item>
+                      </Dropdown.Menu>
+                    </Dropdown> */}
