@@ -9,21 +9,19 @@ import { useAuth } from 'context/authContext';
 
 import { uploadprofileimage } from "../../../api/upload/uploadSlicer"
 import { updateProfile } from "../../../api/profile/profileSlicer"
-import LazyImage from '../../Common/LazyImage'
+import LazyImage from '../Common/LazyImage'
 
-
-export default function ProfilComponent({ isOpen, setOpenModal,userProfile }) {
+export default function ProfilComponent({ isOpen, setOpenModal }) {
     const [active, setActive] = useState(false);
     const [t, i18n] = useTranslation("global")
     const dispatch = useDispatch()
-    const { user, settings } = useAuth()
-    const [uploadid, setUploadid] = useState("")
+    const { user, profiles, settings } = useAuth()
+    const [imageid, setImageid] = useState("")
     const initialProfileImg = "https://lh3.googleusercontent.com/a/ACg8ocK5AcLNndhbXFi8sdw_mo3b3EgkfRZgOOfS77dffHPVj56OswzN=s96-c";
     const [profileImg, setProfileImg] = useState(initialProfileImg);
     const [selectedFile, setSelectedFile] = useState(null);
-    const [_userProfile, setUserProfile] = useState()
     const fileInputRef = useRef(null);
-    const defaultGender = _userProfile?.gender || "pointout";
+    const defaultGender = profiles?.gender || "pinout";
 
     const { isLoading, isSuccess, isError, image: newImage } = useSelector(
         (state) => {
@@ -31,22 +29,27 @@ export default function ProfilComponent({ isOpen, setOpenModal,userProfile }) {
         }
     )
 
- 
+    const { isLoading: isPLoading, isSuccess: isPSuccess, isError: isPError, profile: nProfile } = useSelector(
+        (state) => {
+            return state.profile
+        }
+    )
 
-    useEffect(() => {
-        setUserProfile(userProfile)
-        setUploadid(userProfile?.profileImage._id);
-    }, [userProfile])
-    
     useEffect(() => {
         console.log("isLoading, isSuccess, isError, newImage", isLoading, isSuccess, isError, newImage)
         if (isLoading === false && isSuccess === true && newImage !== null) {
             console.log("newImage", newImage)
             setProfileImg(newImage?.path);
-            setUploadid(newImage?._id);
+            setImageid(newImage?.uploadid);
         }
     }, [isLoading, isSuccess, isError, newImage])
 
+    useEffect(() => {
+        if (isPLoading === false && isPSuccess === true && nProfile !== null) {
+            console.log("nProfile", nProfile)
+
+        }
+    }, [nProfile])
 
     const navigate = useNavigate()
 
@@ -95,7 +98,7 @@ export default function ProfilComponent({ isOpen, setOpenModal,userProfile }) {
         }
 
         const data = {
-            profileImage: formData.get("profileImage"),
+            imageid: imageid,
             firstname: formData.get("firstname"),
             lastname: formData.get("lastname"),
             birthdate: formData.get("birthdate"),
@@ -111,6 +114,9 @@ export default function ProfilComponent({ isOpen, setOpenModal,userProfile }) {
         setProfileImg(initialProfileImg);
         setSelectedFile(null);
     }
+
+    console.log("profiles", profiles)
+    console.log("user", user)
     return (
         <Modal
             size="lg"
@@ -129,18 +135,16 @@ export default function ProfilComponent({ isOpen, setOpenModal,userProfile }) {
                         <Form onSubmit={handleSubmitForm}>
                             {/* Profile image selection */}
                             <Form.Group as={Row} className="mb-3" controlId="formHorizontalProfile">
-                                <input type="hidden" name="profileImage" value={uploadid} />
+                                <input type="hidden" value={imageid} />
                                 <Col className="flex justify-center align-middle" sm={10}>
                                     <Row>
                                         <Col>
                                             <div className="profile-image-container" onClick={handleImageClick}>
-                                                <Image
-                                                    src={_userProfile?.profileImage?.path}
-                                                    roundedCircle
+                                                <LazyImage
+                                                    src={profileImg}
+                                                    alt="Profile"
                                                     className="profile-image"
-                                                    style={{ width: "100px", height: "100px" }}
                                                 />
-                                               
                                                 <div className="profile-overlay">Düzenle</div>
                                             </div>
                                             <input
@@ -167,7 +171,7 @@ export default function ProfilComponent({ isOpen, setOpenModal,userProfile }) {
                                 <Col sm={10}>
                                     <Row>
                                         <Col>
-                                            <p>{user.email}</p>
+                                            <p>engin_erol@hotmail.com</p>
                                         </Col>
                                         <Col>
                                             <span><FontAwesomeIcon size='lg' color='#656565' icon={faCheck} /></span>
@@ -182,14 +186,14 @@ export default function ProfilComponent({ isOpen, setOpenModal,userProfile }) {
                                 <Col sm={5}>
                                     <Form.Control
                                         name="firstname"
-                                        defaultValue={_userProfile?.firstname || _userProfile?.given_name || ""}
+                                        defaultValue={profiles?.firstname || user?.given_name || ""}
                                         placeholder="Adınız"
                                     />
                                 </Col>
                                 <Col sm={5}>
                                     <Form.Control
                                         name="lastname"
-                                        defaultValue={_userProfile?.lastname || _userProfile?.family_name || ""}
+                                        defaultValue={profiles?.lastname || user?.family_name || ""}
                                         placeholder="Soyadınız"
                                     />
                                 </Col>
@@ -202,7 +206,7 @@ export default function ProfilComponent({ isOpen, setOpenModal,userProfile }) {
                                     <Form.Control
                                         name="bio"
                                         as="textarea"
-                                        defaultValue={_userProfile?.bio || ""}
+                                        defaultValue={profiles?.bio || ""}
                                         placeholder="Kendiniz hakkında bilgi"
                                         rows={3}
                                     />
@@ -217,7 +221,7 @@ export default function ProfilComponent({ isOpen, setOpenModal,userProfile }) {
                                     <Form.Control
                                         type="date"
                                         name="birthdate"
-                                        defaultValue={_userProfile?.birthdate ? _userProfile.birthdate.substring(0, 10) : ""}
+                                        defaultValue={profiles?.birthdate ? profiles.birthdate.substring(0, 10) : ""}
                                         placeholder="Doğum Tarihi"
                                     />
                                 </Col>

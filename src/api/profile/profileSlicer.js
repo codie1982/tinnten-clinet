@@ -4,16 +4,32 @@ import { data } from "autoprefixer";
 import profileService from "../profile/profileServices";
 
 const initialState = {
-    isLoading:null,
-    isSuccess:null,
-    isError:null,
-    proile: null,
+    isLoading: null,
+    isSuccess: null,
+    isError: null,
+    userProfile: null,
+    buisnessProfile: null,
     message: '',
 }
 
 
 
-
+export const getUserProfile = createAsyncThunk(
+    'proile/get',
+    async () => {
+        try {
+            return await profileService.getUserProfile()
+        } catch (error) {
+            const message =
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return message
+        }
+    }
+)
 export const updateProfile = createAsyncThunk(
     'proile/update',
     async (data) => {
@@ -39,12 +55,27 @@ export const profileSlicer = createSlice({
             state.isLoading = false
             state.isSuccess = false
             state.isError = false
-            state.proile = null
+            state.userProfile = null
             state.message = ''
         },
     },
     extraReducers: (builder) => {
         builder
+            .addCase(getUserProfile.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(getUserProfile.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.isError = false
+                state.userProfile = action.payload.data
+            })
+            .addCase(getUserProfile.rejected, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = false
+                state.isError = true
+                state.userProfile = null
+            })
             .addCase(updateProfile.pending, (state) => {
                 state.isLoading = true
             })
@@ -52,13 +83,13 @@ export const profileSlicer = createSlice({
                 state.isLoading = false
                 state.isSuccess = true
                 state.isError = false
-                state.profile = action.payload.data?.profile
+                state.userProfile = action.payload.data
             })
             .addCase(updateProfile.rejected, (state, action) => {
                 state.isLoading = false
                 state.isSuccess = false
                 state.isError = true
-                state.profile = null
+                state.userProfile = null
             })
     }
 })
