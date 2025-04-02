@@ -5,8 +5,8 @@ import { useAuth } from '../../context/authContext';
 import tinntenLogo from "../../assets/char-logo.png"
 import { useTranslation } from "react-i18next"
 import LazyImage from '../Common/LazyImage'
-import { Image } from 'react-bootstrap'
-export default function HeaderMenu({ openProfil, openSettings, openDeleteAll, openContactUs, openLogout, userprofile }) {
+import { Image, Spinner } from 'react-bootstrap'
+export default function HeaderMenu({ openProfil, openSettings, openDeleteAll, openContactUs, openLogout, userprofile, isProfileLoading }) {
     const [t, i18n] = useTranslation("global")
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef(null);
@@ -42,17 +42,20 @@ export default function HeaderMenu({ openProfil, openSettings, openDeleteAll, op
 
     return (
         <div className="profile-menu-container" ref={menuRef}>
+            {isProfileLoading ?
+                <Spinner animation="border" />
+                :
+                <Image
+                    loading="lazy"
+                    roundedCircle
+                    src={userprofile?.profileImage.path ? userprofile.profileImage.path : tinntenLogo}
+                    alt="Profile"
+                    height={40}
+                    width={40}
+                    className="profile-image"
+                    onClick={() => setIsOpen(!isOpen)}
+                />}
 
-            <Image
-                loading="lazy"
-                roundedCircle
-                src={userprofile?.profileImage.path ? userprofile.profileImage.path : tinntenLogo}
-                alt="Profile"
-                height={40}
-                width={40}
-                className="profile-image"
-                onClick={() => setIsOpen(!isOpen)}
-            />
             {/* Açılır Menü */}
             {isOpen && createPortal(
                 <motion.div

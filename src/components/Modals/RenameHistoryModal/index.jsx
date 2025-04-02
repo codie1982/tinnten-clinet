@@ -3,12 +3,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faDollar, faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import { Modal, Button, Form, Row, Col, } from 'react-bootstrap'
 
-export default function RenameHistoryModal({ isModalOpen, setIsModalOpen }) {
+export default function RenameHistoryModal({ isModalOpen, setIsModalOpen, title, handleRename }) {
     const [active, setActive] = useState(false);
+    const [_title, setTitle] = useState(title)
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-    }
+  
     return (
         <Modal
             size="lg"
@@ -22,21 +21,23 @@ export default function RenameHistoryModal({ isModalOpen, setIsModalOpen }) {
             </Modal.Header>
 
             <Modal.Body>
-                <Form>
+                <Form onSubmit={handleRename}>
                     <Row className="align-items-center">
                         <Col lg="10" >
-                            <Form.Label htmlFor="inlineFormInput" visuallyHidden>
-                                Yeniden Adlandır
+                            <Form.Label htmlFor="inlineFormInput" >
+                                Konuşma başlığını yeniden adlandır
                             </Form.Label>
                             <Form.Control
                                 className="mb-2"
                                 id="inlineFormInput"
-                                placeholder="Jane Doe"
-                                value={"Adım 1"}
+                                placeholder="Konuşma içeriğini "
+                                name='title'
+                                onChange={(e) => setTitle(e.target.value)}
+                                value={_title}
                             />
                         </Col>
                         <Col lg="2">
-                            <Button type="submit" className="mb-2">
+                            <Button type="submit" className="mb-2" >
                                 Gönder
                             </Button>
                         </Col>

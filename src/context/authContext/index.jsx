@@ -28,9 +28,10 @@ export function AuthProvider({ children }) {
         const init = async () => {
             const token = localStorage.getItem('access_token');
             const user = JSON.parse(localStorage.getItem('user'));
+            const userid = JSON.parse(localStorage.getItem('userid'));
             const settings = JSON.parse(localStorage.getItem('settings'));
             if (token && user) {
-                setAuthState({ isLogin: true, user,settings, sendCode, isLoading: false });
+                setAuthState({ isLogin: true, userid, user, settings, sendCode, isLoading: false });
             } else {
                 setAuthState({ isLogin: false, user: null, sendCode, isLoading: false });
             }
@@ -45,9 +46,10 @@ export function AuthProvider({ children }) {
                 console.log("data:", data);
                 localStorage.setItem('access_token', data.data.accessToken);
                 localStorage.setItem('user', JSON.stringify(data.data.info));
+                localStorage.setItem('userid', JSON.stringify(data.data.userid));
                 localStorage.setItem('settings', JSON.stringify(settings));
                 const user = data.data.info || null;
-                setAuthState({ isLogin: true, sendCode, user,settings, isLoading: false });
+                setAuthState({ isLogin: true, sendCode, user, settings, isLoading: false });
             }
 
 

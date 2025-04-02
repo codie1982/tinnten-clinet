@@ -43,10 +43,9 @@ export default function Header({ toggleSidebar }) {
 
   useEffect(() => {
     if (!isProfileLoading && isSuccess && userProfile) {
-      console.log("userProfile:", isProfileLoading , isSuccess , userProfile);
       setuserprofile(userProfile)
-    }
 
+    }
   }, [isProfileLoading, isSuccess, isError, userProfile, message])
 
 
@@ -83,7 +82,7 @@ export default function Header({ toggleSidebar }) {
               <Nav className="ms-auto d-flex">
                 <Nav.Item>
                   <Nav.Link className="dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <HeaderMenu openLogout={openLogout} openContactUs={openContactUs} openDeleteAll={openDeleteAll} openSettings={openSettings} openProfil={openProfil} userprofile={userprofile} />
+                    <HeaderMenu openLogout={openLogout} openContactUs={openContactUs} openDeleteAll={openDeleteAll} openSettings={openSettings} openProfil={openProfil} userprofile={userprofile} isProfileLoading={isProfileLoading} />
                   </Nav.Link>
                 </Nav.Item>
               </Nav>
@@ -91,7 +90,7 @@ export default function Header({ toggleSidebar }) {
           </Container>
         </Navbar>
       </div>
-      <ProfilComponent isOpen={isOpenProfil} setOpenModal={openProfil} userProfile={userprofile} />
+      <ProfilComponent isOpen={isOpenProfil} setOpenModal={openProfil} userProfile={userprofile} isProfileLoading={isProfileLoading} />
       <SettingsComponent isOpen={isOpenSettings} setOpenModal={openSettings} />
       <DeleteAllChatsComponent isOpen={isOpenDeleteAllChats} setOpenModal={openDeleteAll} />
       <ContactUsComponent isOpen={isOpenContactUs} setOpenModal={openContactUs} />

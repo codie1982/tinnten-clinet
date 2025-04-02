@@ -445,6 +445,7 @@ h1 .page-title {
     font-size: 3rem;
     font-weight: 700;
 }
+
 .form-content-text {
     position: relative;
     margin: auto;
@@ -453,6 +454,7 @@ h1 .page-title {
     font-size: 2rem;
     font-weight: 400;
 }
+
 .form-content-subtext {
     position: relative;
     margin: auto;
@@ -461,6 +463,7 @@ h1 .page-title {
     font-size: 1.5rem;
     font-weight: 400;
 }
+
 .plan-features {
     display: flex;
     text-align: center;
@@ -562,7 +565,6 @@ h1 .page-title {
     display: flex;
     width: 100%;
     /* Örneğin, sabit genişlik belirleyelim */
-    height: 100%;
     /* Sabit yükseklik */
 }
 
@@ -572,7 +574,6 @@ h1 .page-title {
     height: 100%;
     /* Konteynerin yüksekliğini tamamen kaplar */
     display: flex;
-    align-items: center;
     justify-content: center;
     margin-right: 10px;
     /* Görsel olarak ayırt edilebilir olması için */
@@ -582,6 +583,7 @@ h1 .page-title {
     flex: 1;
     /* Eşit genişlikte yayılmalarını sağlar */
     height: 100%;
+    width: 0px;
     /* Konteynerin yüksekliğini tamamen kaplar */
     display: flex;
     align-items: center;
@@ -1470,7 +1472,6 @@ h1 .page-title {
     padding: 10px;
     border-radius: 14px;
     background-color: var(--chat-header);
-
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
 
 }
@@ -1485,7 +1486,28 @@ h1 .page-title {
     border: 1px solid var(--border-color);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
 }
+.empty-message {
+    margin-right: auto;
+    text-align: left;
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+    padding: 10px;
+    border-radius: 14px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
 
+.chat-loading-spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    font-size: 16px;
+    color: #555;
+  }
+  
 .message-content {
     padding: 10px;
 }
@@ -2008,17 +2030,17 @@ h1 .page-title {
     position: relative;
     display: inline-block;
     background-color: var(--background-color);
-  }
-  
-  .profile-image {
+}
+
+.profile-image {
     width: 40px;
     height: 40px;
     border-radius: 50%;
     cursor: pointer;
     border: 2px solid var(--border-color);
-  }
-  
-  .menu-popup {
+}
+
+.menu-popup {
     position: absolute;
     width: 180px;
     background: white;
@@ -2029,29 +2051,29 @@ h1 .page-title {
     padding: 8px 0;
     background-color: var(--background-color);
 
-  }
-  
-  .menu-popup ul {
+}
+
+.menu-popup ul {
     list-style: none;
     margin: 0;
     padding: 0;
-  }
-  
-  .menu-item {
+}
+
+.menu-item {
     padding: 10px 15px;
     cursor: pointer;
     color: var(--text-color);
     transition: background 0.2s ease-in-out;
-  }
-  
-  .menu-item:hover {
+}
+
+.menu-item:hover {
     background: var(--advertaise-color-light);
-  }
-  
-  .logout {
+}
+
+.logout {
     color: red;
-  }
-  
+}
+
 .feature-plan-container {
     display: flex;
     justify-content: center;
@@ -2717,3 +2739,83 @@ h3 {
 .profile-image-container:hover .profile-overlay {
     opacity: 1;
 }
+
+.search-list-container {
+    display: block;
+    position: relative;
+    margin: auto;
+    width: 100%;
+
+    margin-bottom: 20px;
+    padding: 5px 10px;
+
+}
+
+.search-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.search-list-item {
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.search-item-title {
+    font-size: 1.1em;
+    font-weight: 500;
+    color: var(--secondary-color);
+}
+
+.search-item-description {
+    font-size: 0.8rem;
+    font-weight: 300;
+    color: var(--secondary-color);
+}
+
+.search-item-description strong {
+    font-weight: bold;
+    color: var(--text-color);
+    /* istersen başka renk de verebilirsin */
+}
+
+.search-list-item:hover {
+    background-color: var(--chat-header);
+}
+
+.search-item-title {
+    font-weight: bold;
+    margin-bottom: 4px;
+    position: relative;
+}
+
+.search-item-date {
+    font-size: 12px;
+    color: #888;
+    margin-top: 2px;
+}
+
+.search-item-meta {
+    font-size: 12px;
+    color: #888;
+    margin-top: 2px;
+}
+
+
+.empty-message-warning {
+    text-align: center;
+    padding: 2rem;
+    color: #999;
+    font-style: italic;
+    font-size: 16px;
+  }
