@@ -2,6 +2,20 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import conversationService from "./conversationServices"
 
 
+
+export const setConversationTitle = createAsyncThunk(
+    'conversation/title',
+    async (data, thunkAPI) => {
+        return data
+    }
+)
+
+export const setConversationMessage = createAsyncThunk(
+    'conversation/messages',
+    async (data, thunkAPI) => {
+        return data
+    }
+)
 // conversation start user
 export const createconversation = createAsyncThunk(
     'conversation/create',
@@ -23,7 +37,7 @@ export const createconversation = createAsyncThunk(
 // conversation start user
 export const conversationRename = createAsyncThunk(
     'conversation/rename',
-    async (data,thunkAPI) => {
+    async (data, thunkAPI) => {
         try {
             const response = await conversationService.updateConversationTitle(data)
             return response
@@ -40,7 +54,7 @@ export const conversationRename = createAsyncThunk(
 )
 export const deleteQuestion = createAsyncThunk(
     'conversation/deleteQuestion',
-    async (id,thunkAPI) => {
+    async (id, thunkAPI) => {
         try {
             const response = await conversationService.deleteQuestion(id)
             return response
@@ -57,7 +71,7 @@ export const deleteQuestion = createAsyncThunk(
 )
 export const setAnswerToQuestion = createAsyncThunk(
     'conversation/answer',
-    async (data,thunkAPI) => {
+    async (data, thunkAPI) => {
         try {
             const response = await conversationService.answer(data)
             return response
@@ -76,7 +90,6 @@ export const conversationDetail = createAsyncThunk(
     'conversation/detail',
     async (data, thunkAPI) => {
         try {
-            console.log("conversation/detail", data)
             const response = await conversationService.detail(data)
             return response
         } catch (error) {
@@ -91,7 +104,7 @@ export const conversationDetail = createAsyncThunk(
     }
 )
 // conversation send promt user
-export const conversation = createAsyncThunk(
+export const conversationSendMesaage = createAsyncThunk(
     'conversation/chat',
     async (data, thunkAPI) => {
         try {
@@ -111,7 +124,7 @@ export const conversation = createAsyncThunk(
 // conversation send promt user
 export const getConversationHistory = createAsyncThunk(
     'conversation/history/get',
-    async (data,thunkAPI) => {
+    async (data, thunkAPI) => {
         try {
             const response = await conversationService.gethistories(data)
             return response
@@ -149,7 +162,7 @@ export const changeConversitionName = createAsyncThunk(
 // conversation send promt user
 export const deleteConversationThunk = createAsyncThunk(
     'conversation/deleteconversition',
-    async (data,thunkAPI) => {
+    async (data, thunkAPI) => {
         try {
             const response = await conversationService.remove(data)
             return response
@@ -167,7 +180,7 @@ export const deleteConversationThunk = createAsyncThunk(
 // conversation send promt user
 export const searchConversationThunk = createAsyncThunk(
     'conversation/search',
-    async (data,thunkAPI) => {
+    async (data, thunkAPI) => {
         try {
             const response = await conversationService.search(data)
             return response
@@ -208,37 +221,42 @@ export const conversationSlice = createSlice({
         data: null,
         detail: null,
         human_message: null,
-        system_message: null,
+        conversation: null,
         recommendations: null,
         history: null,
-        updateHistory:null,
-        deleteHistory:null,
+        updateHistory: null,
+        deleteHistory: null,
         conversationid: null,
-        conversationCreated:false,
-        question:null,
+        updateConversationid: null,
+        conversationCreated: false,
+        question: null,
         statusCode: null,
         isError: false,
         isSuccess: false,
         isLoading: false,
+        isConversationLoading: false,
         isHistoryError: false,
         isHistorySuccess: false,
         isHistoryLoading: false,
-        deletedQuestionid:null,
+        deletedQuestionid: null,
 
         isSearchError: false,
         isSearchSuccess: false,
         isSearchLoading: false,
-        searchResults:null,
+        searchResults: null,
+        conversationTitle: null,
+
+        conversationMessage: null,
         message: '',
     },
     reducers: {
         resetConversation: (state) => {
             state.isLoading = false
+            state.isConversationLoading = false
             state.isSuccess = false
             state.isError = false
-            state.system_message = null
+            state.conversation = null
             state.data = null
-            state.system_message = null
 
         },
         resetHistory: (state) => {
@@ -276,24 +294,26 @@ export const conversationSlice = createSlice({
                 state.isError = true
                 state.conversationCreated = false;
             })
-            .addCase(conversation.pending, (state) => {
-                state.isLoading = true
+
+            .addCase(conversationSendMesaage.pending, (state) => {
+                state.isConversationLoading = true
             })
-            .addCase(conversation.fulfilled, (state, action) => {
-                console.log("conversation.fulfilled",action)
-                state.isLoading = false
+
+            .addCase(conversationSendMesaage.fulfilled, (state, action) => {
+                state.isConversationLoading = false
                 state.isSuccess = true
                 state.isError = false
                 state.conversationCreated = false;
-                state.conversationid = action.payload.data.conversation.conversationid
-                state.system_message = action.payload.data.conversation
+                //state.conversationid = action.payload.data.conversation?.conversationid
+                //state.conversation = action.payload.data.conversation?
             })
-            .addCase(conversation.rejected, (state, action) => {
-                state.isLoading = false
+            .addCase(conversationSendMesaage.rejected, (state, action) => {
+                state.isConversationLoading = false
                 state.isSuccess = false
                 state.isError = true
-                state.system_message = null
+                state.conversation = null
             })
+
             .addCase(getConversationHistory.pending, (state) => {
                 state.isHistoryLoading = true
             })
@@ -383,7 +403,7 @@ export const conversationSlice = createSlice({
                 state.isSuccess = true
                 state.isError = false
                 state.conversationid = action.payload.data.conversation.conversationid
-                state.system_message = action.payload.data.conversation
+                state.conversation = action.payload.data.conversation
             })
             .addCase(conversationDetail.rejected, (state, action) => {
                 state.isLoading = false
@@ -391,7 +411,7 @@ export const conversationSlice = createSlice({
                 state.isError = true
                 state.conversationCreated = false;
                 state.conversationid = null
-                state.system_message = null
+                state.conversation = null
             })
             .addCase(setAnswerToQuestion.pending, (state) => {
                 state.isLoading = true
@@ -436,10 +456,18 @@ export const conversationSlice = createSlice({
                 state.isSearchSuccess = false
                 state.isSearchError = true
             })
+            .addCase(setConversationTitle.fulfilled, (state, action) => {
+                state.conversationTitle = action.payload.title;
+                state.updateConversationid = action.payload.conversationid;
+            })
+
+            .addCase(setConversationMessage.fulfilled, (state, action) => {
+                state.conversationNewMessage = action.payload.messages;
+            })
     }
 })
 
 
-export const { resetConversation, resetHistory,resetUpdateHistory } = conversationSlice.actions
+export const { resetConversation, resetHistory, resetUpdateHistory } = conversationSlice.actions
 export default conversationSlice.reducer
 

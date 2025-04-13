@@ -7,9 +7,11 @@ import { Badge } from 'react-bootstrap';
 import { useAuth } from '../../context/authContext';
 import { Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next"
+import useAgentSocket from '../../hooks/useAgentSocket';
 export default function Login() {
     const [t, i18n] = useTranslation("global")
     const { isLogin, isLoading: authLoading } = useAuth();
+    const { connectSocket } = useAgentSocket()
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [formValidation, setFormValidation] = useState({
@@ -25,6 +27,7 @@ export default function Login() {
         if (isSuccess && data) {
             console.log("isSuccess, data", isSuccess, data)
             navigate("/conversation");  // Başarılı giriş sonrası yönlendirme
+            connectSocket()
         }
     }, [isSuccess, data]);
 

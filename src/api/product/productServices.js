@@ -1,5 +1,4 @@
-import axios from "axios";
-const API_URL = "api/v10/products/"
+import axiosInstance from "../axiosinstance";
 
 const addFavorite = async (userData) => {
     console.log("userData", userData)
@@ -11,7 +10,12 @@ const addFavorite = async (userData) => {
 
     return response.data
 }
+const getProductDetail = async (data) => {
+    const response = await axiosInstance.get("products/" + data.productid)
+    return response.data;
+}
+
 const productService = {
-    addFavorite
+    addFavorite, getProductDetail
 }
 export default productService

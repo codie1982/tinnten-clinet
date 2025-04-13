@@ -11,118 +11,126 @@ import ProductDetail from "../../components/ProductDetail";
 import Favorite from "../../layouts/Favorite";
 import ChatInput from "../../layouts/Input";
 
-import useChatManager from "./useChatManager";
-import useConversationFlow from "./useConversationFlow";
-
-import {
-  createconversation,
-  conversation,
-  resetConversation,
-  conversationHistory,
-  conversationDetail,
-} from "../../api/conversation/conversationSlicer";
-import AgentFeedbackViewer from '../../components/AgentFeedbackViewer';
-
+import { DETAILVIEW } from "../../constant/chatContentConstant";
+import useChat from "./useChat";
+import useAgentSocket from "../../hooks/useAgentSocket";
 export default function Home() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const { connectSocket } = useAgentSocket()
   const { id: conversationParamId } = useParams();
   const { isLogin } = useAuth();
   const [t] = useTranslation("global");
 
-  // Local state
+
+  // Local UI durumları
   const [openProductDetail, setOpenProductDetail] = useState(false);
-  const [openChatMessage, setOpenChatMessage] = useState(false);
+  const [openChatMessage, setOpenChatMessage] = useState(true);
   const [openSidebar, setOpenSidebar] = useState(true);
   const [chatInputPosition, setChatInputPosition] = useState("middle");
-  const [humanMessage, setHumanMessage] = useState(null);
-
   const [isOpenFavorite, setOpenFavorite] = useState(false);
+  // Eğer gerekiyorsa loading durumunu ayrı tutabilirsin veya hook içinden alabilirsin
+  const [conversationLoading, setConversationLoading] = useState(false);
+
+  useEffect(() => {
+    console.log("isLogin", isLogin)
+    if (isLogin) connectSocket()
+  }, [isLogin])
+
+  /* 
+    useChat hook'una iki tane callback (uiActions) gönderiyoruz:
+    - onProductSelected: Ürün seçildiğinde UI'da ürün detayını açmak ve chat input pozisyonunu ayarlamak için.
+    - onPromptStart: Yeni mesaj (prompt) gönderilmeden önce gerekli UI güncellemelerini tetiklemek için.
+    
+    İkinci parametre olarak conversationParamId veriyoruz; bu sayede, eğer URL'de bir conversation id varsa, hook ilgili detayları getiriyor.
+  */
   const {
     groupedMessages,
     systemMessage,
     totalCount,
     currentPage,
-    updateMessageBlock,
+    viewAction,
+    selectedProduct,
     setSystemMessage,
-    setTotalCount,
-    changePage,
-  } = useChatManager();
-
-  const {
-    sendPrompt,
+    sendMessage,
     handleSetConversation,
     conversationid,
+    updateMessageBlock,
+    handleViewAction,
+    changePage,
     setConversationid,
-  } = useConversationFlow(updateMessageBlock, conversationParamId);
+  } = useChat(
 
-  // Redux state
-  const { isSuccess, isLoading, system_message, detail, conversationid: selectedConversationid, conversationCreated } = useSelector(
-    (state) => state.conversation
+    {
+      onUpdateMessageBlock: () => {
+        setOpenChatMessage(true)
+      },
+      onUpdateActionView: (viewAction) => {
+
+      },
+      onProductSelected: () => {
+        console.log("onProductSelected: Ürün seçildi.");
+        setOpenProductDetail(true);
+        setChatInputPosition("left-middel");
+      },
+      onPromptStart: () => {
+        setOpenProductDetail(false);
+        setOpenChatMessage(true);
+        setChatInputPosition("bottom");
+        // Sayfalama resetleme gibi işlemler de burada tetiklenebilir
+      },
+    },
+    conversationParamId
   );
 
-  // Helper: Group messages by group id
-  const groupMessagesByGroupId = (messages = []) => {
-    console.log("messages.length", messages.length);
-
-    if (messages.length === 0) {
-      return {};
-    }
-
-    return messages.reduce((groups, message) => {
-      if (!groups[message.groupid]) {
-        groups[message.groupid] = [];
-      }
-      groups[message.groupid].push(message);
-      return groups;
-    }, {});
-  };
+  // Log when Home component mounts
+  useEffect(() => {
+    console.log("Home component mounted.");
+  }, []);
 
 
 
+  // groupedMessages değiştiğinde güncel sayfa verisini (systemMessage) ayarla
   useEffect(() => {
     const pages = Object.keys(groupedMessages);
-    setSystemMessage(groupedMessages[pages[currentPage - 1]] || []);
-  }, [groupedMessages, currentPage])
+    console.log("Grouped messages keys:", pages);
+    if (pages.length > 0) {
+      // currentPage, sayfa numarasını 1 bazlı tuttuğumuzdan, dizideki indeksi currentPage - 1 olarak seçiyoruz
+      const currentMessages = groupedMessages[pages[currentPage - 1]] || [];
+      console.log(`Setting system message for page ${currentPage}:`, currentMessages);
+      setSystemMessage(currentMessages);
+    }
+  }, [groupedMessages, currentPage]);
 
-
-
-
-  // İlk yükleme: Eğer conversationid varsa sadece detayını al, yoksa geçmişi getir
+  // Eğer URL'den bir conversation id geldi ise ilgili işlemleri yap
   useEffect(() => {
+    console.log("URL parameter conversationParamId:", conversationParamId);
     if (conversationParamId) {
       setConversationid(conversationParamId);
       setOpenSidebar(false);
       setChatInputPosition("bottom");
+      console.log("Conversation id set from URL:", conversationParamId);
     }
-  }, [conversationParamId]);
+  }, [conversationParamId, setConversationid]);
 
-
-  // Eğer yeni bir mesaj varsa ve konuşma devam ediyorsa mesajları güncelle
+  /* 
+    Bu useEffect içerisinde, örneğin Redux üzerinden gelen yeni mesaj (system_message) varsa,
+    updateMessageBlock fonksiyonu ile mesaj bloğunu güncelliyoruz. 
+    Eğer isLoading ve isSuccess gibi durumları ek olarak kontrol etmek isterseniz,
+    hook içindeki yönetimi veya Redux state'lerini de kullanabilirsiniz.
+  */
   useEffect(() => {
-    if (!isLoading && isSuccess && system_message) {
-      console.log("system_message", system_message)
-      setOpenChatMessage(true);
-      updateMessageBlock(system_message.messages || []);
-    }
-  }, [isLoading, isSuccess, system_message]);
+    // Bu örnekte hook içindeki mesaj güncellemeleri otomatik yapılıyor.
+    // Eğer ek bir kontrol gerekiyorsa, burada düzenlemeler yapabilirsiniz.
+  }, [/* system_message gibi ek bağımlılıklar */]);
 
-
+  // Yeni konuşma oluşturulduğunda yönlendirme
   useEffect(() => {
-    if (!isLoading && isSuccess && conversationCreated) {
-      if (selectedConversationid != undefined && selectedConversationid) {
-        setConversationid(selectedConversationid)
-        setChatInputPosition("middle");
-        setOpenSidebar(true);
-        setOpenChatMessage(false);
-        setOpenProductDetail(false);
-        setTotalCount(0);
-        setSystemMessage(null);
-        navigate("/conversation" + "/" + selectedConversationid)
-      }
+    // Eğer conversation oluşturulmuşsa yönlendirme yapıyoruz.
+    if (conversationid) {
+      navigate("/conversation/" + conversationid);
     }
-  }, [isLoading, isSuccess, selectedConversationid, conversationCreated])
+  }, [conversationid, navigate]);
 
   const toggleSidebar = () => setOpenSidebar((prev) => !prev);
 
@@ -131,9 +139,7 @@ export default function Home() {
       {isLogin && (
         <Sidebar setConversation={handleSetConversation} openSidebar={openSidebar} />
       )}
-     
       <div className="content">
-      <AgentFeedbackViewer />
         {isLogin && <Header toggleSidebar={toggleSidebar} />}
         {isLogin && totalCount !== 0 && (
           <Paginations
@@ -147,13 +153,26 @@ export default function Home() {
             <div className="chat-blok">
               <div className={`message-blok ${openChatMessage ? "" : "hidden"}`}>
                 <Chat
-                  response={systemMessage}
-                  isLoading={isLoading} // 💡 Burada ekliyoruz
-                  openDetail={() => setOpenProductDetail((prev) => !prev)}
+                  messages={systemMessage}
+                  viewAction={viewAction}
+                  isLoading={conversationLoading}
+                  actionState={() => setOpenProductDetail((prev) => !prev)}
                 />
               </div>
               <div className={`detail-blok ${openProductDetail ? "" : "hidden"}`}>
-                <ProductDetail openDetail={() => setOpenProductDetail((prev) => !prev)} />
+                <ProductDetail
+                  product={selectedProduct}
+                  closeDetail={() => {
+                    setOpenProductDetail(false);
+                    setChatInputPosition("middle");
+                    handleViewAction();
+                  }}
+                  openDetail={() => {
+                    setOpenProductDetail((prev) => !prev);
+                    setChatInputPosition("middle");
+                    handleViewAction();
+                  }}
+                />
               </div>
             </div>
           </div>
@@ -162,7 +181,7 @@ export default function Home() {
             closeFavoriteSection={() => setOpenFavorite(false)}
           />
         </div>
-        {isLogin && <ChatInput position={chatInputPosition} sendPromt={sendPrompt} />}
+        {isLogin && <ChatInput position={chatInputPosition} sendMessage={sendMessage} />}
       </div>
     </>
   );

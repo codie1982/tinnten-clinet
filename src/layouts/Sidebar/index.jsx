@@ -16,7 +16,8 @@ import {
   conversationRename,
   resetUpdateHistory,
   deleteConversationThunk,
-  searchConversationThunk
+  searchConversationThunk,
+  setConversationTitle
 } from "../../api/conversation/conversationSlicer";
 
 export default function Sidebar({ setConversation, openSidebar }) {
@@ -41,6 +42,7 @@ export default function Sidebar({ setConversation, openSidebar }) {
   const SEARCHLIMIT = 10;
   const [hasMoreResults, setHasMoreResults] = useState(true);
   const [firstSearch, setFirstSearch] = useState(true);
+  const [conversationTitle, setconversationTitle] = useState()
   const {
     isHistorySuccess,
     isHistoryLoading,
@@ -51,6 +53,8 @@ export default function Sidebar({ setConversation, openSidebar }) {
     isSearchError,
     isSearchSuccess,
     isSearchLoading,
+    conversationTitle: title,
+    updateConversationid
 
   } = useSelector(state => state.conversation);
 
@@ -59,6 +63,18 @@ export default function Sidebar({ setConversation, openSidebar }) {
   useEffect(() => {
     dispatch(getConversationHistory({ page: 1, limit: LIMIT }));
   }, [dispatch]);
+
+
+  useEffect(() => {
+    setConversationTitle(title)
+    historyList.map(item => {
+      if (item.conversationid === updateConversationid) {
+        return item.title == title
+      }
+    })
+  }, [title, updateConversationid])
+
+
 
   const getMoreHistory = () => {
     if (isFetchingMore || !hasMoreHistory) return;
@@ -97,7 +113,7 @@ export default function Sidebar({ setConversation, openSidebar }) {
 
     if (!isSearchLoading && isSearchSuccess && searchResults?.length > 0) {
       if (searchResults.length < SEARCHLIMIT) setHasMoreResults(false);
-      if(firstSearch) {
+      if (firstSearch) {
         setSearchResults(searchResults); // ilk arama sonuçlarını ayarla
       } else {
         setSearchResults(prev => [...prev, ...searchResults]); // sonuçları birleştir
@@ -149,7 +165,7 @@ export default function Sidebar({ setConversation, openSidebar }) {
     }
   };
 
-  const handleSearch = (searchText, page, limit,first) => {
+  const handleSearch = (searchText, page, limit, first) => {
     if (searchText) {
       setFirstSearch(first);
       // Burada redux dispatch çağrısı yapılır
@@ -170,7 +186,6 @@ export default function Sidebar({ setConversation, openSidebar }) {
         <div className="chat-release">
           <button onClick={() => setConversation()}>{t("sidebar.reconversation")}</button>
         </div>
-
         <div className="history-title">
           <h3>{t("sidebar.history")}</h3>
         </div>

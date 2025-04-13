@@ -2,11 +2,13 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from 'react-toastify';
 import { checkToken, logoutUser } from "../../api/auth/authSlicer"
+import useAgentSocket from "../../hooks/useAgentSocket"
 
 const AuthContext = createContext(null);
 
 export function useAuth() {
     const context = useContext(AuthContext);
+   
     if (context === undefined || context === null) {
         throw new Error("useAuth() must be used within an AuthProvider.");
     }
@@ -14,6 +16,8 @@ export function useAuth() {
 }
 export function AuthProvider({ children }) {
     const dispatch = useDispatch()
+ 
+
     const { data, sendCode, isError, isLoading: reduxLoading, isSuccess, isLogout, mailverify } = useSelector((state) => state.auth);
     const [settings, setSettings] = useState({
         language: "tr"

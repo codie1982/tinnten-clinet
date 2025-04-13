@@ -15,12 +15,11 @@ export default function ProductCard({ product, openDetail }) {
             </div>
             <Card.Body className="product-info">
                 <Card.Text>{product.title}</Card.Text>
-                <Card.Text>{product.basePrice[0].discountedPrice}</Card.Text>
-                <Card.Text>{""}</Card.Text>
-                <Card.Text>Ücretsiz gönderim</Card.Text>
-                <div className="button-group">
+                <Card.Text>{product.basePrice?.discountedPrice} {product.basePrice?.currency}</Card.Text>
+                <Card.Text>{"Satıcı : "} {"Migros"}</Card.Text>
+                <div className="product-button-group">
                     <Button variant="info" className="product-detail-button" onClick={openDetail}>Detaylar</Button>
-                    <Link to={`${product.redirectUrl[0]}`} variant="primary" className="go-to-product-button">Git</Link>
+                    <Link to={`${product.redirectUrl[0]}`} target='_blank' variant="primary" className="product-button-link">Git</Link>
                 </div>
             </Card.Body>
         </Card>

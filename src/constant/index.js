@@ -7,3 +7,4 @@ const GOOGLE = "google"
 export {
     LOGIN, REGISTER, MAILVERIFY,GOOGLE,FORGOTPASSWORD
 }
+

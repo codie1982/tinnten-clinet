@@ -11,11 +11,11 @@ const Paginations = ({ totalCount, currentPage, changePage }) => {
 
     return (
         <div className="pagination-content center-horizantal mt-2">
-            <Pagination>
-                <Pagination.First onClick={() => handlePageChange(1)} />
-                <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
+            <Pagination className='pagination-section'>
+                <Pagination.First className='pagination-first' onClick={() => handlePageChange(1)} />
+                <Pagination.Prev  className='pagination-prev'  onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
                 {[...Array(totalPages)].map((_, index) => (
-                    <Pagination.Item
+                    <Pagination.Item className='pagination-item'
                         key={index + 1}
                         active={index + 1 === currentPage}
                         onClick={() => handlePageChange(index + 1)}
@@ -23,8 +23,8 @@ const Paginations = ({ totalCount, currentPage, changePage }) => {
                         {index + 1}
                     </Pagination.Item>
                 ))}
-                <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
-                <Pagination.Last onClick={() => handlePageChange(totalPages)} />
+                <Pagination.Next className='pagination-next' onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
+                <Pagination.Last className='pagination-last' onClick={() => handlePageChange(totalPages)} />
             </Pagination>
         </div>
     );

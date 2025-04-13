@@ -13,32 +13,36 @@ export default function Recommendation({recommendations}) {
     useEffect(() => {
         setItemRecommendation(recommendations)
     }, [recommendations])
+    
     useEffect(() => {
-     console.log("itemRecommendation",itemRecommendation)
+
     }, [itemRecommendation])
     
 
+    console.log("recommendations",recommendations)
 
     const getRecommendationType = (recom, type,index) => {
         switch (type) {
             case "productRecommendation":
                 return <ProductRecommendation recommendation={recom} key={index} />
             case "serviceRecommendation":
-                return <ServicesRecommendation recommendation={recom} />
+                return <ServicesRecommendation recommendation={recom} key={index} />
             case "companyRecommendation":
-                return <CompanyRecommandation recommendation={recom} />
+                return <CompanyRecommandation recommendation={recom} key={index} />
             default:
                 break;
         }
     }
+
+    
     return (
         
         <>
-            <Accordion defaultActiveKey={['0']} alwaysOpen={true} flush>
+            <div defaultActiveKey={['0']} alwaysOpen={true} flush>
                 {itemRecommendation.length != 0 && itemRecommendation?.map((recom,index) => {
                    return getRecommendationType(recom, recom.type,index)
                 })}
-            </Accordion>
+            </div>
         </>
     )
 }

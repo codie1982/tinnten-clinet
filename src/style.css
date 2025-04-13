@@ -569,7 +569,7 @@ h1 .page-title {
 }
 
 .message-blok {
-    flex: 1;
+    flex: 2;
     /* Eşit genişlikte yayılmalarını sağlar */
     height: 100%;
     /* Konteynerin yüksekliğini tamamen kaplar */
@@ -1486,6 +1486,7 @@ h1 .page-title {
     border: 1px solid var(--border-color);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
 }
+
 .empty-message {
     margin-right: auto;
     text-align: left;
@@ -1499,15 +1500,45 @@ h1 .page-title {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
 }
 
+.chat-loading-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: auto;
+}
+
 .chat-loading-spinner {
     display: flex;
     align-items: center;
-    justify-content: center;
+    width: 100%;
+    justify-content: start;
     padding: 2rem;
     font-size: 16px;
     color: #555;
-  }
-  
+}
+
+.agent-feedback-container {
+    display: flex;
+    width: 80%;
+    margin-right: 30px;
+    flex-direction: column;
+    padding: 15px 15px;
+    margin: 10px 30px;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+}
+
+.feedback-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    padding: 10px 0;
+    font-size: 0.9rem;
+    font-weight: 400;
+    text-align: left;
+}
+
 .message-content {
     padding: 10px;
 }
@@ -1629,9 +1660,24 @@ h1 .page-title {
     color: var(--text-light-color);
 }
 
+.recommendation-header-title {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.recommendation-header-description {
+    font-size: 0.8rem;
+    font-weight: 300;
+}
+
+.recommendation-body-system-message {
+    font-size: 1rem;
+    font-weight: 400;
+}
+
 .product-list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(10.5rem, 0.2fr));
     /* Otomatik sütun sayısı */
     /* Her satırda 3 sütun */
     gap: 25px;
@@ -1687,6 +1733,7 @@ h1 .page-title {
 .product-info p {
     margin: 5px 0;
     font-size: 0.9em;
+    text-align: start;
     color: var(--secondary-color);
 }
 
@@ -1696,33 +1743,189 @@ h1 .page-title {
     margin-top: 10px;
 }
 
+.product-button-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--advertaise-color-light);
+}
 
+.product-detail-button {
+    width: 100%;
+    background-color: var(--secondary-color);
+    color: var(--background-color);
+    border: 2px solid var(--text-light-color);
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 0.8em;
+    font-weight: bold;
+    margin: 0 5px;
+}
+
+.product-detail-button:hover {
+
+    background-color: var(--button-hover);
+    color: var(--text-color);
+}
+
+.product-button-link {
+    width: 100%;
+    margin: 0 5px;
+    text-decoration: none;
+    color: var(--chat-background);
+    font-size: 0.8em;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background-color: var(--advertaise-color-light);
+    transition: background-color 0.3s ease;
+}
+
+.product-button-link:hover {
+    background-color: var(--button-hover);
+    color: var(--text-color);
+}
 
 .chat-input {
     position: absolute;
     display: flex;
+    flex-direction: column;
+    /* alt alta */
     align-items: center;
     background-color: #333;
-    padding: 10px;
+    padding: 10px 15px;
     border-radius: 20px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: all 0.5 ease-in;
+    transition: all 0.2s ease-in;
+    color: white;
+    width: 40%;
+    height: auto;
+}
+
+.chat-input .tag-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    width: 100%;
+    align-items: start;
+}
+
+.chat-input .tag-chip {
+    background-color: #555;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.chat-input .tag-remove {
+    font-size: 10px;
+    margin-left: 6px;
+    color: #ccc;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 16px;
+    background-color: #444;
+    color: white;
+    outline: none;
+    margin-bottom: 8px;
+}
+
+.chat-input button {
+    align-self: flex-end;
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+    background-color: var(--background-color, #666);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+}
+
+.chat-input .input-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: auto;
+    justify-content: center;
+    width: 100%;
+    margin: auto;
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #333;
+    border-radius: 30px;
+    padding: 4px 8px;
+    width: 100%;
+}
+
+.input-wrapper input {
+    flex: 1;
+    height: 48px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 24px;
+    background-color: #444;
+    color: white;
+    font-size: 16px;
+    outline: none;
+}
+
+.input-wrapper button {
+    width: 48px;
+    height: 48px;
+    background-color: #111;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
 }
 
 .chat-input.bottom {
     width: 50%;
-    height: 100px;
     transform: translateY(0);
     transform: translateX(-25%);
     width: 40%;
     left: 50%;
-    height: 100px;
+    bottom: 20px;
+}
+
+.chat-input.left-middel {
+    width: 50%;
+    transform: translateY(0);
+    transform: translateX(-25%);
+    width: 40%;
+    left: 25%;
     bottom: 20px;
 }
 
 .chat-input.middle {
     width: 50%;
-    height: 100px;
     bottom: 50%;
     left: 0;
     transform: translateY(50%);
@@ -1734,38 +1937,50 @@ h1 .page-title {
     visibility: hidden;
 }
 
-.chat-input input {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    border-radius: 20px;
-    background-color: #444;
-    color: var(--text-color);
-    margin-right: 10px;
-    outline: none;
-}
 
-.chat-input button {
-    width: 50px;
-    height: 50px;
-    padding: 10px;
-    background-color: var(--background-color);
-    color: white;
-    border: none;
-    right: 0;
-    margin-right: 21px;
-    border-radius: 100%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
 
 .chat-input .icon {
     margin-right: 10px;
     cursor: pointer;
     color: var(--text-color);
 }
+
+
+.mention-popup {
+    position: absolute;
+    bottom: 80px; /* input'un üstü */
+    left: 20px;
+    background-color: #222;
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease-out;
+    z-index: 10;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .mention-item {
+    padding: 6px 12px;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .mention-item:hover {
+    background-color: #444;
+    border-radius: 6px;
+  }
 
 .search-history {
     display: flex;
@@ -2424,8 +2639,16 @@ h3 {
 }
 
 .price {
-    font-size: 24px;
-    font-weight: bold;
+    font-size: 0.8rem;
+    font-weight: 300;
+    color: var(--standart-text-light-color);
+    margin-bottom: 10px;
+    text-decoration: line-through;
+}
+
+.bestprice {
+    font-size: 1.3rem;
+    font-weight: 600;
     color: var(--text-light-color);
     margin-bottom: 10px;
 }
@@ -2445,7 +2668,14 @@ h3 {
     font-weight: bold;
 }
 
-.product-detail-go-button {
+.product-detail-action-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.product-detail-action-section a {
     width: 100%;
     font-size: 18px;
     padding: 10px;
@@ -2455,6 +2685,14 @@ h3 {
     /* Arka plan rengi beyaz */
     border: 2px solid var(--border-color);
     color: var(--text-light-color);
+    text-align: center;
+}
+
+.product-detail-action-section a:hover {
+    background-color: var(--button-hover);
+    color: var(--text-color);
+    border: 2px solid var(--button-border-hover);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .product-detail-add-favorite-button {
@@ -2573,6 +2811,12 @@ h3 {
     color: var(--secondary-color);
 }
 
+.product-detail-saller-content-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
 .product-detail-saller-content-description {
     font-size: 0.9rem;
     font-weight: 300;
@@ -2637,6 +2881,79 @@ h3 {
     width: 100%;
 }
 
+.product-auxiliary-content {
+    width: 100%;
+}
+
+.product-auxiliary-list {
+    display: block;
+    position: relative;
+    margin: auto;
+    width: 100%;
+}
+
+.product-auxiliary-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background-color: var(--advertaise-color);
+    padding: 0 10px;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 14px;
+    border: 1px solid var(--border-color);
+}
+
+.product-auxiliary-image {
+    width: 70px;
+    height: 70px;
+    flex: 1;
+    border-radius: 14px;
+    overflow: hidden;
+    padding: 1px;
+}
+
+.product-auxiliary-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-auxiliary-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+    padding: 10px;
+}
+
+.product-auxiliary-info h4 {
+    font-size: 0.72em;
+    font-weight: 500;
+    color: var(--secondary-color);
+}
+
+.product-auxiliary-info p {
+    font-size: 0.62em;
+    font-weight: 300;
+    color: var(--secondary-color);
+}
+
+.product-auxiliary-action {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+.product-auxiliary-action a {
+    text-align: center;
+}
+
 .product-favorite-item {
     display: flex;
     flex-direction: row;
@@ -2696,6 +3013,43 @@ h3 {
 .pagination-content {
     background-color: var(--background-color);
     /* change/choose desired color */
+
+}
+
+.pagination-section {
+    background-color: var(--background-color);
+    margin: auto;
+}
+
+.pagination-first,
+.pagination-prev,
+.pagination-item,
+.pagination-next,
+.pagination-last {
+    background-color: var(--advertaise-color);
+    border: 1px solid var(--border-color);
+}
+
+.pagination-first a,
+.pagination-prev a,
+.pagination-item a,
+.pagination-next a,
+.pagination-last a {
+    background-color: var(--advertaise-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+.pagination-first a:hover {
+    background-color: var(--advertaise-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+li.pagination-next.page-item.disabled span,
+li.pagination-prev.page-item.disabled span {
+    background-color: var(--background-open1-color);
+    color: var(--advertaise-color-light);
 }
 
 .profile-image-container {
@@ -2818,4 +3172,76 @@ h3 {
     color: #999;
     font-style: italic;
     font-size: 16px;
-  }
+}
+
+
+.chat-input-container {
+    padding: 16px;
+    border-radius: 12px;
+    background-color: #1e1e1e;
+    color: white;
+    max-width: 800px;
+    margin: auto;
+}
+
+.tags-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.tag-chip {
+    background-color: #444;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.tag-chip .remove-icon {
+    margin-left: 8px;
+    font-size: 12px;
+}
+
+.input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.input-with-margin {
+    flex: 1;
+    background-color: #2a2a2a;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.input-with-margin::placeholder {
+    color: #888;
+}
+
+.submit-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.available-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+}
+
+.tag-chip.inactive {
+    background-color: #2e2e2e;
+    opacity: 0.6;
+}

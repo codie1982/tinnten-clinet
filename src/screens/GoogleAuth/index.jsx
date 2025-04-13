@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { googlelogin } from "../../api/auth/authSlicer"
 import { useAuth } from '../../context/authContext';
 import { Navigate } from "react-router-dom";
+
 export default function GoogleAuth() {
   const dispatch = useDispatch()
   const navigate = useNavigate();
@@ -20,15 +21,19 @@ export default function GoogleAuth() {
     if (success === "true") {
       console.log("success")
       dispatch(googlelogin(token))
+
     } else {
       alert("Google Girişi Başarısız: " + error);
       navigate("/login");
     }
   }, [location, navigate]);
+
   // ✅ Kullanıcı giriş yapmamışsa login sayfasına yönlendir
   if (isLogin) {
     return <Navigate to="/conversation" replace />;
   }
+
+
   return (
     <div>
       <h2>Google Giriş Yapılıyor...</h2>

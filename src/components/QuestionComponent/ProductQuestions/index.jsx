@@ -101,7 +101,7 @@ export default function ProductQuestions({ questions }) {
                                                 <p>Soru : </p>
                                             </Col>
                                             <Col>{quest.questionText}</Col>
-                                            <Col>
+                                          {/*   <Col>
                                                 <Button
                                                     className=""
                                                     variant="danger"
@@ -110,13 +110,13 @@ export default function ProductQuestions({ questions }) {
                                                 >
                                                     Sil
                                                 </Button>
-                                            </Col>
+                                            </Col> */}
                                         </Row>
-                                        <Row>
+                                        {/* <Row>
                                             <Col>
                                                 {selectedQuestionType(quest._id, quest)}
                                             </Col>
-                                        </Row>
+                                        </Row> */}
                                     </>
                                 )
                             })

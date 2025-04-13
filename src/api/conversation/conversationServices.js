@@ -21,6 +21,7 @@ const search = async (data) => {
     return response.data;
 }
 const conversation = async (data) => {
+    console.log("data", data)
     const response = await axiosInstance.post("conversation", data)
     return response.data;
 }
