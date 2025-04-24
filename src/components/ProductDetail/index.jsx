@@ -5,37 +5,36 @@ import { useCookies } from 'react-cookie';
 import { Row, Col, Button, CloseButton, Carousel } from 'react-bootstrap'
 import { useTranslation } from "react-i18next"
 import { useAuth } from '../../context/authContext'
+import useChat from '../../hooks/useChat'
 import { addFavorite, resetProduct } from '../../api/product/productSlicer';
 
-export default function ProductDetail({ product, openDetail,closeDetail }) {
+export default function ProductDetail({ product, closeDetail }) {
     const dispatch = useDispatch()
     const [t, i18n] = useTranslation("global")
-    const [cookies, setCookie] = useCookies(['name']);
-    const { isLogin, isLoading, user } = useAuth();
-    const [index, setIndex] = useState(0);
+    const { isProductLoading } = useChat();
+    const { isLogin } = useAuth();
+    const [imageIndex, setImageIndex] = useState(0);
 
-    const handleSelect = (selectedIndex) => {
-        setIndex(selectedIndex);
+    const handleImageSelect = (selectedIndex) => {
+        setImageIndex(selectedIndex);
     };
-    const addFavoriteProduct = () => {
-        console.log("addFavoriteProduct")
-        dispatch(resetProduct())
-        dispatch(addFavorite({ id: 1 }))
+
+
+    if(isProductLoading){
+        return "Yükleniyor..."
     }
-
-
     if (isLogin && product != null)
         return (
             <div className="product-detail">
                 <div className="product-detail-header-content">
                     <div className="product-detail-header">
                         <div className="icon">Ürün Detayı</div>
-                        <div className="close-button"><CloseButton onClick={closeDetail} /></div>
+                        <div className="close-button"><CloseButton onClick={() => { closeDetail() }} /></div>
                     </div>
                 </div>
                 <Row>
                     <Col className="image-section">
-                        <Carousel activeIndex={index} indicators={false} controls={false} data-bs-theme="dark">
+                        <Carousel activeIndex={imageIndex} indicators={false} controls={false} data-bs-theme="dark">
                             {product.gallery.images.map((item) => {
                                 return (
                                     <Carousel.Item key={item.path}>
@@ -58,7 +57,7 @@ export default function ProductDetail({ product, openDetail,closeDetail }) {
                                         <img
                                             src={`${item.path}`}
                                             className="product-image"
-                                            onClick={() => { handleSelect(index) }}
+                                            onClick={() => { handleImageSelect(index) }}
                                         />
                                     </li>
                                 )

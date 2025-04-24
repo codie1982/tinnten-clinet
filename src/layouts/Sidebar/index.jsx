@@ -19,12 +19,13 @@ import {
   searchConversationThunk,
   setConversationTitle
 } from "../../api/conversation/conversationSlicer";
-
-export default function Sidebar({ setConversation, openSidebar }) {
+import useChat from '../../hooks/useChat';
+export default function Sidebar({ openSidebar }) {
   const [t] = useTranslation("global");
   const dispatch = useDispatch();
   const LIMIT = 5;
 
+  const { createNewConversation, getConversationDetail } = useChat()
   const [modals, setModals] = useState({
     features: false,
     rename: false,
@@ -184,7 +185,7 @@ export default function Sidebar({ setConversation, openSidebar }) {
         </div>
 
         <div className="chat-release">
-          <button onClick={() => setConversation()}>{t("sidebar.reconversation")}</button>
+          <button onClick={() => createNewConversation()}>{t("sidebar.reconversation")}</button>
         </div>
         <div className="history-title">
           <h3>{t("sidebar.history")}</h3>
@@ -205,7 +206,7 @@ export default function Sidebar({ setConversation, openSidebar }) {
               <div className="d-flex justify-around align-items-center w-100">
                 <Link
                   to={`/conversation/${history.conversationid}`}
-                  onClick={() => setConversation(history.conversationid)}
+                  onClick={() => getConversationDetail(history.conversationid)}
                   className="history-link"
                 >
                   <span>{history.title || `${history.conversationid.substring(0, 15)}...`}</span>

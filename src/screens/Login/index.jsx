@@ -27,7 +27,6 @@ export default function Login() {
         if (isSuccess && data) {
             console.log("isSuccess, data", isSuccess, data)
             navigate("/conversation");  // Başarılı giriş sonrası yönlendirme
-            connectSocket()
         }
     }, [isSuccess, data]);
 

@@ -1,12 +1,18 @@
-import React, { useState } from 'react'
-import ReactMarkdown from 'react-markdown'
+import React, { useState, useMemo } from 'react'
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
-const MarkdownEditor = ({ value = "", onChange }) => {
-  const [text, setText] = useState(value)
-  const handleChange = (e) => {
-    setText(e.target.value)
-    onChange && onChange(e.target.value)
-  }
+const MarkdownEditor = ({ message = "", onChange }) => {
+  const [text, setText] = useState(message)
+
+
+  // Markdown'ı HTML'ye çevir ve sanitize et
+  const renderedMessage = useMemo(() => {
+    if (!message) return '';
+    const rawHtml = marked(message, { breaks: true }); // \n ile satır sonlarını destekle
+    return DOMPurify.sanitize(rawHtml); // XSS güvenliği
+  }, [message]);
+
   return (
     <div className="markdown-editor">
       {/* <textarea
@@ -15,11 +21,13 @@ const MarkdownEditor = ({ value = "", onChange }) => {
         placeholder="Enter markdown..."
         style={{ width: "100%", height: "200px", padding: "10px", fontSize: "14px" }}
       /> */}
-      <div 
-        className="markdown-preview" 
-        style={{ padding: "10px", marginTop: "10px" ,color:"#b4b4b4", fontSize:"0.875rem" }}
+      <div
+        className="markdown-preview"
+        style={{  color: "#e1e1e1", fontSize: "1rem" }}
       >
-        <ReactMarkdown>{text}</ReactMarkdown>
+        <div className="system-message">
+          <div dangerouslySetInnerHTML={{ __html: renderedMessage }} />
+        </div>
       </div>
     </div>
   )

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
-import { setConversationTitle, setConversationMessage } from "../api/conversation/conversationSlicer";
+import { setConversationTitle, setConversationMessage, setMessageIntent } from "../api/conversation/conversationSlicer";
 import { stream } from "../api/stream/streamSlicer";
 import { useAuth } from "../context/authContext";
 
@@ -41,7 +41,7 @@ export default function useAgentSocket() {
       return;
     }
 
-    let userid = localStorage.getItem("userid").replace(/^"|"$/g, '');
+    let userid = localStorage.getItem("userid")?.replace(/^"|"$/g, '');
 
     // Zaten bağlıysa tekrar bağlanma
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
@@ -95,15 +95,13 @@ export default function useAgentSocket() {
         } else if (eventType === "intent") {
           console.log("[useAgentSocket] Intent alındı:", data.intent);
           setCurrentIntent(data.intent);
-          setFeedbackData((prev) => ({
-            ...prev,
-            [data.intent]: [],
-          }));
         } else if (eventType === "create_message") {
           // data: { messages }
           console.log("[useAgentSocket] Yeni Sistem Mesaj oluşturuldu:", data.messages);
-
+          setCurrentIntent(data.messages.system_message.intent)
+          dispatch(setMessageIntent(data.messages.system_message.intent))
           dispatch(setConversationMessage(data))
+
 
         } else if (eventType === "agent-feedback") {
           const mcp = data;
@@ -190,7 +188,6 @@ export default function useAgentSocket() {
   useEffect(() => {
     if (isLogin) {
       console.log("[useAgentSocket] useEffect tetiklendi, bağlanıyor...");
-      connectSocket();
     }
 
     return () => {

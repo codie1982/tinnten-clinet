@@ -16,6 +16,12 @@ export const setConversationMessage = createAsyncThunk(
         return data
     }
 )
+export const setMessageIntent = createAsyncThunk(
+    'conversation/intent',
+    async (data, thunkAPI) => {
+        return data
+    }
+)
 // conversation start user
 export const createconversation = createAsyncThunk(
     'conversation/create',
@@ -229,6 +235,7 @@ export const conversationSlice = createSlice({
         conversationid: null,
         updateConversationid: null,
         conversationCreated: false,
+        isConversationMemory: false,
         question: null,
         statusCode: null,
         isError: false,
@@ -247,6 +254,7 @@ export const conversationSlice = createSlice({
         conversationTitle: null,
 
         conversationMessage: null,
+        intent: null,
         message: '',
     },
     reducers: {
@@ -257,7 +265,7 @@ export const conversationSlice = createSlice({
             state.isError = false
             state.conversation = null
             state.data = null
-
+            state.intent = null
         },
         resetHistory: (state) => {
             state.isHistoryLoading = false
@@ -279,17 +287,17 @@ export const conversationSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(createconversation.pending, (state) => {
-                state.isLoading = true
+                state.isConversationLoading = true
             })
             .addCase(createconversation.fulfilled, (state, action) => {
-                state.isLoading = false
+                state.isConversationLoading = false
                 state.isSuccess = true
                 state.isError = false
                 state.conversationid = action.payload.data.conversationid
                 state.conversationCreated = true;
             })
             .addCase(createconversation.rejected, (state, action) => {
-                state.isLoading = false
+                state.isConversationLoading = false
                 state.isSuccess = false
                 state.isError = true
                 state.conversationCreated = false;
@@ -301,9 +309,10 @@ export const conversationSlice = createSlice({
 
             .addCase(conversationSendMesaage.fulfilled, (state, action) => {
                 state.isConversationLoading = false
-                state.isSuccess = true
+                state.isSuccess = action.payload.data.success
                 state.isError = false
                 state.conversationCreated = false;
+                state.isConversationMemory=action.payload.data.isMemorySaved
                 //state.conversationid = action.payload.data.conversation?.conversationid
                 //state.conversation = action.payload.data.conversation?
             })
@@ -463,6 +472,9 @@ export const conversationSlice = createSlice({
 
             .addCase(setConversationMessage.fulfilled, (state, action) => {
                 state.conversationNewMessage = action.payload.messages;
+            })
+            .addCase(setMessageIntent.fulfilled, (state, action) => {
+                state.intent = action.payload;
             })
     }
 })

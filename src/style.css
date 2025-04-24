@@ -580,6 +580,8 @@ h1 .page-title {
 }
 
 .detail-blok {
+    position: sticky;
+    top: 0px;
     flex: 1;
     /* Eşit genişlikte yayılmalarını sağlar */
     height: 100%;
@@ -598,12 +600,15 @@ h1 .page-title {
     opacity: 0;
     flex: 0;
     visibility: hidden;
+   
 }
 
 .detail-blok.hidden {
+    position: relative;
     opacity: 0;
     flex: 0;
     visibility: hidden;
+
 }
 
 
@@ -1479,12 +1484,6 @@ h1 .page-title {
 .system-message {
     margin-right: auto;
     text-align: left;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    padding: 10px;
-    border-radius: 14px;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
 }
 
 .empty-message {
@@ -1540,7 +1539,7 @@ h1 .page-title {
 }
 
 .message-content {
-    padding: 10px;
+    padding: 1px;
 }
 
 .human-message h3 {
@@ -1677,7 +1676,7 @@ h1 .page-title {
 
 .product-list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(10.5rem, 0.2fr));
+    grid-template-columns: repeat(auto-fit, minmax(10.5rem, 0.7fr));
     /* Otomatik sütun sayısı */
     /* Her satırda 3 sütun */
     gap: 25px;
@@ -3244,4 +3243,24 @@ li.pagination-prev.page-item.disabled span {
 .tag-chip.inactive {
     background-color: #2e2e2e;
     opacity: 0.6;
+}
+
+.chat-messages {
+    min-height: 100px;
+}
+.human-message {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+}
+.system-message {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+}
+.system-message p, .system-message ul, .system-message li {
+    margin: 5px 0;
+}
+.system-message strong {
+    font-weight: bold;
 }

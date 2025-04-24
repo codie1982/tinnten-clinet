@@ -1,74 +1,85 @@
-import React, { useEffect,useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/authContext";
-import HumanMessage from './HumanMessage'; // örnek olarak
+import HumanMessage from './HumanMessage';
 import SystemMessage from './SystemMessage';
 import Question from '../QuestionComponent';
 import Recommendation from '../Recommendation';
 import { Row, Col } from 'react-bootstrap';
 import AgentFeedbackViewer from '../../components/AgentFeedbackViewer';
 import { DETAILVIEW, QUESTIONVIEW, RECOMMENDATOINVIEW } from 'constant/chatContentConstant';
-import useAgentSocket from "../../hooks/useAgentSocket"; // useAgentSocket import
-export default function Chat({ viewAction, messages, isLoading }) {
-    const [t] = useTranslation("global");
+import useAgentSocket from "../../hooks/useAgentSocket";
+import useChat from "../../hooks/useChat";
+
+export default function Chat({ viewState }) {
+    const { t } = useTranslation("global");
     const { isLogin } = useAuth();
-    const [isOpenProductDetail, setIsOpenProductDetail] = useState(false);
-    const { feedbackList } = useAgentSocket(); // WebSocket verilerini al
-    const [streamMessages, setStreamMessages] = useState([]); // Stream için yerel state
+    const [humanMessage, setHumanMessage] = useState("");
+    const [assistans, setAssistans] = useState("")
+    const { systemMessage, isConversationLoading, viewAction } = useChat()
+    const [recommendation, setRecommendation] = useState({})
+    const [assistansIntent, setAssistansIntent] = useState("")
+    const [chatView, setChatView] = useState("")
 
-    // Stream verilerini işleme
+    const [isLoading, setIsLoading] = useState(false)
+    // Mesajları stream olarak işleme
     useEffect(() => {
-        if (feedbackList?.length > 0) {
-            console.log("[Chat] Yeni stream verisi:", feedbackList);
+        console.log("messages", systemMessage)
+        setIsLoading(false)
+        // Her yeni messages prop'unda state'leri sıfırla
+        setHumanMessage("");
+        setAssistans("");
 
-            // Son stream verisini al
-            const latestFeedback = feedbackList[feedbackList.length - 1];
-
-            // Stream token’larını birleştir
-            setStreamMessages((prev) => {
-                // Mevcut stream mesajını güncelle veya yeni ekle
-                const lastMessage = prev.length > 0 ? prev[prev.length - 1] : null;
-                if (lastMessage && lastMessage.type === "stream_message") {
-                    // Mevcut stream mesajına ekle
-                    return [
-                        ...prev.slice(0, -1),
-                        {
-                            ...lastMessage,
-                            content: lastMessage.content + latestFeedback,
-                        },
-                    ];
-                } else {
-                    // Yeni stream mesajı oluştur
-                    return [
-                        ...prev,
-                        {
-                            type: "stream_message",
-                            content: latestFeedback,
-                        },
-                    ];
-                }
-            });
+        // Yeni mesajları ata (stream mantığına uygun)
+        if (Array.isArray(systemMessage) && systemMessage.length >= 2) {
+            setHumanMessage(systemMessage[0].content || ""); // İnsan mesajı (ör. 'merhaba')
+            setAssistans(systemMessage[1].content || ""); // Sistem mesajı (stream gelen)
         }
-    }, [feedbackList]);
+    }, [systemMessage]);
 
-    const selectedAction = (viewAction, item) => {
-        switch (viewAction) {
+
+    useEffect(() => {
+        if (viewAction == "recommendation") {
+            setChatView(RECOMMENDATOINVIEW)
+        } else if (viewAction == "detail") {
+            setChatView(DETAILVIEW)
+        }
+    }, [viewAction])
+
+    useEffect(() => {
+        if (viewState == "recommendation") {
+            setChatView(RECOMMENDATOINVIEW)
+        } else if (viewState == "detail") {
+            setChatView(DETAILVIEW)
+        }
+    }, [viewState])
+
+
+    useEffect(() => {
+        console.log("isConversationLoading", isConversationLoading)
+        setIsLoading(isConversationLoading)
+    }, [isConversationLoading])
+
+
+    const selectedAction = (chatView, item) => {
+        console.log("viewAction, item",chatView, assistansIntent, item)
+        if (!item) return null;
+
+        switch (chatView) {
             case "none":
                 return <>none</>;
             case QUESTIONVIEW:
                 return (
                     <Question
                         questions={{
-                            productionQuestions: item.productionQuestions,
-                            servicesQuestions: item.servicesQuestions,
+                            productionQuestions: item.productionQuestions || [],
+                            servicesQuestions: item.servicesQuestions || [],
                         }}
                     />
                 );
             case RECOMMENDATOINVIEW:
-                if (item?.recommendations != null) {
-                    return <Recommendation recommendations={item.recommendations} />;
-                }
-                break;
+                console.log("RECOMMENDATOINVIEW", RECOMMENDATOINVIEW, (item?.recommendation))
+                return <Recommendation recommendation={item.recommendation} />;
             case DETAILVIEW:
                 return <>DETAY EKRANI</>;
             default:
@@ -76,7 +87,7 @@ export default function Chat({ viewAction, messages, isLoading }) {
         }
     };
 
-    // 1️⃣ Eğer yükleniyorsa göster
+    // Yükleniyor durumu
     if (isLoading) {
         return (
             <div className="chat-loading-container">
@@ -96,12 +107,8 @@ export default function Chat({ viewAction, messages, isLoading }) {
         );
     }
 
-    // ✅ Güvenli boş kontrolü
-    const isEmpty =
-        (!messages || !Array.isArray(messages) || messages.length === 0) &&
-        streamMessages.length === 0;
-
-    if (isEmpty) {
+    // Mesajlar boşsa
+    if (!systemMessage || !Array.isArray(systemMessage) || systemMessage.length === 0) {
         return (
             <div className="empty-message">
                 <Row>
@@ -115,31 +122,24 @@ export default function Chat({ viewAction, messages, isLoading }) {
         );
     }
 
-    // Mesajları birleştir: statik (messages) + stream (streamMessages)
-    const combinedMessages = [
-        ...(Array.isArray(messages) ? messages : []),
-        ...streamMessages,
-    ];
-
     return (
         <div className="chat-messages">
             <ul>
-                {combinedMessages.map((message, index) => (
-                    <li className="message" key={index}>
-                        {message.type === "human_message" ? (
-                            <HumanMessage message={message.content} />
-                        ) : message.type === "stream_message" ? (
-                            <SystemMessage message={message.content} isStreaming={true} />
-                        ) : (
-                            <SystemMessage message={message.content} />
-                        )}
-                        {viewAction && message.action
-                            ? selectedAction(viewAction, message)
-                            : null}
+                {humanMessage ? (
+                    <li key="human-message">
+                        <HumanMessage message={humanMessage} />
                     </li>
-                ))}
+                ) : null}
+                {systemMessage ? (
+                    <li key="system-message">
+                        <SystemMessage message={assistans} isStreaming={true} />
+                    </li>
+                ) : null}
+
+                {chatView ? (
+                    <li key="intent">{selectedAction(chatView, systemMessage[1])}</li>
+                ) : null}
             </ul>
         </div>
     );
 }
-
