@@ -183,7 +183,7 @@ export default function Advertaise() {
                                 <Col>
                                     <h1 className="hero-title">{t("advertaise.hero.title")}</h1>
                                     <p className="hero-description">{t("advertaise.hero.description")}</p>
-                                    <a href="signup.html" className="btn btn-lg cta-button">{t("advertaise.hero.cta")}</a>
+                                    <Link to="/login" className="btn btn-lg cta-button">{t("advertaise.hero.cta")}</Link>
                                 </Col>
                                 {/* <Col>
 
@@ -240,16 +240,15 @@ export default function Advertaise() {
                                     </ul>
                                 </Col> */}
                             </Row>
-
                         </main>
-                        <div className="chat-advertise-text-content">
+                       {/*  <div className="chat-advertise-text-content">
                             <h2 className="display-4 mb-4 text-left">{t("advertaise.subhero.title")}</h2>
                             <h3 className="display-5 mb-2 text-left">{t("advertaise.subhero.subtitle")}</h3>
                             <p className="lead text-left">{t("advertaise.subhero.description")}</p>
-                        </div>
+                        </div> */}
                     </Col>
                 </Row>
-                <section className="supporting-section">
+              {/*   <section className="supporting-section">
                     <div className="supporting-section-one">
                         <h2 className="supporting-title">{t("advertaise.supporting.title")}</h2>
                         <p className="supporting-description">{t("advertaise.supporting.description")}</p>
@@ -315,7 +314,7 @@ export default function Advertaise() {
                             </Accordion.Item>
                         </Accordion>
                     </div>
-                </section>
+                </section> */}
             </div>
         </>
     )

@@ -13,6 +13,7 @@ const axiosInstance = axios.create({
 // 🚀 Silent Authentication Function (Backend üzerinden istek)
 const silentAuth = async () => {
     try {
+        console.log("API_URL", API_URL)
         const response = await axios.post(`${API_URL}auth/refresh-token`, {}, {
             withCredentials: true, // ✅ Cookie'nin gönderilmesi için gerekli
         });
