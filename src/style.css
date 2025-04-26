@@ -836,6 +836,7 @@ h1 .page-title {
 .hero-section {
     padding: 80px 20px;
     width: 100%;
+    height: 100vh;
     background-color: var(--background-open2-color);
 }
 
