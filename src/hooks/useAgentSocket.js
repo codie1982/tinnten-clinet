@@ -60,8 +60,7 @@ export default function useAgentSocket() {
       }
     }
 
-    const socketUrl = `${process.env.REACT_APP_WS_URL || "ws://localhost:5001/stream"
-      }?token=${token}`;
+    const socketUrl = `${process.env.REACT_APP_WS_URL || "wss://tinnten.com/stream"}?token=${token}`;
     console.log("[useAgentSocket] Bağlanılıyor:", socketUrl);
 
     const socket = new WebSocket(socketUrl);
