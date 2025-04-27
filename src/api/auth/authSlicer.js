@@ -153,9 +153,9 @@ export const checkToken = createAsyncThunk(
 // Logout user
 export const logoutUser = createAsyncThunk(
     'auth/logout',
-    async (token) => {
+    async () => {
         try {
-            return await authService.logout(token)
+            return await authService.logout()
         } catch (error) {
             const message =
                 (error.response &&

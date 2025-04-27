@@ -7,6 +7,7 @@ import Login from "../screens/Login"
 import Register from "../screens/Register"
 import Advertaise from "../components/Advertaise";
 import { AuthProvider } from "../context/authContext";  // ✅ AuthProvider'ı ekleyin
+import WaitList from "screens/WaitList";
 import Abouth from "screens/Abouth";
 import HowWorks from "screens/HowWorks";
 import ConsumerTerms from "screens/ConsumerTerms";
@@ -22,6 +23,7 @@ const routes = createBrowserRouter([
         ),
         children: [
             { path: "/", element: <Advertaise /> },
+            { path: "/waitlist", element: <WaitList /> },
             { path: "/abouth", element: <Abouth /> },
             { path: "/works", element: <HowWorks /> },
             { path: "/consumer-terms", element: <ConsumerTerms /> },

@@ -12,9 +12,11 @@
     },
     "advertaise": {
         "hero": {
-            "title": "Yapay Zeka Destekli Ürün Keşfi",
-            "description": "İhtiyacınız olan ürünü hızlı ve kolayca bulun, gereksiz detaylarla vakit kaybetmeyin.",
-            "cta": "Keşfetmeye Başla"
+            "title": "Akıllı Alışverişin Yeni Dönemi",
+            "description": "Akıllı keşif algoritmamızla ihtiyaçlarınıza en uygun ürünleri zahmetsizce bulun.",
+            "login": "Giriş yap",
+            "register": "Kayıt ol",
+            "waitlist": "Bekleme listesi"
         },
         "subhero": {
             "title": "Akıllı ve Hedefe Odaklı",
@@ -204,7 +206,7 @@
         "policy68": "10. İletişim Bilgileri",
         "policy69": "Herhangi bir soru veya talebiniz için bize ulaşabilirsiniz:"
     },
-    "profile":{
-        "title":"Profil Bilgileri"
+    "profile": {
+        "title": "Profil Bilgileri"
     }
 }

@@ -60,7 +60,8 @@ export function AuthProvider({ children }) {
             if (isLogout) {
                 setAuthState({ isLogin: false, user: null, isLoading: false });
                 localStorage.clear()
-                toast.info("Oturumunuz sonlandırıldı.");
+                console.log("isLogout:", isLogout);
+                toast.success("Oturumunuz sonlandırıldı.");
             }
         }
     }, [isError, isLogout, reduxLoading, isSuccess, data, sendCode]);
@@ -75,12 +76,12 @@ export function AuthProvider({ children }) {
         }
     }, [mailverify])
 
-    const logout = () => {
+    const logoutApplication = () => {
         dispatch(logoutUser());
     };
 
     return (
-        <AuthContext.Provider value={{ ...authState, logout }}>
+        <AuthContext.Provider value={{ ...authState, logoutApplication }}>
             {children}
         </AuthContext.Provider>
     );

@@ -6,9 +6,12 @@ import tinntenLogo from "../../assets/char-logo.png"
 import { useTranslation } from "react-i18next"
 import LazyImage from '../Common/LazyImage'
 import { Image, Spinner } from 'react-bootstrap'
-export default function HeaderMenu({ openProfil, openSettings, openDeleteAll, openContactUs, openLogout, userprofile, isProfileLoading }) {
+import  { useModalManager }  from "../../hooks/useModalManager";
+import  { useModal }  from "../Modals/ModalProvider";
+export default function HeaderMenu({ openProfil, openSettings, openDeleteAll, openContactUs, userprofile, isProfileLoading }) {
     const [t, i18n] = useTranslation("global")
-    const [isOpen, setIsOpen] = useState(false);
+    const { openModal } = useModal()
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef(null);
     const popupRef = useRef(null);
     const menuContainer = useRef(document.createElement("div"));
@@ -31,7 +34,7 @@ export default function HeaderMenu({ openProfil, openSettings, openDeleteAll, op
                 popupRef.current &&
                 !popupRef.current.contains(event.target)
             ) {
-                setIsOpen(false);
+                setIsMenuOpen(false);
             }
         }
         document.addEventListener("mousedown", handleClickOutside);
@@ -53,11 +56,11 @@ export default function HeaderMenu({ openProfil, openSettings, openDeleteAll, op
                     height={40}
                     width={40}
                     className="profile-image"
-                    onClick={() => setIsOpen(!isOpen)}
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
                 />}
 
             {/* Açılır Menü */}
-            {isOpen && createPortal(
+            {isMenuOpen && createPortal(
                 <motion.div
                     ref={popupRef} // popupRef'i motion.div'e ekledim
                     initial={{ opacity: 0, y: -10 }}
@@ -76,7 +79,10 @@ export default function HeaderMenu({ openProfil, openSettings, openDeleteAll, op
                         <li className="menu-item" onClick={openSettings}>{t("header.menu.settings")}</li>
                         <li className="menu-item" onClick={openDeleteAll}>{t("header.menu.deleteallconversation")}</li>
                         <li className="menu-item" onClick={openContactUs}>{t("header.menu.contact")}</li>
-                        <li className="menu-item logout" onClick={openLogout}>{t("header.logout")}</li>
+                        <li className="menu-item logout" onClick={() => { 
+                            console.log("onClick logout");
+                            openModal("logout");
+                        }}>{t("header.logout")}</li>
                     </ul>
                 </motion.div>,
                 menuContainer.current

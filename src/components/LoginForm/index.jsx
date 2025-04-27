@@ -17,8 +17,8 @@ export default function LoginForm({ setState, handleLoginSubmit, handleCreateGoo
         <>
             <p className="standart-dark-text">{t("form.login.title")}</p>
             <Link to={"/"}>
-                <div className="site-logo mb-2">
-                    <img src={logo} alt="Logo" className="tinnten logo" />
+                <div className="site-logo">
+                    <img src={logo} alt="Logo" className="tinnten-logo" />
                 </div>
             </Link>
 

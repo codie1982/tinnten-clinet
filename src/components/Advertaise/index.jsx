@@ -10,6 +10,7 @@ import RegisterForm from "../RegisterForm"
 import MailVerifyForm from "../MailVerifyForm"
 import ForgotPasswordFrom from "../ForgotPasswordFrom"
 import { LOGIN, REGISTER, MAILVERIFY, GOOGLE, FORGOTPASSWORD } from '../../constant'
+import AnimatedText from '../AnimatedText';
 
 
 export default function Advertaise() {
@@ -17,160 +18,13 @@ export default function Advertaise() {
     const { isLogin } = useAuth();
     const navigate = useNavigate()
     const dispatch = useDispatch()
-
-    const [form, setForm] = useState(LOGIN)
-    const [isSendCode, setIsSendCode] = useState(false)
-
     const { isLoading } = useSelector(
         (state) => {
             return state.auth
         }
     )
 
-    const [formValidation, setFormValidation] = useState({
-        login: {
-            email: {
-                error: false, message: ""
-            },
-            password: {
-                error: false, message: ""
-            }
-        },
-        register: {
-            email: {
-                error: false, message: ""
-            },
-            password: {
-                error: false, message: ""
-            },
-            rePassword: {
-                error: true, message: ""
-            }
-        },
-        forgotPassword: {
-            email: {
-                error: false, message: ""
-            },
-        },
-        mailVerify: {
-            email: {
-                error: false, message: ""
-            },
-        }
-    })
 
-
-
-
-    const resetValidation = () => {
-        setFormValidation({
-            login: {
-                email: {
-                    error: false, message: ""
-                },
-                password: {
-                    error: false, message: ""
-                }
-            },
-            register: {
-                email: {
-                    error: false, message: ""
-                },
-                password: {
-                    error: false, message: ""
-                },
-                rePassword: {
-                    error: true, message: ""
-                }
-            },
-            forgotPassword: {
-                email: {
-                    error: false, message: ""
-                },
-            },
-            mailVerify: {
-                email: {
-                    error: false, message: ""
-                },
-            }
-        })
-    }
-    const setStateForm = (state) => {
-        setForm(state)
-    }
-
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        resetValidation()
-        setIsSendCode(true)
-        switch (form) {
-            case LOGIN:
-                const loginemail = e.target.email.value;
-                const loginpassword = e.target.password.value;
-
-                if (loginemail === "") {
-                    setFormValidation(prev => ({
-                        ...prev,
-                        login: {
-                            ...prev.login,
-                            email: { error: true, message: "Email alanı boş olamaz." }
-                        }
-                    }));
-                }
-                if (loginpassword === "") {
-                    setFormValidation(prev => ({
-                        ...prev,
-                        login: {
-                            ...prev.login,
-                            password: { error: true, message: "Şifre alanı boş olamaz." }
-                        }
-                    }));
-                }
-                if (loginemail !== "" && loginpassword !== "") {
-                    dispatch(login({
-                        email: loginemail, password: loginpassword, "device": "web",
-                    }))
-                }
-
-                return;
-            case REGISTER:
-                const registeremail = e.target.email.value;
-                const registerpassword = e.target.password.value;
-                const registerrepassword = e.target.password.value;
-
-                if (registerpassword == registerrepassword) {
-
-                }
-                dispatch(register({
-                    email: registeremail, password: registerpassword, repassword: registerrepassword
-                }))
-                return;
-            case FORGOTPASSWORD:
-                const forgotemail = e.target.email.value;
-
-                console.log("Kullanıcı Email:", forgotemail);
-                return;
-            case GOOGLE:
-                return;
-            default:
-                return null; // Hiçbir durumda render edilmezse
-        }
-    }
-
-    const renderForm = () => {
-        switch (form) {
-            case LOGIN:
-                return <LoginForm setState={setStateForm} handleLoginSubmit={handleSubmit} validation={formValidation.login} reset={resetValidation} isLoading={isLoading} />;
-            case REGISTER:
-                return <RegisterForm setState={setStateForm} handleRegisterSubmit={handleSubmit} validation={formValidation.register} isSendCode={isSendCode} />;
-            case MAILVERIFY:
-                return <MailVerifyForm setState={setStateForm} validation={formValidation.mailVerify} />;
-            case FORGOTPASSWORD:
-                return <ForgotPasswordFrom setState={setStateForm} validation={formValidation.forgotPassword} />;
-            default:
-                return null; // Hiçbir durumda render edilmezse
-        }
-    };
 
     if (isLogin) navigate("/conversation")
     return (
@@ -179,20 +33,26 @@ export default function Advertaise() {
                 <Row className="chat-advertise-row">
                     <Col className="chat-advertise-col left-side">
                         <main className="hero-section">
+                            <div class="animated-title">
+                               <AnimatedText/>
+                            </div>
                             <Row>
                                 <Col>
                                     <h1 className="hero-title">{t("advertaise.hero.title")}</h1>
                                     <p className="hero-description">{t("advertaise.hero.description")}</p>
-                                    <Link to="/login" className="btn btn-lg cta-button">{t("advertaise.hero.cta")}</Link>
+                                    <Row>
+                                        <Col><Link to="/login" className="btn btn-lg btn-block cta-button login">{t("advertaise.hero.login")}</Link></Col>
+                                        <Col><Link to="/register" className="btn btn-lg btn-block cta-button register">{t("advertaise.hero.register")}</Link></Col>
+                                    </Row>
                                 </Col>
-                                {/* <Col>
+                                <Col>
 
-                                    <Carousel data-bs-theme="dark">
+                                    {/*  <Carousel data-bs-theme="dark">
                                         <Carousel.Item>
 
                                             <Card className="product-card" key={""}>
                                                 <div className="product-image-container">
-                                                    <Card.Img variant="bottom" src={logo} alt={"product.description"} />
+                                                    <Card.Img variant="bottom" src={"logo"} alt={"product.description"} />
                                                 </div>
                                                 <Card.Body className="product-info">
                                                     <Card.Text>{"product.title"}</Card.Text>
@@ -213,7 +73,7 @@ export default function Advertaise() {
                                         <Carousel.Item>
                                             <Card className="product-card" key={""}>
                                                 <div className="product-image-container">
-                                                    <Card.Img variant="bottom" src={logo} alt={"product.description"} />
+                                                    <Card.Img variant="bottom" src={"logo"} alt={"product.description"} />
                                                 </div>
                                                 <Card.Body className="product-info">
                                                     <Card.Text>{"product.title"}</Card.Text>
@@ -232,23 +92,29 @@ export default function Advertaise() {
                                             </Carousel.Caption>
                                         </Carousel.Item>
 
-                                    </Carousel>
+                                    </Carousel> */}
                                     <ul>
                                         <li>
-
                                         </li>
                                     </ul>
-                                </Col> */}
+                                </Col>
                             </Row>
+
                         </main>
-                       {/*  <div className="chat-advertise-text-content">
+                        {/*  <div className="chat-advertise-text-content">
                             <h2 className="display-4 mb-4 text-left">{t("advertaise.subhero.title")}</h2>
                             <h3 className="display-5 mb-2 text-left">{t("advertaise.subhero.subtitle")}</h3>
                             <p className="lead text-left">{t("advertaise.subhero.description")}</p>
                         </div> */}
                     </Col>
                 </Row>
-              {/*   <section className="supporting-section">
+            </div>
+        </>
+    )
+}
+
+
+{/*   <section className="supporting-section">
                     <div className="supporting-section-one">
                         <h2 className="supporting-title">{t("advertaise.supporting.title")}</h2>
                         <p className="supporting-description">{t("advertaise.supporting.description")}</p>
@@ -315,7 +181,3 @@ export default function Advertaise() {
                         </Accordion>
                     </div>
                 </section> */}
-            </div>
-        </>
-    )
-}

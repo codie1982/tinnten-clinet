@@ -21,6 +21,7 @@ import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 import { AuthProvider } from './context/authContext';
 import './app.css';
 import './style.css';
+import { ModalProvider } from './components/Modals/ModalProvider.jsx';
 i18next.init({
   interpolation: { escapeValue: false },
   lng: "tr",
@@ -43,7 +44,9 @@ root.render(
       <I18nextProvider i18n={i18next}>
         <Provider store={store}>
           <AuthProvider>
-            <RouterProvider router={routes} future={{ v7_startTransition: true }} />
+            <ModalProvider>
+              <RouterProvider router={routes} future={{ v7_startTransition: true }} />
+            </ModalProvider>
           </AuthProvider>
         </Provider>
       </I18nextProvider>

@@ -18,13 +18,31 @@ export default function useAgentSocket() {
   const refreshToken = async () => {
     try {
       console.log("[useAgentSocket] Token yenileniyor...");
+  
+      // Cookie'den refresh_token'ı oku
+      const getCookie = (name) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+      };
+  
+      const refreshToken = getCookie("refresh_token");
+      console.log("[useAgentSocket] refresh_token:", refreshToken);
+  
+      if (!refreshToken) {
+        throw new Error("Refresh token bulunamadı");
+      }
+  
       const response = await fetch("/refresh-token", {
         method: "POST",
-        headers: { Authorization: `Bearer ${localStorage.getItem("refresh_token")}` },
+        credentials: "include", // ✨ Cookie'yi isteğe eklemesi için
+        headers: { Authorization: `Bearer ${refreshToken}` },
       });
+  
       if (!response.ok) {
         throw new Error("Token yenileme başarısız");
       }
+  
       const { access_token } = await response.json();
       localStorage.setItem("access_token", access_token);
       console.log("[useAgentSocket] access_token yenilendi");
@@ -53,14 +71,14 @@ export default function useAgentSocket() {
     if (!token) {
       console.log("[useAgentSocket] access_token bulunamadı");
       try {
-        token = await refreshToken();
+        //token = await refreshToken();
       } catch (error) {
         console.error("[useAgentSocket] Token alınamadı, bağlantı iptal");
         return;
       }
     }
 
-    const socketUrl = `${process.env.REACT_APP_WS_URL || "wss://tinnten.com/stream"}?token=${token}`;
+    const socketUrl = `${process.env.REACT_APP_WS_URL || "ws://localhost:5001/stream"}?token=${token}`;
     console.log("[useAgentSocket] Bağlanılıyor:", socketUrl);
 
     const socket = new WebSocket(socketUrl);

@@ -15,8 +15,10 @@ import { useAuth } from 'context/authContext';
 import { getUserProfile } from "../../api/profile/profileSlicer"
 
 export default function Header({ toggleSidebar }) {
+
   const dispatch = useDispatch()
   const { isLogin, isLoading, user } = useAuth()
+
   const [t, i18n] = useTranslation("global")
   const [isOpenProfil, setIsOpenProfil] = useState(false)
   const [isOpenSettings, setIsOpenSettings] = useState(false)
@@ -62,9 +64,7 @@ export default function Header({ toggleSidebar }) {
   const openContactUs = () => {
     setIsOpenContactUs(!isOpenContactUs)
   }
-  const openLogout = () => {
-    setIsOpenLogout(!isOpenLogout)
-  }
+
 
   return (
     <div className="chat-header">
@@ -82,7 +82,7 @@ export default function Header({ toggleSidebar }) {
               <Nav className="ms-auto d-flex">
                 <Nav.Item>
                   <Nav.Link className="dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <HeaderMenu openLogout={openLogout} openContactUs={openContactUs} openDeleteAll={openDeleteAll} openSettings={openSettings} openProfil={openProfil} userprofile={userprofile} isProfileLoading={isProfileLoading} />
+                    <HeaderMenu openContactUs={openContactUs} openDeleteAll={openDeleteAll} openSettings={openSettings} openProfil={openProfil} userprofile={userprofile} isProfileLoading={isProfileLoading} />
                   </Nav.Link>
                 </Nav.Item>
               </Nav>
@@ -94,7 +94,8 @@ export default function Header({ toggleSidebar }) {
       <SettingsComponent isOpen={isOpenSettings} setOpenModal={openSettings} />
       <DeleteAllChatsComponent isOpen={isOpenDeleteAllChats} setOpenModal={openDeleteAll} />
       <ContactUsComponent isOpen={isOpenContactUs} setOpenModal={openContactUs} />
-      <LogoutComponent isOpen={isOpenLogout} setOpenModal={openLogout} />
+
+      <LogoutComponent />
     </div>
   )
 }

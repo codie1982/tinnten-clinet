@@ -181,7 +181,11 @@ export default function Sidebar({ openSidebar }) {
     <div className={`sidebar ${openSidebar ? 'open' : 'closed'}`}>
       <div className={`sidebar-content ${openSidebar ? '' : 'closed'}`}>
         <div className="site-logo-container">
-          <img src={logo} alt="Logo" className="logo" />
+          <div className="site-logo-maxi">
+            <Link to={"/conversation"}>
+              <img src={logo} alt="Logo" className="logo" />
+            </Link>
+          </div>
         </div>
 
         <div className="chat-release">
@@ -251,10 +255,7 @@ export default function Sidebar({ openSidebar }) {
             </div>
           )}
         </ul>
-
-
-
-
+       
       </div>
 
       <FeaturesPrice isModalOpen={modals.features} setIsModalOpen={() => toggleModal("features")} />

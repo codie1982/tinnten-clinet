@@ -108,7 +108,24 @@ export default function Chat({ viewState }) {
     }
 
     // Mesajlar boşsa
-    if (!systemMessage || !Array.isArray(systemMessage) || systemMessage.length === 0) {
+    if (!systemMessage) {
+        return (
+            <div className="new-message">
+                <Row>
+                    <Col>
+                        <div className="sub-start-new-message-content">
+                            <p className='head'>{"Yeni bir konuşma \nbaşlatın."}</p>
+                            <p className='description'>{"Aklınızdaki ürün ve hizmetler ile ilgili bilgi alın."}</p>
+                            <p className='note'>{"Note: Tinnten alfa-test aşamasındadır. Bu sürümde çökmeler donmalar ve bazı aksaklıklar olmaktadır."}</p>
+                        </div>
+                    </Col>
+                </Row>
+            </div>
+        );
+    }
+
+    // Mesajlar boşsa
+    if (!Array.isArray(systemMessage) || systemMessage.length === 0) {
         return (
             <div className="empty-message">
                 <Row>

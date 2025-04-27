@@ -195,7 +195,7 @@ export default function useChat(uiActions) {
       console.log("🔁 View action değişti:", viewAction);
       uiActions.onUpdateActionView(viewAction);
     }
-  }, [viewAction, uiActions]);
+  }, [viewAction]);
 
   const handleViewAction = (action) => {
     console.log("handleViewActionaction", action)
