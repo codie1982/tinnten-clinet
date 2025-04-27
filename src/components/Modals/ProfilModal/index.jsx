@@ -12,10 +12,12 @@ import { updateProfile } from "../../../api/profile/profileSlicer"
 import LazyImage from '../../Common/LazyImage'
 import { use } from 'i18next'
 import { toast } from 'react-toastify'
+import { useModal } from '../ModalProvider'
 
-
-export default function ProfilComponent({ isOpen, setOpenModal, userProfile, isProfileLoading }) {
+export default function ProfilComponent({ userProfile, isProfileLoading }) {
     const [active, setActive] = useState(false);
+      const { closeModal,isOpen, modals } = useModal();
+
     const [t, i18n] = useTranslation("global")
     const dispatch = useDispatch()
     const { user, settings } = useAuth()
@@ -140,8 +142,8 @@ export default function ProfilComponent({ isOpen, setOpenModal, userProfile, isP
     return (
         <Modal
             size="lg"
-            show={isOpen}
-            onHide={() => setOpenModal(false)}
+            show={isOpen("profil")}
+            onHide={() => closeModal("profil")}
             aria-labelledby="example-modal-sizes-title-lg plans-container"
         >
             <Modal.Header className="feature-plan-container" closeButton>

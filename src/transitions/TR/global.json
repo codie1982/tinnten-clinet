@@ -91,10 +91,12 @@
     "sidebar": {
         "reconversation": "Konuşmayı yenile",
         "history": "Arama Geçmişi",
+        "placeholder": "Arama yapın...",
         "rename": "Yeniden Adlandır",
         "removesearch": "Konusmayı kaldır",
         "plans": "Planları Görüntüle",
-        "addCompany": "Firmanı Ekle"
+        "addCompany": "Firmanı Ekle",
+        "more": "Daha fazla"
     },
     "humanMessage": {
         "you": "Siz"

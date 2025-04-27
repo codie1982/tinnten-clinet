@@ -25,8 +25,7 @@ export default function Advertaise() {
     )
 
 
-
-    if (isLogin) navigate("/conversation")
+    if (isLoading) return <>Yükleniyor</>
     return (
         <>
             <div className="page-inside page-fluid page-no-border page-no-background">
@@ -34,7 +33,7 @@ export default function Advertaise() {
                     <Col className="chat-advertise-col left-side">
                         <main className="hero-section">
                             <div class="animated-title">
-                               <AnimatedText/>
+                                <AnimatedText />
                             </div>
                             <Row>
                                 <Col>

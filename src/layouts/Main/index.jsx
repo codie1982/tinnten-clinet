@@ -18,7 +18,7 @@ export default function MainLayout() {
     if (isLoading) {
         return <>Yükleniyor...</>
     }
-    if (isLogin) navigate("/conversation")
+    //if (isLogin) navigate("/conversation")
     return (
         <div data-bs-spy="scroll" data-bs-target="#navbar-example" >
             <Container fluid className={`page-container `}>

@@ -1,13 +1,14 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import API_URL from "../common/baseurl";
-
+console.log("API_URL", API_URL)
 const axiosInstance = axios.create({
     baseURL: API_URL,
     headers: {
         'Content-Type': 'application/json',
     },
-    withCredentials: true // 🌟 Burada tanımlanırsa tüm isteklerde geçerli olur
+    withCredentials: true, // 🌟 Burada tanımlanırsa tüm isteklerde geçerli olur
+    timeout: 10000, // 10 saniyelik timeout ekliyoruz
 });
 
 // 🚀 Silent Authentication Function (Backend üzerinden istek)
@@ -46,41 +47,42 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
-        console.log("error", error)
-        if ((error.response && error.response.status === 404) || (error.response && error.response.status === 400)  && !error.config._retry) {
-            error.config._retry = true;
-            const response = error.response
-            const errorMessage = response.data.message
-            toast.error(errorMessage)
-        }
-        return Promise.reject(error);
-    }
-);
-// ❌ Response Interceptor (401 durumunda Silent Auth çalışır)
-axiosInstance.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-        console.log("error.response",error.response)
-        if ((error.response && (error.response.status === 401 || error.response.status === 403 || error.response.status === 500)) && !error.config._retry && !error.config.skipAuth) {
-            error.config._retry = true; // Sonsuz döngüyü engellemek için
-            try {
-                const newToken = await silentAuth();
-                if (newToken) {
-                    error.config.headers['Authorization'] = `Bearer ${newToken}`;
-                    return axiosInstance(error.config);
-                } else {
-                    toast.error("Oturum süreniz doldu. Lütfen tekrar giriş yapın.");
+        console.log("error.response", error.response);
+
+        const originalRequest = error.config;
+
+        if (error.response) {
+            const status = error.response.status;
+
+            if ((status === 400 || status === 404) && !originalRequest._retry) {
+                originalRequest._retry = true;
+                const errorMessage = error.response.data.message;
+                toast.error(errorMessage);
+                return Promise.reject(error);
+            }
+
+            if ((status === 401 || status === 403 || status === 500) && !originalRequest._retry && !originalRequest.skipAuth) {
+                originalRequest._retry = true;
+                try {
+                    const newToken = await silentAuth();
+                    if (newToken) {
+                        originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
+                        return axiosInstance(originalRequest);
+                    } else {
+                        toast.error("Oturum süreniz doldu. Lütfen tekrar giriş yapın.");
+                        localStorage.clear();
+                        window.location.href = '/login';
+                    }
+                } catch (silentAuthError) {
+                    console.log("silentAuthError", silentAuthError);
+                    toast.error('Oturum süreniz doldu. Lütfen tekrar giriş yapın.');
                     localStorage.clear();
                     window.location.href = '/login';
+                    return Promise.reject(silentAuthError);
                 }
-            } catch (silentAuthError) {
-                console.log("silentAuthError", silentAuthError)
-                toast.error('Oturum süreniz doldu. Lütfen tekrar giriş yapın.');
-                localStorage.clear();
-                window.location.href = '/login';
-                return Promise.reject(silentAuthError);
             }
         }
+
         return Promise.reject(error);
     }
 );

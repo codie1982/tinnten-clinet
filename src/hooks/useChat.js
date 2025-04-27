@@ -28,17 +28,16 @@ export default function useChat(uiActions) {
   const [conversationMessages, setConversationMessages] = useState([]);
   const [conversationid, setConversationid] = useState();
   const [queuedMessage, setQueuedMessage] = useState(null);
-  const [recommendation, setRecommendation] = useState({})
-
-  const [userIntent, setUserIntent] = useState("")
+  const [recommendation, setRecommendation] = useState({});
+  const [userIntent, setUserIntent] = useState("");
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+
 
   const {
     isProductLoading,
     isProcudtSuccess,
     isProductError,
-    productData
+    productData,
   } = useSelector((state) => state.product);
   const {
     isSuccess,
@@ -53,63 +52,78 @@ export default function useChat(uiActions) {
   const { stream } = useSelector((state) => state.stream);
   const [lastMessageId, setLastMessageId] = useState(null);
 
-
   const { id: conversationParamid } = useParams();
 
   useEffect(() => {
-    if (conversationParamid != null)
-      setConversationid(conversationParamid)
-  }, [conversationParamid])
+    if (conversationParamid != null) {
+      console.log("📌 conversationParamid değişti:", conversationParamid);
+      setConversationid(conversationParamid);
+    }
+  }, [conversationParamid]);
 
   useEffect(() => {
-    if (uiActions?.onCreateConversationid) uiActions.onCreateConversationid(conversationid);
-  }, [conversationid])
-
-
+    if (uiActions?.onCreateConversationid) {
+      console.log("📬 onCreateConversationid tetiklendi:", conversationid);
+      uiActions.onCreateConversationid(conversationid);
+    }
+  }, [conversationid]);
 
   const groupMessagesByGroupId = (messages = []) => {
     console.log("🔃 groupMessagesByGroupId çağrıldı:", messages);
-    return messages.reduce((groups, message) => {
+    const grouped = messages.reduce((groups, message) => {
       if (!groups[message.groupid]) {
         groups[message.groupid] = [];
       }
       groups[message.groupid].push(message);
       return groups;
     }, {});
+    console.log("🔃 groupMessagesByGroupId sonucu:", grouped);
+    return grouped;
   };
 
+  const updateMessageBlock = useCallback(
+    (messages) => {
+      console.log("🧱 updateMessageBlock çağrıldı:", messages);
+      const grouped = groupMessagesByGroupId(messages);
+      const pages = Object.keys(grouped);
+      const lastPage = pages.length;
 
+      console.log("🧱 Gruplaştırma:", grouped);
 
-  const updateMessageBlock = useCallback((messages) => {
-    console.log("🧱 updateMessageBlock çağrıldı:", messages);
-    const grouped = groupMessagesByGroupId(messages);
-    const pages = Object.keys(grouped);
-    const lastPage = pages.length;
+      setGroupedMessages(grouped);
+      console.log("🧱 groupedMessages güncellendi:", grouped);
 
+      setTotalCount(lastPage);
+      console.log("🧱 totalCount güncellendi:", lastPage);
 
-    console.log("🧱 Gruplaştırma :", grouped);
+      setCurrentPage(lastPage);
+      console.log("🧱 currentPage güncellendi:", lastPage);
 
+      const latestSystemMessage = grouped[pages[lastPage - 1]] || [];
+      const intentAction =
+        latestSystemMessage[1]?.type === "system_message"
+          ? latestSystemMessage[1].intent
+          : "";
 
-    setGroupedMessages(grouped);
-    setTotalCount(lastPage);
-    setCurrentPage(lastPage);
+      console.log("📤 Sistem mesajı ve action:", latestSystemMessage, intentAction);
 
+      const newViewAction =
+        intentAction === RECOMMENDATOINVIEW
+          ? RECOMMENDATOINVIEW
+          : intentAction === QUESTIONVIEW
+          ? QUESTIONVIEW
+          : intentAction === DETAILVIEW
+          ? DETAILVIEW
+          : RECOMMENDATOINVIEW;
 
-    const latestSystemMessage = grouped[pages[lastPage - 1]] || [];
-    const intentAction = latestSystemMessage[1]?.type === "system_message" ? latestSystemMessage[1].intent : "";
+      setViewAction(newViewAction);
+      console.log("🧱 viewAction güncellendi:", newViewAction);
 
-    console.log("📤 Sistem mesajı ve action:", latestSystemMessage, intentAction);
-
-    setViewAction(
-      intentAction === RECOMMENDATOINVIEW ? RECOMMENDATOINVIEW :
-        intentAction === QUESTIONVIEW ? QUESTIONVIEW :
-          intentAction === DETAILVIEW ? DETAILVIEW :
-            RECOMMENDATOINVIEW
-    );
-    setSystemMessage(latestSystemMessage);
-  }, []);
-
-
+      setSystemMessage(latestSystemMessage);
+      console.log("🧱 systemMessage güncellendi:", latestSystemMessage);
+    },
+    []
+  );
 
   useEffect(() => {
     if (
@@ -119,42 +133,43 @@ export default function useChat(uiActions) {
       conversationNewMessage.system_message
     ) {
       console.log("📩 Yeni mesaj alındı:", conversationNewMessage);
+      setLastMessageId(conversationNewMessage.id);
+      console.log("📩 lastMessageId güncellendi:", conversationNewMessage.id);
 
       setConversationMessages((prevMessages) => {
-        console.log("prevMessages", prevMessages)
+        console.log("📩 prevMessages:", prevMessages);
         const updatedMessages = [
-          ...prevMessages, conversationNewMessage.human_message, conversationNewMessage.system_message
+          ...prevMessages,
+          conversationNewMessage.human_message,
+          conversationNewMessage.system_message,
         ];
-        setCompleteMessage("");
-        updateMessageBlock(updatedMessages);
+        console.log("📩 updatedMessages:", updatedMessages);
 
+        setCompleteMessage("");
+        console.log("📩 completeMessage sıfırlandı");
+
+        updateMessageBlock(updatedMessages);
         return updatedMessages;
       });
     }
-  }, [conversationNewMessage]);
+  }, [conversationNewMessage, updateMessageBlock]);
 
   useEffect(() => {
     if (intent) {
-      setUserIntent(intent)
-      /*  switch (currentIntent) {
-         case "chat":
-         case "recommendation":
-           setViewAction(RECOMMENDATOINVIEW);
-           break;
-         case "production_info":
-         case "services_info":
-           setViewAction(DETAILVIEW);
-           break;
-         default:
-           break;
-       } */
+      console.log("🧠 Intent güncellendi:", intent);
+      setUserIntent(intent);
+      console.log("🧠 userIntent güncellendi:", intent);
     }
   }, [intent]);
 
   useEffect(() => {
     if (stream && stream !== "") {
       console.log("📡 stream verisi geldi:", stream);
-      setCompleteMessage((prev) => prev + stream);
+      setCompleteMessage((prev) => {
+        const newCompleteMessage = prev + stream;
+        console.log("📡 completeMessage güncellendi:", newCompleteMessage);
+        return newCompleteMessage;
+      });
     }
   }, [stream]);
 
@@ -167,12 +182,18 @@ export default function useChat(uiActions) {
     ) {
       console.log("✏️ Stream tamamlandı, mesaj güncelleniyor");
       const updatedMessages = conversationMessages.map((msg, index) =>
-        index === conversationMessages.length - 1 ? { ...msg, content: completeMessage } : msg
+        index === conversationMessages.length - 1
+          ? { ...msg, content: completeMessage }
+          : msg
       );
+      console.log("✏️ updatedMessages:", updatedMessages);
+
       setConversationMessages(updatedMessages);
+      console.log("✏️ conversationMessages güncellendi:", updatedMessages);
+
       updateMessageBlock(updatedMessages);
     }
-  }, [completeMessage, conversation]);
+  }, [completeMessage, conversation, conversationMessages, updateMessageBlock]);
 
   useEffect(() => {
     if (conversationid) {
@@ -186,7 +207,12 @@ export default function useChat(uiActions) {
       console.log("🛍️ Ürün başarıyla yüklendi:", productData);
       handleViewAction(DETAILVIEW);
       setSelectedProduct(productData);
-      if (uiActions?.onProductSelected) uiActions.onProductSelected(productData._id);
+      console.log("🛍️ selectedProduct güncellendi:", productData);
+
+      if (uiActions?.onProductSelected) {
+        console.log("🛍️ onProductSelected tetiklendi:", productData._id);
+        uiActions.onProductSelected(productData._id);
+      }
     }
   }, [isProductLoading, isProcudtSuccess, isProductError, productData, uiActions]);
 
@@ -198,18 +224,27 @@ export default function useChat(uiActions) {
   }, [viewAction]);
 
   const handleViewAction = (action) => {
-    console.log("handleViewActionaction", action)
-    const _action = action || (systemMessage && systemMessage[1]?.action) || RECOMMENDATOINVIEW;
-    console.log("📌 handleViewAction çalıştı:", _action);
+    console.log("📌 handleViewAction çağrıldı, action:", action);
+    const _action =
+      action || (systemMessage && systemMessage[1]?.action) || RECOMMENDATOINVIEW;
+    console.log("📌 handleViewAction çalıştı, _action:", _action);
     setViewAction(_action);
+    console.log("📌 viewAction güncellendi:", _action);
   };
 
   const changePage = (page) => {
+    console.log("📄 changePage çağrıldı, page:", page);
     if (page >= 1 && page <= totalCount) {
       console.log("📄 Sayfa değiştirildi:", page);
       setCurrentPage(page);
+      console.log("📄 currentPage güncellendi:", page);
+
       const pages = Object.keys(groupedMessages);
-      setSystemMessage(groupedMessages[pages[page - 1]] || []);
+      const newSystemMessage = groupedMessages[pages[page - 1]] || [];
+      setSystemMessage(newSystemMessage);
+      console.log("📄 systemMessage güncellendi:", newSystemMessage);
+    } else {
+      console.log("📄 Geçersiz sayfa numarası:", page);
     }
   };
 
@@ -217,58 +252,110 @@ export default function useChat(uiActions) {
     if (!isConversationMemory && isSuccess && conversation) {
       console.log("💬 Konuşma başarıyla yüklendi:", conversation);
       setConversationInformation(conversation);
-      setConversationMessages(conversation.messages || []);
-      updateMessageBlock(conversation.messages || []);
+      console.log("💬 conversationInformation güncellendi:", conversation);
+
+      const messages = conversation.messages || [];
+      setConversationMessages(messages);
+      console.log("💬 conversationMessages güncellendi:", messages);
+
+      updateMessageBlock(messages);
     }
-  }, [isConversationMemory, isSuccess, conversation]);
+  }, [isConversationMemory, isSuccess, conversation, updateMessageBlock]);
 
   useEffect(() => {
     if (!isConversationMemory && isSuccess && conversationCreated) {
+      console.log("💬 Yeni konuşma oluşturuldu:", createdConversationid);
       if (queuedMessage) {
-        console.log("📨 Yeni konuşma oluşturuldu, kuyruk mesajı gönderiliyor:", queuedMessage);
-        dispatch(conversationSendMesaage({ conversationid: createdConversationid, human_message: queuedMessage }));
+        console.log("📨 Kuyruk mesajı gönderiliyor:", queuedMessage);
+        dispatch(
+          conversationSendMesaage({
+            conversationid: createdConversationid,
+            human_message: queuedMessage,
+          })
+        );
         setQueuedMessage(null);
+        console.log("📨 queuedMessage sıfırlandı");
       } else {
-        navigate(`/conversation/${createdConversationid}`);
+        console.log("🧭 Yeni konuşmaya yönlendiriliyor:", createdConversationid);
         setConversationMessages([]);
+        console.log("📨 conversationMessages sıfırlandı");
         updateMessageBlock([]);
+        if (uiActions?.createNewConversation) {
+          console.log("📬 createNewConversation tetiklendi:", createdConversationid);
+          uiActions.createNewConversation(createdConversationid);
+        }
       }
     }
-  }, [isConversationMemory, isSuccess, conversationCreated, queuedMessage, createdConversationid, dispatch, navigate]);
+  }, [
+    isConversationMemory,
+    isSuccess,
+    conversationCreated,
+    queuedMessage,
+    createdConversationid,
+    updateMessageBlock,
+  ]);
 
   const sendMessage = (message, selectedProductid) => {
-    console.log("📬 sendMessage çağrıldı:", message, selectedProductid, conversationid);
+    console.log("📬 sendMessage çağrıldı, message:", message);
+    console.log("📬 sendMessage çağrıldı, selectedProductid:", selectedProductid);
+    console.log("📬 sendMessage çağrıldı, conversationid:", conversationid);
 
     setSelectedProduct(null);
+    console.log("📬 selectedProduct sıfırlandı");
+
     if (conversationid) {
-      dispatch(conversationSendMesaage({ conversationid, human_message: message, productid: selectedProductid }));
+      console.log("📬 Mesaj gönderiliyor:", { conversationid, message, selectedProductid });
+      dispatch(
+        conversationSendMesaage({
+          conversationid,
+          human_message: message,
+          productid: selectedProductid,
+        })
+      );
     } else {
+      console.log("📬 conversationid yok, queuedMessage set ediliyor:", message);
       setQueuedMessage(message);
       dispatch(createconversation());
+      console.log("📬 Yeni konuşma oluşturuluyor");
     }
 
-    if (uiActions?.onPromptStart) uiActions.onPromptStart();
+    if (uiActions?.onPromptStart) {
+      console.log("📬 onPromptStart tetiklendi");
+      uiActions.onPromptStart();
+    }
   };
 
-
   const createNewConversation = () => {
-    console.log("createNewConversation", createNewConversation)
+    console.log("🔄 createNewConversation çağrıldı");
     dispatch(createconversation());
-    if (uiActions?.onPromptStart) uiActions.onPromptStart();
-  }
+    console.log("🔄 Yeni konuşma oluşturuluyor");
+
+    if (uiActions?.onPromptStart) {
+      console.log("🔄 onPromptStart tetiklendi");
+      uiActions.onPromptStart();
+    }
+  };
+
   const getConversationDetail = (conversationid) => {
-    handleSetConversation(conversationid)
-  }
+    console.log("📄 getConversationDetail çağrıldı, conversationid:", conversationid);
+    handleSetConversation(conversationid);
+  };
+
   const handleSetConversation = (id) => {
+    console.log("🧭 handleSetConversation çağrıldı, id:", id);
     if (id) {
       console.log("🧭 Var olan konuşma set ediliyor:", id);
       setConversationid(id);
+      console.log("🧭 conversationid güncellendi:", id);
       dispatch(conversationDetail({ conversationid: id }));
     } else {
       console.log("🔄 Yeni konuşma başlatılıyor");
       dispatch(resetConversation());
+      console.log("🔄 Konuşma sıfırlanıyor");
       dispatch(createconversation());
+      console.log("🔄 Yeni konuşma oluşturuluyor");
       setConversationid(null);
+      console.log("🧭 conversationid sıfırlandı");
     }
   };
 

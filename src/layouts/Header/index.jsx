@@ -90,11 +90,10 @@ export default function Header({ toggleSidebar }) {
           </Container>
         </Navbar>
       </div>
-      <ProfilComponent isOpen={isOpenProfil} setOpenModal={openProfil} userProfile={userprofile} isProfileLoading={isProfileLoading} />
-      <SettingsComponent isOpen={isOpenSettings} setOpenModal={openSettings} />
-      <DeleteAllChatsComponent isOpen={isOpenDeleteAllChats} setOpenModal={openDeleteAll} />
-      <ContactUsComponent isOpen={isOpenContactUs} setOpenModal={openContactUs} />
-
+      <ProfilComponent userProfile={userprofile} isProfileLoading={isProfileLoading} />
+      <SettingsComponent  />
+      <DeleteAllChatsComponent  />
+      <ContactUsComponent />
       <LogoutComponent />
     </div>
   )

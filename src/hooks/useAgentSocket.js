@@ -79,7 +79,7 @@ export default function useAgentSocket() {
     }
 
     const socketUrl = `${process.env.REACT_APP_WS_URL || "ws://localhost:5001/stream"}?token=${token}`;
-    console.log("[useAgentSocket] Bağlanılıyor:", socketUrl);
+    console.log("[useAgentSocket] Bağlanılıyor:", `${process.env.REACT_APP_WS_URL || "ws://localhost:5001/stream"}?token=${"..."}`);
 
     const socket = new WebSocket(socketUrl);
     socketRef.current = socket;

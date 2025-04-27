@@ -1,40 +1,65 @@
 import React, { useState, useEffect } from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faDollar, faEnvelope } from '@fortawesome/free-solid-svg-icons'
-import { Modal, Button, Form, ButtonGroup } from 'react-bootstrap'
+import { Modal, Button,Spinner } from 'react-bootstrap'
 import { useAuth } from '../../../context/authContext'
+import { useDispatch, useSelector } from "react-redux";
 import { useModal } from '../ModalProvider'
+import { logoutUser,axiosTest } from '../../../api/auth/authSlicer'
+import { toast } from 'react-toastify';
+
 export default function LogoutModal({ setOpenModal }) {
-    const { isLogin, isLoading, logoutApplication } = useAuth()
-    const { closeModal,isOpen, modals } = useModal();
-    const setLogout = () => {
-        // Burada logout işlemini yaparsın
-        console.log("Çıkış yapılıyor...");
-        //closeModal("logout"); // Modalı kapat
-        //logoutApplication()
+    const dispatch = useDispatch();
+    const { closeModal, isOpen, closeAllModals } = useModal();
+    const { setAuthState,logoutApplication } = useAuth();
+    const { isLoading, isSuccess,isLogout, isError } = useSelector((state) => state.auth);
+
+    const handleLogout = () => {
+       logoutApplication();
+       toast.success("Oturumunuz sonlandırıldı!");
+       //localStorage.clear();
+       //window.location.href = '/';
     };
 
+    useEffect(() => {
+        if (isSuccess && !isError && isLogout) {
+            setAuthState({ isLogin: false, user: null, isLoading: false });
+            localStorage.clear();
+            toast.success("Oturumunuz sonlandırıldı!");
+            closeAllModals();
+        }
+    }, [isSuccess, isError,isLogout]);
+
     return (
-        <>
-            <Modal
-                size="xl"
-                show={isOpen("logout")}
-                onHide={() => closeModal("logout")}
-                aria-labelledby="example-modal-sizes-title-lg plans-container"
-            >
-                <Modal.Header className="feature-plan-container" closeButton>
-                    <Modal.Title className="feature-plan-title" id="example-modal-sizes-title-lg">
-                        Çıkış yap
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    Çıkış yapmak istediğinizden emin misiniz?
-                    <div className="settings-button-container">
-                        <button className="regular-button" onClick={() => closeModal("logout")}>Vazgeç</button>
-                        <button className="delete-button" onClick={setLogout}>Çıkış yap</button>
-                    </div>
-                </Modal.Body>
-            </Modal>
-        </>
-    )
+        <Modal
+            size="md"
+            show={isOpen("logout")}
+            onHide={() => closeModal("logout")}
+            aria-labelledby="modal-logout"
+            centered
+        >
+            <Modal.Header closeButton>
+                <Modal.Title id="modal-logout">Çıkış Yap</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                Çıkış yapmak istediğinize emin misiniz?
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={() => closeModal("logout")}>
+                    Vazgeç
+                </Button>
+                <Button
+                    variant="danger"
+                    onClick={handleLogout}
+                    disabled={isLoading}
+                >
+                    {isLoading ? (
+                        <>
+                            <Spinner animation="border" size="sm" /> Çıkış yapılıyor...
+                        </>
+                    ) : (
+                        "Çıkış Yap"
+                    )}
+                </Button>
+            </Modal.Footer>
+        </Modal>
+    );
 }

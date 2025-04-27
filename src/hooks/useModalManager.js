@@ -1,21 +1,24 @@
 import { useState, useEffect, useCallback } from "react";
-
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
-import useAgentSocket from "./useAgentSocket";
+import Logger from "../utils/Logger";
 
 const initialModals = {
   login: false,
   signup: false,
   logout: false,
   forgotPassword: false,
+  deleteallchats: false,
+  contactus: false,
+  settings: false,
+  profil: false,
+  waitlist: false,
 };
 
 export function useModalManager() {
   const [modals, setModals] = useState(initialModals);
+  const log = new Logger("ModalManager");
 
   const openModal = useCallback((modalName) => {
-    console.log("[useModalManager] openModal çağrıldı:", modalName);
+    log.log("openModal çağrıldı:", modalName);
     setModals((prev) => ({
       ...prev,
       [modalName]: true,
@@ -23,7 +26,7 @@ export function useModalManager() {
   }, []);
 
   const closeModal = useCallback((modalName) => {
-    console.log("[useModalManager] closeModal çağrıldı:", modalName);
+    log.log("closeModal çağrıldı:", modalName);
     setModals((prev) => ({
       ...prev,
       [modalName]: false,
@@ -31,7 +34,7 @@ export function useModalManager() {
   }, []);
 
   const toggleModal = useCallback((modalName) => {
-    console.log("[useModalManager] toggleModal çağrıldı:", modalName);
+    log.log("toggleModal çağrıldı:", modalName);
     setModals((prev) => ({
       ...prev,
       [modalName]: !prev[modalName],
@@ -44,11 +47,13 @@ export function useModalManager() {
   }, [modals]);
 
   const closeAllModals = useCallback(() => {
-    console.log("[useModalManager] closeAllModals çağrıldı.");
-    setModals(Object.keys(initialModals).reduce((acc, key) => {
-      acc[key] = false;
-      return acc;
-    }, {}));
+    log.log("closeAllModals çağrıldı");
+    setModals(
+      Object.keys(initialModals).reduce((acc, key) => {
+        acc[key] = false;
+        return acc;
+      }, {})
+    );
   }, []);
 
   return {

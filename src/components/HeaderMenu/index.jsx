@@ -75,10 +75,10 @@ export default function HeaderMenu({ openProfil, openSettings, openDeleteAll, op
                     }}
                 >
                     <ul>
-                        <li className="menu-item" onClick={openProfil} >{user.name}</li>
-                        <li className="menu-item" onClick={openSettings}>{t("header.menu.settings")}</li>
-                        <li className="menu-item" onClick={openDeleteAll}>{t("header.menu.deleteallconversation")}</li>
-                        <li className="menu-item" onClick={openContactUs}>{t("header.menu.contact")}</li>
+                        <li className="menu-item" onClick={()=>{openModal("profil")}} >{user.name}</li>
+                        <li className="menu-item" onClick={()=>{openModal("settings")}}>{t("header.menu.settings")}</li>
+                        <li className="menu-item" onClick={()=>{openModal("deleteallchats")}}>{t("header.menu.deleteallconversation")}</li>
+                        <li className="menu-item" onClick={()=>{openModal("contactus")}}>{t("header.menu.contact")}</li>
                         <li className="menu-item logout" onClick={() => { 
                             console.log("onClick logout");
                             openModal("logout");

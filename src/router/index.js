@@ -23,13 +23,13 @@ const routes = createBrowserRouter([
         ),
         children: [
             { path: "/", element: <Advertaise /> },
-            { path: "/waitlist", element: <WaitList /> },
             { path: "/abouth", element: <Abouth /> },
             { path: "/works", element: <HowWorks /> },
+            { path: "/loaderio-7685311382253a34a6fb6901560ffa03", element: <>Text</> },
             { path: "/consumer-terms", element: <ConsumerTerms /> },
             { path: "/privatepolicy", element: <PrivatePolicy /> },
-            { path: "/contact", element: <Contact/> },
-            { path: "/google-auth", element: <GoogleAuth/> },
+            { path: "/contact", element: <Contact /> },
+            { path: "/google-auth", element: <GoogleAuth /> },
             {
                 element: <ProtectedRoute />,
                 children: [
@@ -52,3 +52,5 @@ const routes = createBrowserRouter([
 ])
 
 export default routes;
+
+// { path: "/waitlist", element: <WaitList /> },

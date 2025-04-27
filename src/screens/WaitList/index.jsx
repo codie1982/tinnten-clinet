@@ -9,7 +9,6 @@ import useAgentSocket from "../../hooks/useAgentSocket";
 export default function WaitList() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { connectSocket } = useAgentSocket()
   const { isLogin } = useAuth();
   return (
     <>

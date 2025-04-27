@@ -11,7 +11,10 @@ import { use } from 'i18next'
 export default function Recommendation({ recommendation }) {
     const [itemRecommendation, setItemRecommendation] = useState(null)
     useEffect(() => {
-        setItemRecommendation(recommendation)
+        if (recommendation != null) {
+            console.log("recommendation", recommendation)
+            setItemRecommendation(recommendation)
+        }
     }, [recommendation])
 
     useEffect(() => {

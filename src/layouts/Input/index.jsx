@@ -87,6 +87,7 @@ export default function Input({ position, selectedid }) {
     // Mesaj gönder
     const handleSubmit = (e) => {
         e.preventDefault();
+        console.log("sending promt ..", promt)
         console.log("selectedProductid", selectedProductid)
         sendMessage(promt, selectedProductid);
         setPromt('');

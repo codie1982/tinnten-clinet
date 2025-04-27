@@ -153,17 +153,26 @@ export const checkToken = createAsyncThunk(
 // Logout user
 export const logoutUser = createAsyncThunk(
     'auth/logout',
-    async () => {
-        try {
-            return await authService.logout()
-        } catch (error) {
-            const message =
-                (error.response &&
-                    error.response.data &&
-                    error.response.data.message) ||
-                error.message ||
-                error.toString()
-            return message
+    async (_, { rejectWithValue })=> {
+        try {console.log("logoutUser createAsyncThunk")
+            return await authService.logoutUser()
+        }  catch (error) {
+            console.log("logoutUser error",error)
+            const message = (error.response?.data?.message) || error.message || error.toString();
+            return rejectWithValue(message); // ✅ HATA durumunda rejectWithValue kullanıyoruz
+        }
+    }
+)
+// Logout user
+export const axiosTest = createAsyncThunk(
+    'auth/logout',
+    async (_, { rejectWithValue })=> {
+        try {console.log("axiosTest axiosTest")
+            return await authService.axiosTest()
+        }  catch (error) {
+            console.log("axiosTest error",error)
+            const message = (error.response?.data?.message) || error.message || error.toString();
+            return rejectWithValue(message); // ✅ HATA durumunda rejectWithValue kullanıyoruz
         }
     }
 )
@@ -251,9 +260,11 @@ export const authSlice = createSlice({
                 state.url = null
             })
             .addCase(logoutUser.pending, (state, action) => {
+                console.log("logoutUser pending")
                 state.isLoading = true
             })
             .addCase(logoutUser.fulfilled, (state, action) => {
+                console.log("logoutUser fulfilled")
                 state.isLoading = false
                 state.isSuccess = true
                 state.isError = false
@@ -264,6 +275,7 @@ export const authSlice = createSlice({
                 state.data = null
             })
             .addCase(logoutUser.rejected, (state, action) => {
+                console.log("logoutUser rejected")
                 state.isLoading = false
                 state.isSuccess = false
                 state.isError = true

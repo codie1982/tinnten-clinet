@@ -20,6 +20,7 @@ export default function Home() {
   const { connectSocket } = useAgentSocket()
 
 
+
   const { isLogin } = useAuth();
   const [t] = useTranslation("global");
 
@@ -80,6 +81,18 @@ export default function Home() {
           setOpenSidebar(false);
           setChatInputPosition("bottom");
           console.log("Conversation id set from URL:", conversationid);
+          navigate(`/conversation/${conversationid}`);
+        }
+        // Sayfalama resetleme gibi işlemler de burada tetiklenebilir
+      },
+      createNewConversation: (createdConversationid) => {
+        console.log("URL parameter conversationParamId:", createdConversationid);
+        // navigate'i asenkron olarak çağır
+        if (createdConversationid) {
+          setTimeout(() => {
+            console.log("🧭 navigate çağrılıyor:", `/conversation/${createdConversationid}`);
+            navigate(`/conversation/${createdConversationid}`);
+          }, 0);
         }
         // Sayfalama resetleme gibi işlemler de burada tetiklenebilir
       },
@@ -95,7 +108,7 @@ export default function Home() {
     console.log("userIntent", userIntent)
     if (userIntent) {
       switch (userIntent) {
-        case "chat":
+        case "general":
           setOpenChatMessage(true)
           setOpenProductDetail(false);
           setChatInputPosition("bottom");

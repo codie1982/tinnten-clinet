@@ -79,7 +79,7 @@ export default function Chat({ viewState }) {
                 );
             case RECOMMENDATOINVIEW:
                 console.log("RECOMMENDATOINVIEW", RECOMMENDATOINVIEW, (item?.recommendation))
-                return <Recommendation recommendation={item.recommendation} />;
+                return <Recommendation recommendation={item?.recommendation} />;
             case DETAILVIEW:
                 return <>DETAY EKRANI</>;
             default:
@@ -87,6 +87,24 @@ export default function Chat({ viewState }) {
         }
     };
 
+    if (isConversationLoading) {
+        return (
+            <div className="chat-loading-container">
+                <Row>
+                    <Col>
+                        <div className="chat-loading-spinner">
+                            <span
+                                className="spinner-border spinner-border-sm"
+                                role="status"
+                                aria-hidden="true"
+                            ></span>
+                            Yeni bir konuşma başlatılıyor...
+                        </div>
+                    </Col>
+                </Row>
+            </div>
+        );
+    }
     // Yükleniyor durumu
     if (isLoading) {
         return (
@@ -154,7 +172,7 @@ export default function Chat({ viewState }) {
                 ) : null}
 
                 {chatView ? (
-                    <li key="intent">{selectedAction(chatView, systemMessage[1])}</li>
+                    <li></li>//  {/* <li key="intent">{selectedAction(chatView, systemMessage[1])}</li> */}
                 ) : null}
             </ul>
         </div>

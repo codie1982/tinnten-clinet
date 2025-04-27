@@ -198,7 +198,7 @@ export default function Sidebar({ openSidebar }) {
         <div className="history-input">
           <input
             type="text"
-            placeholder={t("sidebar.searchPlaceholder") || "Geçmiş"}
+            placeholder={t("sidebar.placeholder") || "Geçmiş"}
             onClick={() => toggleModal("historySearch")}
           />
           <span><FontAwesomeIcon icon={faSearch} /></span>
@@ -251,7 +251,7 @@ export default function Sidebar({ openSidebar }) {
 
           {hasMoreHistory && !isHistoryLoading && (
             <div className="search-history-all-see" onClick={getMoreHistory}>
-              <span>{t("sidebar.seeMore") || "Daha fazla Gör"}</span>
+              <span>{t("sidebar.more") || "Daha fazla Gör"}</span>
             </div>
           )}
         </ul>
