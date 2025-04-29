@@ -51,7 +51,7 @@ export default function HeaderMenu({ openProfil, openSettings, openDeleteAll, op
                 <Image
                     loading="lazy"
                     roundedCircle
-                    src={userprofile?.profileImage.path ? userprofile.profileImage.path : tinntenLogo}
+                    src={userprofile?.profileImage?.path ? userprofile?.profileImage?.path : tinntenLogo}
                     alt="Profile"
                     height={40}
                     width={40}
