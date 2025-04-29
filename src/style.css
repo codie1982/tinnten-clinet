@@ -1404,6 +1404,25 @@ h1 .page-title {
     /* Yazı rengi */
 }
 
+.btn-mail-login-disable{
+    font-weight: 300;
+    /* İnce font */
+    background-color: var(--background-open2-color);
+    /* Arka plan rengi beyaz */
+    border: 2px solid var(--text-dark-color);
+    color: var(--text-dark-color);
+    /* Yazı rengi */
+}
+.btn-mail-login-disable:hover{
+    font-weight: 300;
+    /* İnce font */
+    background-color: var(--background-open2-color);
+    /* Arka plan rengi beyaz */
+    border: 2px solid var(--text-dark-color);
+    color: var(--text-dark-color);
+    /* Yazı rengi */
+}
+
 .btn-register {
     font-weight: 300;
     /* İnce font */

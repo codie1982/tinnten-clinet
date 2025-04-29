@@ -7,17 +7,17 @@ import { Badge } from 'react-bootstrap';
 import { useAuth } from '../../context/authContext';
 import { Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next"
-export default function MailVerify({ sendCode }) {
+export default function MailVerify({ }) {
     const [t, i18n] = useTranslation("global")
     const { isLogin, isLoading: authLoading } = useAuth();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { isError, isSendCodeLoading, isSuccess } = useSelector((state) => state.auth);
+    const { isError, isSendCodeLoading, isSuccess, sendCode } = useSelector((state) => state.auth);
 
-
-    const [isCodeSending, setIsCodeSending] = useState(sendCode)
-
+    const [isCodeSending, setIsCodeSending] = useState()
     const [remindingTime, setRemindingTime] = useState(180)
+    const [isActiveButton, setIsActiveButton] = useState(false)
+
     const [formValidation, setFormValidation] = useState({
         mailVerify: {
             code: {
@@ -26,9 +26,31 @@ export default function MailVerify({ sendCode }) {
         }
     });
 
-useEffect(() => {
-    setIsCodeSending(sendCode)
-}, [sendCode])
+    useEffect(() => {
+   
+        if (isSuccess && !isSendCodeLoading && !isError) {
+            // disable button until timer finishes
+            setIsActiveButton(false);
+            setIsCodeSending(sendCode)
+            const intervalId = setInterval(() => {
+                setRemindingTime(prev => {
+                    if (prev <= 1) {
+                        clearInterval(intervalId);
+                        setIsActiveButton(true);
+                        // reset to 180 after reaching 0
+                        return 180;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+            return () => clearInterval(intervalId);
+        }
+    }, [isSuccess, isSendCodeLoading, isError, sendCode]);
+
+
+    useEffect(() => {
+        setIsCodeSending(sendCode)
+    }, [sendCode])
 
 
     const resetValidation = () => {
@@ -65,10 +87,10 @@ useEffect(() => {
                 }));
                 hasError = true;
             }
-            console.log("hasError", hasError)
+
             if (hasError) return; // 🚩 Hata varsa işlemi durdur
             // Doğruysa login işlemi başlat
-            console.log("code",code)
+            console.log("code", code)
             dispatch(verifymailcode(code))
         }
     }
@@ -95,6 +117,7 @@ useEffect(() => {
                 remindingTime={remindingTime}
                 isLoading={isSendCodeLoading}
                 isCodeSending={isCodeSending}
+                isActiveButton={isActiveButton}
                 verifyMailCode={verifyMailCode} sendingCode={sendingCode} />
         </div>
     );

@@ -10,7 +10,7 @@ import { MAILVERIFY } from '../../constant'
 import { useTranslation } from "react-i18next"
 import logo from "../../assets/char-logo.png"
 
-export default function MailVerifyForm({ remindingTime, validation, isLoading, isCodeSending, verifyMailCode, sendingCode }) {
+export default function MailVerifyForm({ remindingTime, validation, isLoading, isCodeSending, verifyMailCode, sendingCode, isActiveButton }) {
     const [t, i18n] = useTranslation("global")
 
     const handleSubmit = (e) => {
@@ -68,13 +68,13 @@ export default function MailVerifyForm({ remindingTime, validation, isLoading, i
                         <Button
                             type="submit"
                             size="lg"
-                            disabled={isLoading}
-                            className="col btn m-t-1 btn-block btn-mail-login"
+                            disabled={isLoading && !isActiveButton}
+                            className={` col btn m-t-1 btn-block ${!isActiveButton ? "btn-mail-login-disable" : "btn-mail-login"}`}
                             style={{
                                 width: '100%',
 
                             }}
-                        >{isLoading ? t("form.mail.loading") : t("form.mail.sendcode")}
+                        >{isLoading ? t("form.mail.loading") : isCodeSending ? t("form.mail.entercode") : t("form.mail.sendcode") }
                         </Button>
                     </ButtonGroup>
                 </Form>

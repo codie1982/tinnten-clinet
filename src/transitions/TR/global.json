@@ -114,8 +114,9 @@
         "mail": {
             "title": "mail adresinizi onaylamanız gerekmektedir.",
             "sendcode": "Kodu Gönder",
+            "entercode": "Kodu Giriniz",
             "loading": "gönderiliyor...",
-            "description": "mail adresine gelen kodu bu alana girip mail adresini onaylamalısın.",
+            "description": "Mail adresini onaylamanız gerekmektedir. kodu gönder butonu ile bir mail kodu oluşturabilirsiniz..",
             "send_code_placeholder": " Mail kutunuza gelen 6 haneli mail kodunu giriniz.",
             "send_code_placeholder": " Mail kutunuza gelen 6 haneli mail kodunu giriniz.",
             "resendcode": "Kodu Tekrar Gönder",

@@ -1,15 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { useAuth } from '../../context/authContext'
 import { useSelector, useDispatch } from "react-redux"
-import { login, register } from "../../api/auth/authSlicer"
 import { Link, useNavigate, } from "react-router-dom";
-import { Row, Col, Card, Button, Carousel, Accordion, Container } from 'react-bootstrap'
+import { Row, Col } from 'react-bootstrap'
 import { useTranslation } from "react-i18next"
-import LoginForm from "../LoginForm"
-import RegisterForm from "../RegisterForm"
-import MailVerifyForm from "../MailVerifyForm"
-import ForgotPasswordFrom from "../ForgotPasswordFrom"
-import { LOGIN, REGISTER, MAILVERIFY, GOOGLE, FORGOTPASSWORD } from '../../constant'
 import AnimatedText from '../AnimatedText';
 
 
