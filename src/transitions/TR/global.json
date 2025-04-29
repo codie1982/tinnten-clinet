@@ -125,10 +125,9 @@
             "title": "mail adresine gelen kodu girebilirsin!",
             "terms": "Kullanım Şartları",
             "and": "ve",
-            "privatePolicy": "Gizlilik Politikası",
-            "sendcode": "Kodu Gönder",
+            "privatepolicy": "Gizlilik Politikası",
             "angrement": " kabul ediyorum",
-            "resendcode": "Kodu Tekrar Gönder",
+            "button": "Kayıt Ol",
             "login": "Giriş yapmak için tıklayın"
         },
         "forgotPassword": {

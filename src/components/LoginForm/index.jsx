@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '../../context/authContext'
-import {    Form, Button, ButtonGroup, Badge,Nav} from 'react-bootstrap'
+import { Form, Button, ButtonGroup, Badge, Nav } from 'react-bootstrap'
 import { useNavigate, Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock, faEye, faEnvelope, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
@@ -10,6 +10,7 @@ import logo from "../../assets/char-logo.png"
 export default function LoginForm({ setState, handleLoginSubmit, handleCreateGoogleUrl, validation, reset, isLoading }) {
     const [t, i18n] = useTranslation("global")
     const [showPassword, setShowPassword] = useState(false);
+
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword); // Şifre görünürlüğünü değiştir
     };
@@ -27,7 +28,10 @@ export default function LoginForm({ setState, handleLoginSubmit, handleCreateGoo
                 <Form id="login-form" className="form" onSubmit={!isLoading ? handleLoginSubmit : null}>
                     <div className="icon-container">
                         <Form.Group controlId="email" className="mb-3">
-                            <Form.Control type="text" placeholder="Email Adresi" className={`form-control icon-control  ${validation != null && validation.email.error ? "error-control" : ""}`} />
+                            <Form.Control type="text"
+                                placeholder="Email Adresi"
+                                className={`form-control icon-control ${validation != null && validation.email.error ? "error-control" : ""}`}
+                            />
                             <div className="input-icon-left-container">
                                 <span><FontAwesomeIcon size='lg' color='#656565' icon={faEnvelope} /></span>
                             </div>
@@ -67,9 +71,9 @@ export default function LoginForm({ setState, handleLoginSubmit, handleCreateGoo
                     <div className="row">
                         <div className="col">
                             <div className="form-check">
-                                <input type="checkbox" className="form-check-box" id="rememberMe" />
+                                <input type="checkbox" className="form-check-box" id="rememberme" />
                                 <div className="custom-checkbox"></div>
-                                <label className={`form-check-label ${validation != null && validation.password.error ? "error-label" : ""}`} htmlFor="rememberMe">{t("form.login.rememberme")}</label>
+                                <label className={`form-check-label`} htmlFor="rememberMe">{t("form.login.rememberme")}</label>
                             </div>
                         </div>
                     </div>
@@ -79,10 +83,7 @@ export default function LoginForm({ setState, handleLoginSubmit, handleCreateGoo
                             size="lg"
                             className="col btn m-t-1 btn-block btn-mail-login"
                             disabled={isLoading}
-                            style={{
-                                width: '100%',
-
-                            }}
+                            style={{ width: '100%' }}
                         >
                             {t("form.login.login")}
                         </Button>
@@ -95,7 +96,6 @@ export default function LoginForm({ setState, handleLoginSubmit, handleCreateGoo
                             {t("form.login.loginWithGoogle")}</Button>
                     </ButtonGroup>
                     <div className="d-flex align-content-center justify-content-between text-container">
-
                         <p>
                             <Link to="/register" className="text-decoration-none">
                                 {t("form.login.register")}

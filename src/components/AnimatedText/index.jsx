@@ -4,28 +4,28 @@ import { useEffect, useState } from "react";
  * @       
  */
 export default function AnimatedText() {
-    const sentences = [
-        "Yapay zekâ ile sınırları aşın",
-        "Bilgiyi akışa dönüştürün",
-        "Geleceğin ritmini yakalayın",
-        "Akıllı çözümlerle fark yaratın",
-        "Teknolojiyle güçlenin, akışta kalın",
-        "Veriden ilhama, ilhamdan güce",
-        "Dijital dünyayı aklınızla şekillendirin",
-        "Yapay zekâ ile yeni ufuklara yelken açın",
-        "Zekânızı geleceğe taşıyın",
-        "Verinin ışığında ilerleyin",
-        "Tinnten ile doğru bilgiye ulaşın",
-        "Her adımda akıllı çözümler",
-        "Yapay zekâ, gerçek dünyanın sihri",
-        "Akışın ritmini yapay zekâ ile bulun",
-        "Düşünün, öğrenin, ilerleyin",
-        "Veriye yön verin, geleceği şekillendirin",
-        "Yapay zekâ, aklın yeni sesi",
-        "Gelecek akıllı olanlarla şekillenecek",
-        "Teknolojiyi akılla birleştirin",
-        "Gücünüzü yapay zekâ ile artırın"
-      ];
+  const sentences = [
+    "Bahçeme uygun sulama sistemi arıyorum",
+    "Düğün organizasyonu için hizmet arıyorum",
+    "Evime özel mobilya tasarımı yapan firma arıyorum",
+    "Freelance yazılım desteği arıyorum",
+    "Arabam için uygun kasko teklifi almak istiyorum",
+    "Doğum günü partisi için catering hizmeti arıyorum",
+    "Ev tadilatı için güvenilir usta bulmak istiyorum",
+    "E-ticaret sitem için fotoğraf çekimi hizmeti arıyorum",
+    "Uygun fiyatlı güvenlik kamerası sistemleri arıyorum",
+    "Evime doğal gaz tesisatı için yetkili firma arıyorum",
+    "Profesyonel çeviri hizmeti almak istiyorum",
+    "Bebek fotoğrafçılığı yapan yerler arıyorum",
+    "Logo tasarımı yaptırmak istiyorum",
+    "Uygun fiyatlı temizlik hizmeti arıyorum",
+    "Yoga dersleri için eğitmen bulmak istiyorum",
+    "Şirketim için kurumsal kimlik tasarımı arıyorum",
+    "İstanbul'da diyetisyen tavsiyesi arıyorum",
+    "Telefonum için ekran değişimi yaptırabileceğim yer arıyorum",
+    "Yurt dışı taşımacılık firması arıyorum",
+    "Web sitesi için SEO hizmeti almak istiyorum"
+  ];
   
   
       const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);

@@ -20,10 +20,13 @@ import {
   setConversationTitle
 } from "../../api/conversation/conversationSlicer";
 import useChat from '../../hooks/useChat';
+import { useModal } from "../../../src/components/Modals/ModalProvider.jsx";
+import WaitlistModal from '../../components/Modals/WaitlistModal';
 export default function Sidebar({ openSidebar }) {
   const [t] = useTranslation("global");
   const dispatch = useDispatch();
   const LIMIT = 5;
+  const { openModal } = useModal()
 
   const { createNewConversation, getConversationDetail } = useChat()
   const [modals, setModals] = useState({
@@ -255,7 +258,11 @@ export default function Sidebar({ openSidebar }) {
             </div>
           )}
         </ul>
-       
+
+        <div className='waitList-content' onClick={() => openModal("waitlist")}>
+          <p className='header'>Bekleme Listesine Katıl</p>
+          <p className='description'>Ürün ve hizmetlerini ekle</p>
+        </div>
       </div>
 
       <FeaturesPrice isModalOpen={modals.features} setIsModalOpen={() => toggleModal("features")} />
@@ -280,6 +287,7 @@ export default function Sidebar({ openSidebar }) {
         hasMoreResults={hasMoreResults}
         searchLimit={SEARCHLIMIT}
       />
+      <WaitlistModal />
     </div>
   );
 }

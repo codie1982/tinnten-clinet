@@ -11,7 +11,6 @@ import useAgentSocket from '../../hooks/useAgentSocket';
 export default function Login() {
     const [t, i18n] = useTranslation("global")
     const { isLogin, isLoading: authLoading } = useAuth();
-    const { connectSocket } = useAgentSocket()
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [formValidation, setFormValidation] = useState({
@@ -46,6 +45,7 @@ export default function Login() {
             login: {
                 email: { error: false, message: "" },
                 password: { error: false, message: "" },
+
             },
         });
 
@@ -60,6 +60,7 @@ export default function Login() {
 
         const email = e.target.email.value;
         const password = e.target.password.value;
+        const rememberme = e.target.rememberme.checked;
 
 
         let hasError = false;
@@ -89,7 +90,7 @@ export default function Login() {
         if (hasError) return; // 🚩 Hata varsa işlemi durdur
         console.log("email, password", email, password)
         // Doğruysa login işlemi başlat
-        dispatch(login({ email, password, device: "web" }));
+        dispatch(login({ email, password, device: "web",rememberme }));
     };
     // ✅ Yüklenme tamamlanana kadar beklet
     if (authLoading) {

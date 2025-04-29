@@ -26,9 +26,14 @@ export default function ProtectedRoute() {
                     <MailVerify sendCode={isSendingCode} />
                 </div>
                 <div className="form-content form-content-right-side">
-                    <div className="form-content-desctiption">Tinnten 1.0 burada</div>
-                    <div className="form-content-text">Mail Kutunuza 6 haneli bir kod gönderdik. <br />Mail hesabınızı onaylamak için o kodu girmelisiniz.</div>
-                    <div className="form-content-subtext">Tinnten henüz çok yeni bir girişim.<br /> bu yüzden bazı mail adresleri için doğrulama konu spam klasörüne düşebilir.<br /> Eğer kod gelmemiş gözüküyor ise span klasörünüzü kontrol etmeyi unutmayınız</div>
+                    <div className="form-content-desctiption">Tinnten 1.0'a Hoş Geldiniz</div>
+                    <div className="form-content-text">
+                        Mail adresinize gönderilen 6 haneli doğrulama kodunu girerek hesabınızı etkinleştirebilirsiniz.
+                    </div>
+                    <div className="form-content-subtext">
+                        Tinnten henüz yeni bir girişim olduğundan, doğrulama e-postaları <br /> bazı durumlarda spam veya gereksiz klasörüne düşebilmektedir.
+                        <br/> Kodunuzu almadıysanız lütfen spam klasörünüzü kontrol ediniz.
+                    </div>
                 </div>
             </div>
         }

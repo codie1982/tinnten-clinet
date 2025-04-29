@@ -14,18 +14,31 @@ import ConsumerTerms from "screens/ConsumerTerms";
 import PrivatePolicy from "screens/PrivatePolicy";
 import Contact from "screens/Contact";
 import GoogleAuth from "screens/GoogleAuth";
+import React, { useEffect } from "react";
+
+
+// İndirme işlemini yapan bileşen
+const DownloadTxt = () => {
+    useEffect(() => {
+        const link = document.createElement("a");
+        // Public klasöründe bulunan dosyanın yolunu belirtiyoruz
+        link.href = "/loaderio-7685311382253a34a6fb6901560ffa03.txt";
+        link.download = "loaderio-7685311382253a34a6fb6901560ffa03";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }, []);
+    return <div>Dosya indiriliyor...</div>;
+};
 
 const routes = createBrowserRouter([
     {
         path: "/",
-        element: (
-            <MainLayout />
-        ),
+        element: <MainLayout />,
         children: [
             { path: "/", element: <Advertaise /> },
             { path: "/abouth", element: <Abouth /> },
             { path: "/works", element: <HowWorks /> },
-            { path: "/loaderio-7685311382253a34a6fb6901560ffa03", element: <>Text</> },
             { path: "/consumer-terms", element: <ConsumerTerms /> },
             { path: "/privatepolicy", element: <PrivatePolicy /> },
             { path: "/contact", element: <Contact /> },
@@ -41,15 +54,18 @@ const routes = createBrowserRouter([
         ],
     },
     {
-        element: (
-            <AuthLayout />
-        ),
+        path: "/loaderio-7685311382253a34a6fb6901560ffa03",
+        element:<DownloadTxt /> ,
+    },
+    {
+        element: <AuthLayout />,
         children: [
             { path: "login", element: <Login /> },
             { path: "register", element: <Register /> },
         ],
     },
-])
+]);
+
 
 export default routes;
 

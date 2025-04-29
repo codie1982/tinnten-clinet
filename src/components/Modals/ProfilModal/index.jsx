@@ -9,8 +9,6 @@ import { useAuth } from 'context/authContext';
 
 import { uploadprofileimage } from "../../../api/upload/uploadSlicer"
 import { updateProfile } from "../../../api/profile/profileSlicer"
-import LazyImage from '../../Common/LazyImage'
-import { use } from 'i18next'
 import { toast } from 'react-toastify'
 import { useModal } from '../ModalProvider'
 

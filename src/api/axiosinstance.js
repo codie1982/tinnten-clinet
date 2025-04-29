@@ -55,6 +55,7 @@ axiosInstance.interceptors.response.use(
             const status = error.response.status;
 
             if ((status === 400 || status === 404) && !originalRequest._retry) {
+                console.log("error.response.data", error.response.data);
                 originalRequest._retry = true;
                 const errorMessage = error.response.data.message;
                 toast.error(errorMessage);

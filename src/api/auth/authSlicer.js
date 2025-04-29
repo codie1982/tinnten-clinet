@@ -20,9 +20,9 @@ const initialState = {
 
 export const login = createAsyncThunk(
     'auth/login',
-    async (user, thunkAPI) => {
+    async (data, thunkAPI) => {
         try {
-            return await authService.login(user);
+            return await authService.login(data);
         } catch (error) {
             const message =
                 (error.response?.data?.message) ||

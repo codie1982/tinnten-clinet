@@ -14,44 +14,127 @@ export default function Register() {
     const { isLogin, isLoading: reduxLoading } = useAuth();
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const validation = {
-        register: {
-            email: {
-                error: false, message: ""
-            },
-            password: {
-                error: false, message: ""
-            },
-            rePassword: {
-                error: true, message: ""
-            }
-        }
-    }
+
     const [isSendCode, setIsSendCode] = useState(false)
     const { isError, isLoading, isSuccess, data } = useSelector((state) => { return state.auth })
-    const [formValidation, setFormValidation] = useState(validation)
-
-    useEffect(() => {
-    }, [isError, isLoading, isSuccess, data])
+    const [formValidation, setFormValidation] = useState({
+        register: {
+            email: { error: false, message: "" },
+            password: { error: false, message: "" },
+            repassword: { error: false, message: "" },
+            angrement: { error: false, message: "" }
+        }
+    })
 
 
     const resetValidation = () => {
-        setFormValidation(validation)
-    }
+        setFormValidation({
+            register: {
+                email: { error: false, message: "" },
+                password: { error: false, message: "" },
+                repassword: { error: false, message: "" },
+                angrement: { error: false, message: "" }
+            }
+        });
+    };
+
 
 
     const handleSubmit = (e) => {
         e.preventDefault()
         resetValidation()
         setIsSendCode(true)
-
+        console.log("isSendCode", isSendCode)
+        console.log("e.target", e.target.email.value, e.target.password.value)
         const registeremail = e.target.email.value;
         const registerpassword = e.target.password.value;
-        const registerrepassword = e.target.password.value;
-        if (registerpassword == registerrepassword) {
+        const registerrepassword = e.target.repassword.value;
+        const angrement = e.target.angrement.checked;
+        console.log("registeremail, registerpassword", registeremail, registerpassword)
+        console.log("registerrepassword", registerrepassword)
+        console.log("angrement", angrement)
+
+        let hasError = false;
+        if (!registeremail) {
+            setFormValidation((prev) => ({
+                ...prev,
+                register: {
+                    ...prev.register,
+                    email: { error: true, message: "Email alanı boş olamaz." },
+                },
+            }));
+            hasError = true;
         }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(registeremail)) {
+            setFormValidation((prev) => ({
+                ...prev,
+                register: {
+                    ...prev.register,
+                    email: { error: true, message: "Geçerli bir email adresi giriniz." },
+                },
+            }));
+            hasError = true;
+        }
+
+        if (!registerpassword) {
+            setFormValidation((prev) => ({
+                ...prev,
+                register: {
+                    ...prev.register,
+                    password: { error: true, message: "Şifre alanı boş olamaz." },
+                },
+            }));
+            hasError = true;
+        }
+
+        if (registerpassword.length < 6) {
+            setFormValidation((prev) => ({
+                ...prev,
+                register: {
+                    ...prev.register,
+                    password: { error: true, message: "min 6 karatkerli bir şifre giriniz." },
+                },
+            }));
+            hasError = true;
+        }
+        if (registerpassword.length >= 8) {
+            setFormValidation((prev) => ({
+                ...prev,
+                register: {
+                    ...prev.register,
+                    password: { error: true, message: "max 8 karatkerli bir şifre giriniz." },
+                },
+            }));
+            hasError = true;
+        }
+
+        if (registerpassword !== registerrepassword) {
+            setFormValidation((prev) => ({
+                ...prev,
+                register: {
+                    ...prev.register,
+                    repassword: { error: true, message: "Girdiğiniz şifreler aynı değil." },
+                },
+            }));
+            hasError = true;
+        }
+        if (!angrement) {
+            setFormValidation((prev) => ({
+                ...prev,
+                register: {
+                    ...prev.register,
+                    angrement: { error: true, message: "Kullanım koşullarını kabul etmelisiniz." },
+                },
+            }));
+            hasError = true;
+        }
+        console.log("hasError", hasError)
+        console.log("formValidation", formValidation)
+        if (hasError) return; // 🚩 Hata varsa işlemi durdur
+        console.log("email, password", registeremail, registerpassword)
         dispatch(register({
-            email: registeremail, password: registerpassword, repassword: registerrepassword
+            email: registeremail, password: registerpassword, repassword: registerrepassword, device: "web" 
         }))
     }
 
@@ -74,7 +157,7 @@ export default function Register() {
                         <Badge bg="light mt-2" style={{ color: "#111" }}>{t("beta")}</Badge></h6>
                 </div>
             </div>
-            <RegisterForm handleRegisterSubmit={handleSubmit} validation={formValidation.register} isSendCode={isSendCode} />
+            <RegisterForm handleRegisterSubmit={handleSubmit} validation={formValidation.register} isSendCode={isSendCode} isLoading={isLoading} />
         </div>
     )
 }
