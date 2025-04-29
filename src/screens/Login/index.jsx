@@ -8,6 +8,8 @@ import { useAuth } from '../../context/authContext';
 import { Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next"
 import useAgentSocket from '../../hooks/useAgentSocket';
+import { useRecaptchaToken } from "../../hooks/useRecaptchaToken";
+
 export default function Login() {
     const [t, i18n] = useTranslation("global")
     const { isLogin, isLoading: authLoading } = useAuth();
@@ -19,18 +21,17 @@ export default function Login() {
             password: { error: false, message: "" },
         },
     });
-
-    const [captchaToken, setCaptchaToken] = useState("");
-    useEffect(() => {
-        window.grecaptcha.ready(() => {
-            window.grecaptcha.execute("6LfmgCgrAAAAAITG5dRGnT5ejEZye6UXDI6Pyq8w", { action: "login" }).then((token) => {
-                setCaptchaToken(token);
-            });
-        });
-    }, []);
-
+    const { token, loading, error, refresh } = useRecaptchaToken("login");
     const { isError, isLoading, isSuccess, data, url } = useSelector((state) => state.auth);
-
+    const refreshAndGet = async () => {
+        try {
+            await refresh();
+            return { token };
+        } catch (err) {
+            console.error("Yeni captcha alınamadı:", err);
+            return { token: null };
+        }
+    };
     useEffect(() => {
         if (isSuccess && data) {
             console.log("isSuccess, data", isSuccess, data)
@@ -63,8 +64,11 @@ export default function Login() {
     const handleCreateGoogleUrl = () => {
         dispatch(createGoogleurl())
     }
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        // 🔥 FORM SUBMIT OLACAĞI ZAMAN YENİ TOKEN AL
+        const { token: freshToken } = await refreshAndGet();
+        if (!freshToken) return alert("reCAPTCHA token alınamadı.");
         resetValidation();
 
         const email = e.target.email.value;
@@ -99,7 +103,7 @@ export default function Login() {
         if (hasError) return; // 🚩 Hata varsa işlemi durdur
         console.log("email, password", email, password)
         // Doğruysa login işlemi başlat
-        dispatch(login({ email, password, device: "web", rememberme, captcha_token: captchaToken, }));
+        dispatch(login({ email, password, device: "web", rememberme, captcha_token: freshToken, }));
     };
     // ✅ Yüklenme tamamlanana kadar beklet
     if (authLoading) {

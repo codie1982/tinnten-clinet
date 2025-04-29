@@ -7,6 +7,7 @@ import { useNavigate, } from "react-router-dom";
 import { Badge } from 'react-bootstrap'
 import { Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next"
+import { useRecaptchaToken } from "../../hooks/useRecaptchaToken";
 
 export default function Register() {
     const [t, i18n] = useTranslation("global")
@@ -17,14 +18,16 @@ export default function Register() {
 
     const [isSendCode, setIsSendCode] = useState(false)
     const { isError, isLoading, isSuccess, data } = useSelector((state) => { return state.auth })
-    const [captchaToken, setCaptchaToken] = useState("");
-    useEffect(() => {
-        window.grecaptcha.ready(() => {
-            window.grecaptcha.execute("6LfmgCgrAAAAAITG5dRGnT5ejEZye6UXDI6Pyq8w", { action: "register" }).then((token) => {
-                setCaptchaToken(token);
-            });
-        });
-    }, []);
+    const { token, loading, error, refresh } = useRecaptchaToken("register");
+    const refreshAndGet = async () => {
+        try {
+            await refresh();
+            return { token };
+        } catch (err) {
+            console.error("Yeni captcha alınamadı:", err);
+            return { token: null };
+        }
+    };
     const [formValidation, setFormValidation] = useState({
         register: {
             email: { error: false, message: "" },
@@ -48,19 +51,17 @@ export default function Register() {
 
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
+        // 🔥 FORM SUBMIT OLACAĞI ZAMAN YENİ TOKEN AL
+        const { token: freshToken } = await refreshAndGet();
+        if (!freshToken) return alert("reCAPTCHA token alınamadı.");
         resetValidation()
         setIsSendCode(true)
-        console.log("isSendCode", isSendCode)
-        console.log("e.target", e.target.email.value, e.target.password.value)
         const registeremail = e.target.email.value;
         const registerpassword = e.target.password.value;
         const registerrepassword = e.target.repassword.value;
         const angrement = e.target.angrement.checked;
-        console.log("registeremail, registerpassword", registeremail, registerpassword)
-        console.log("registerrepassword", registerrepassword)
-        console.log("angrement", angrement)
 
         let hasError = false;
         if (!registeremail) {
@@ -141,8 +142,11 @@ export default function Register() {
         console.log("formValidation", formValidation)
         if (hasError) return; // 🚩 Hata varsa işlemi durdur
         console.log("email, password", registeremail, registerpassword)
+
         dispatch(register({
-            email: registeremail, password: registerpassword, repassword: registerrepassword, device: "web", captcha_token: captchaToken
+            email: registeremail, password: registerpassword,
+            repassword: registerrepassword, device: "web",
+            captcha_token: token, angrement: angrement
         }))
     }
 
