@@ -17,6 +17,14 @@ export default function Register() {
 
     const [isSendCode, setIsSendCode] = useState(false)
     const { isError, isLoading, isSuccess, data } = useSelector((state) => { return state.auth })
+    const [captchaToken, setCaptchaToken] = useState("");
+    useEffect(() => {
+        window.grecaptcha.ready(() => {
+            window.grecaptcha.execute("6LfmgCgrAAAAAITG5dRGnT5ejEZye6UXDI6Pyq8w", { action: "register" }).then((token) => {
+                setCaptchaToken(token);
+            });
+        });
+    }, []);
     const [formValidation, setFormValidation] = useState({
         register: {
             email: { error: false, message: "" },
@@ -134,7 +142,7 @@ export default function Register() {
         if (hasError) return; // 🚩 Hata varsa işlemi durdur
         console.log("email, password", registeremail, registerpassword)
         dispatch(register({
-            email: registeremail, password: registerpassword, repassword: registerrepassword, device: "web" 
+            email: registeremail, password: registerpassword, repassword: registerrepassword, device: "web", captcha_token: captchaToken
         }))
     }
 

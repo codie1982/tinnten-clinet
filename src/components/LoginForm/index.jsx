@@ -10,7 +10,6 @@ import logo from "../../assets/char-logo.png"
 export default function LoginForm({ setState, handleLoginSubmit, handleCreateGoogleUrl, validation, reset, isLoading }) {
     const [t, i18n] = useTranslation("global")
     const [showPassword, setShowPassword] = useState(false);
-
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword); // Şifre görünürlüğünü değiştir
     };

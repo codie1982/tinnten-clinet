@@ -20,6 +20,15 @@ export default function Login() {
         },
     });
 
+    const [captchaToken, setCaptchaToken] = useState("");
+    useEffect(() => {
+        window.grecaptcha.ready(() => {
+            window.grecaptcha.execute("6LfmgCgrAAAAAITG5dRGnT5ejEZye6UXDI6Pyq8w", { action: "login" }).then((token) => {
+                setCaptchaToken(token);
+            });
+        });
+    }, []);
+
     const { isError, isLoading, isSuccess, data, url } = useSelector((state) => state.auth);
 
     useEffect(() => {
@@ -90,7 +99,7 @@ export default function Login() {
         if (hasError) return; // 🚩 Hata varsa işlemi durdur
         console.log("email, password", email, password)
         // Doğruysa login işlemi başlat
-        dispatch(login({ email, password, device: "web",rememberme }));
+        dispatch(login({ email, password, device: "web", rememberme, captcha_token: captchaToken, }));
     };
     // ✅ Yüklenme tamamlanana kadar beklet
     if (authLoading) {

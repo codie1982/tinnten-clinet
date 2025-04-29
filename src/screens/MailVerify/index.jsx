@@ -18,6 +18,15 @@ export default function MailVerify({ }) {
     const [remindingTime, setRemindingTime] = useState(180)
     const [isActiveButton, setIsActiveButton] = useState(false)
 
+    const [captchaToken, setCaptchaToken] = useState("");
+    useEffect(() => {
+        window.grecaptcha.ready(() => {
+            window.grecaptcha.execute("6LfmgCgrAAAAAITG5dRGnT5ejEZye6UXDI6Pyq8w", { action: "register" }).then((token) => {
+                setCaptchaToken(token);
+            });
+        });
+    }, []);
+
     const [formValidation, setFormValidation] = useState({
         mailVerify: {
             code: {
@@ -27,7 +36,7 @@ export default function MailVerify({ }) {
     });
 
     useEffect(() => {
-   
+
         if (isSuccess && !isSendCodeLoading && !isError) {
             // disable button until timer finishes
             setIsActiveButton(false);
@@ -67,7 +76,12 @@ export default function MailVerify({ }) {
     const sendingCode = () => {
         //kod gönder
         if (!isCodeSending) {
-            dispatch(sendmailcode())
+            window.grecaptcha.ready(() => {
+                window.grecaptcha.execute("6LfmgCgrAAAAAITG5dRGnT5ejEZye6UXDI6Pyq8w", { action: "register" }).then((token) => {
+                    dispatch(sendmailcode({ captchaToken: token }))
+                });
+            });
+
         }
     };
 
@@ -90,8 +104,11 @@ export default function MailVerify({ }) {
 
             if (hasError) return; // 🚩 Hata varsa işlemi durdur
             // Doğruysa login işlemi başlat
-            console.log("code", code)
-            dispatch(verifymailcode(code))
+            window.grecaptcha.ready(() => {
+                window.grecaptcha.execute("6LfmgCgrAAAAAITG5dRGnT5ejEZye6UXDI6Pyq8w", { action: "register" }).then((token) => {
+                    dispatch(verifymailcode({ code, captchaToken: token }))
+                });
+            });
         }
     }
 

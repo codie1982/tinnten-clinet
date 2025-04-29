@@ -116,10 +116,10 @@ export const sendmailcode = createAsyncThunk(
 )
 export const verifymailcode = createAsyncThunk(
     'auth/verifymailcode',
-    async (code,thunkAPI) => {
+    async (data,thunkAPI) => {
         try {
-            console.log("code",code)
-            return await authService.verifymailcode(code)
+
+            return await authService.verifymailcode(data)
         } catch (error) {
 
             const message =
