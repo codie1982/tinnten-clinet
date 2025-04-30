@@ -11,10 +11,11 @@ import { uploadprofileimage } from "../../../api/upload/uploadSlicer"
 import { updateProfile } from "../../../api/profile/profileSlicer"
 import { toast } from 'react-toastify'
 import { useModal } from '../ModalProvider'
+import tinntenLogo from "../../../assets/char-logo.png"
 
 export default function ProfilComponent({ userProfile, isProfileLoading }) {
     const [active, setActive] = useState(false);
-      const { closeModal,isOpen, modals } = useModal();
+    const { closeModal, isOpen, modals } = useModal();
 
     const [t, i18n] = useTranslation("global")
     const dispatch = useDispatch()
@@ -35,8 +36,14 @@ export default function ProfilComponent({ userProfile, isProfileLoading }) {
 
     useEffect(() => {
         setUserProfile(userProfile)
-        setProfileImg(userProfile?.profileImage?.path);
-        setUploadid(userProfile?.profileImage._id);
+        if (userProfile?.profileImage != null && userProfile?.profileImage?.path != null) {
+            setProfileImg(userProfile?.profileImage?.path);
+        }else{
+            setProfileImg(tinntenLogo);
+        }
+
+
+        setUploadid(userProfile?.profileImage?._id);
     }, [userProfile])
 
     useEffect(() => {
