@@ -4,6 +4,7 @@ import uploadReducer from '../api/upload/uploadSlicer'
 import profileReducer from '../api/profile/profileSlicer'
 import productReducer from '../api/product/productSlicer'
 import conversationReducer from '../api/conversation/conversationSlicer'
+import systemPackagesReducer from '../api/system-packages/systempackagesSlicer'
 import streamReducer from '../api/stream/streamSlicer'
 export const store = configureStore({
     reducer: {
@@ -13,5 +14,6 @@ export const store = configureStore({
         upload: uploadReducer,
         product: productReducer,
         conversation: conversationReducer,
+        systempackages: systemPackagesReducer,
     }
 })
