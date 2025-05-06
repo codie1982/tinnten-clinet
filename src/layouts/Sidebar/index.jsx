@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingCart, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useSelector, useDispatch } from 'react-redux';
 import logo from '../../assets/logo.png';
-import FeaturesPrice from '../../components/Modals/FeaturesPriceModal';
+import FeaturesPrice from '../../components/Modals/UserPackagesModal';
 import RenameHistoryModal from '../../components/Modals/RenameHistoryModal';
 import DeleteConversationModal from '../../components/Modals/DeleteConversationModal';
 import HistorySearchModal from '../../components/Modals/HistorySearchModal';

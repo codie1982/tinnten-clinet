@@ -10,7 +10,7 @@ import { useAuth } from '../../context/authContext';
 import HeaderNoAuth from "layouts/HeaderNoAuth";
 import Header from "layouts/Header";
 import FooterNoAuth from "layouts/FooterNoAuth";
-export default function MainLayout() {
+export default function AILayout() {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const [t, i18n] = useTranslation("global")
@@ -23,10 +23,8 @@ export default function MainLayout() {
     return (
         <div data-bs-spy="scroll" data-bs-target="#navbar-example" >
             <Container fluid className={`page-container `}>
-                <div className={`page-content page-vertical`}>
-                    <HeaderNoAuth />
+                <div className={`page-content page-horizontal`}>
                     <Outlet lang={global} />
-                    <FooterNoAuth />
                 </div>
             </Container>
         </div>

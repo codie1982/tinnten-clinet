@@ -68,6 +68,7 @@ export default function Login() {
         e.preventDefault();
         // 🔥 FORM SUBMIT OLACAĞI ZAMAN YENİ TOKEN AL
         const { token: freshToken } = await refreshAndGet();
+        console.log("freshToken", freshToken)
         if (!freshToken) return alert("reCAPTCHA token alınamadı.");
         resetValidation();
 

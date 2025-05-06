@@ -11,6 +11,9 @@ const initialModals = {
   settings: false,
   profil: false,
   waitlist: false,
+  userPackages:false,
+  buissnessPackages:false,
+  ourOffer:false,
 };
 
 export function useModalManager() {

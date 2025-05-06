@@ -28,7 +28,7 @@ export default function SettingsComponent({ }) {
             <Modal.Body>
                 <div className="settings-container">
                     <div className="settings-card">
-                        <h2 className="settings-title">Settings</h2>
+                        <h2 className="settings-title">Ayarlar</h2>
                         <div className="settings-content">
                             <div className="settings-item">
                                 <span className="settings-item-title" onSelect={(e) => { handleSelectedLanguage(e) }}>Language</span>
@@ -36,7 +36,6 @@ export default function SettingsComponent({ }) {
                                     <option value="1">System</option>
                                     <option value="tr">Türkçe</option>
                                     <option value="en">İngilizce</option>
-
                                 </select>
                             </div>
                         </div>

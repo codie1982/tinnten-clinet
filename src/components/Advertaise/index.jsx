@@ -2,11 +2,9 @@ import React from 'react'
 import { useAuth } from '../../context/authContext'
 import { useSelector, useDispatch } from "react-redux"
 import { Link, useNavigate, } from "react-router-dom";
-import { Row, Col } from 'react-bootstrap'
+import { Row, Col, Button } from 'react-bootstrap'
 import { useTranslation } from "react-i18next"
 import AnimatedText from '../AnimatedText';
-
-
 export default function Advertaise() {
     const [t, i18n] = useTranslation("global")
     const { isLogin } = useAuth();
@@ -101,6 +99,7 @@ export default function Advertaise() {
                         </div> */}
                     </Col>
                 </Row>
+              
             </div>
         </>
     )

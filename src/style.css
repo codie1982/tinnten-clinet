@@ -303,6 +303,7 @@ h1 .page-title {
     margin-top: 30px;
     width: 80%;
 }
+
 .site-logo-maxi {
     position: relative;
     display: block;
@@ -313,10 +314,12 @@ h1 .page-title {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
     overflow: hidden;
 }
+
 .site-logo-maxi img {
     width: 100%;
     height: 100%;
 }
+
 .site-logo {
     position: relative;
     display: block;
@@ -426,10 +429,7 @@ h1 .page-title {
 .form-section {
     display: flex;
     flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100vh;
+
 }
 
 .form-content {
@@ -437,15 +437,22 @@ h1 .page-title {
     align-items: center;
     justify-content: center;
     margin: auto;
-    height: 100vh;
 }
 
 .form-content-left-side {
     flex: 1;
 }
 
-.form-content-right-side {
+.form-content-flex-one {
+    flex: 1;
+}
+
+.form-content-flex-two {
     flex: 2;
+}
+
+.form-content-right-side {
+    flex: 1;
     display: block;
     position: relative;
     background-color: var(--advertaise-color-light);
@@ -614,7 +621,7 @@ h1 .page-title {
     opacity: 0;
     flex: 0;
     visibility: hidden;
-   
+
 }
 
 .detail-blok.hidden {
@@ -827,7 +834,7 @@ h1 .page-title {
     text-decoration: none;
 
 
-  
+
 }
 
 .login-btn a {
@@ -836,7 +843,7 @@ h1 .page-title {
 }
 
 .signup-btn {
-     background-color: var(--background-color);
+    background-color: var(--background-color);
     color: var(--text-color);
     border: 2px solid var(--text-color);
     border-radius: 10px;
@@ -855,18 +862,25 @@ h1 .page-title {
     padding: 80px 20px;
     width: 100%;
     height: 100vh;
-    background: linear-gradient(135deg,  var(--background-open3-color),  var(--background-open4-color));
+    background: linear-gradient(135deg, var(--background-open3-color), var(--background-open4-color));
 
 }
+
 .hero-section::after {
     content: "";
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAtklEQVRoQ+2XsQ3CMAwFv//zXRnBoLKUtNJJ5Kxn6eVgF8mwBpxfGdkNn5K9wAKIgiAIgiAIgiAIgiAIgiAIgiD8M3ngqHB+Jz4rJlfRG7jh62IGnVIXHtqAKur60T7Wi7B50YUtF6EHKBlrTTDDNAI0yXNwAl0AgV4Tde1aJplGoPplxqgN4B68BWnKHkFo7UlWJYFWt5DWmUKkF0F7geB3whZFu5vAHRa+68BAtXDAAAAAElFTkSuQmCC");
-    opacity: 0.05; /* Çok düşük opaklık (istersen 0.03 veya 0.1 yapabilirsin) */
-    pointer-events: none; /* Mouse tıklamalarına engel olmaz */
-    z-index: 1; /* Body içeriğinin altında dursun */
-  }
+    opacity: 0.05;
+    /* Çok düşük opaklık (istersen 0.03 veya 0.1 yapabilirsin) */
+    pointer-events: none;
+    /* Mouse tıklamalarına engel olmaz */
+    z-index: 1;
+    /* Body içeriğinin altında dursun */
+}
 
 .hero-title {
     font-size: 32px;
@@ -885,10 +899,12 @@ h1 .page-title {
     font-size: 16px;
     width: 100%;
 }
+
 .cta-button.login {
     background-color: var(--secondary-color);
     color: var(--background-color);
 }
+
 .cta-button.register {
     background-color: var(--background-color);
     color: var(--text-light-color);
@@ -1166,7 +1182,7 @@ h1 .page-title {
     background-color: #222;
     color: #fff;
     text-align: center;
-    padding : 20px 0
+    padding: 20px 0
 }
 
 .footer-container {
@@ -1183,17 +1199,19 @@ h1 .page-title {
     flex: 1;
     min-width: 200px;
 }
-.social-icons{
+
+.social-icons {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.footer-links{
+.footer-links {
     display: flex;
     justify-content: justify;
     align-items: center;
 }
+
 .footer-links a {
     color: #fff;
     text-decoration: none;
@@ -1348,6 +1366,7 @@ h1 .page-title {
     ;
     /* Label yazı rengi */
 }
+
 .form-check-label.tolink {
     color: var(--primary-color);
     text-decoration: underline;
@@ -1404,7 +1423,7 @@ h1 .page-title {
     /* Yazı rengi */
 }
 
-.btn-mail-login-disable{
+.btn-mail-login-disable {
     font-weight: 300;
     /* İnce font */
     background-color: var(--background-open2-color);
@@ -1413,7 +1432,8 @@ h1 .page-title {
     color: var(--text-dark-color);
     /* Yazı rengi */
 }
-.btn-mail-login-disable:hover{
+
+.btn-mail-login-disable:hover {
     font-weight: 300;
     /* İnce font */
     background-color: var(--background-open2-color);
@@ -1577,6 +1597,7 @@ h1 .page-title {
     border: 1px solid var(--border-color);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
 }
+
 .new-message {
     margin-right: auto;
     text-align: left;
@@ -1586,30 +1607,35 @@ h1 .page-title {
     margin-left: 10px;
     padding: 10px;
 }
+
 .sub-start-new-message-content {
     display: flex;
     flex-direction: column;
     justify-content: start;
     align-items: start;
 }
-.sub-start-new-message-content p.head{
+
+.sub-start-new-message-content p.head {
     font-size: 2.8rem;
     font-weight: 600;
     text-align: left;
     color: var(--text-light-color);
 }
-.sub-start-new-message-content p.description{
+
+.sub-start-new-message-content p.description {
     font-size: 1.8rem;
     font-weight: 200;
     text-align: left;
     color: var(--text-light-color);
 }
-.sub-start-new-message-content p.note{
+
+.sub-start-new-message-content p.note {
     font-size: 0.9rem;
     font-weight: 100;
     text-align: left;
     color: var(--text-light-color);
 }
+
 .chat-loading-container {
     display: flex;
     flex-direction: column;
@@ -1970,7 +1996,7 @@ h1 .page-title {
     margin-top: 2px;
 }
 
-.chat-input .input-container{
+.chat-input .input-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -2058,7 +2084,8 @@ h1 .page-title {
 
 .mention-popup {
     position: absolute;
-    bottom: 80px; /* input'un üstü */
+    bottom: 80px;
+    /* input'un üstü */
     left: 20px;
     background-color: #222;
     border-radius: 8px;
@@ -2068,29 +2095,30 @@ h1 .page-title {
     z-index: 10;
     max-height: 200px;
     overflow-y: auto;
-  }
-  
-  @keyframes slideUp {
+}
+
+@keyframes slideUp {
     from {
-      opacity: 0;
-      transform: translateY(40px);
+        opacity: 0;
+        transform: translateY(40px);
     }
+
     to {
-      opacity: 1;
-      transform: translateY(0);
+        opacity: 1;
+        transform: translateY(0);
     }
-  }
-  
-  .mention-item {
+}
+
+.mention-item {
     padding: 6px 12px;
     color: white;
     cursor: pointer;
-  }
-  
-  .mention-item:hover {
+}
+
+.mention-item:hover {
     background-color: #444;
     border-radius: 6px;
-  }
+}
 
 .search-history {
     display: flex;
@@ -2629,6 +2657,12 @@ h1 .page-title {
     margin-bottom: 20px;
 }
 
+.settings-title-first {
+    text-align: start;
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
 .settings-content {
     display: flex;
     flex-direction: column;
@@ -2693,6 +2727,44 @@ h1 .page-title {
 
 .settings-button-container .regular-button:hover {
     background-color: var(--button-hover);
+}
+
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--background-color);
+    padding: 10px 20px;
+}
+
+.form-header {
+    text-align: center;
+    font-size: 20px;
+    margin-bottom: 20px;
+    margin-top: 30px;
+}
+
+.form-title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.form-title-start {
+    text-align: start;
+}
+
+.form-title-center {
+    text-align: center;
+}
+.form-description{
+    font-size: 1rem;
+    margin-bottom: 20px;
+}
+.form-description-start {
+    text-align: start;
+}
+.form-description-center {
+    text-align: center;
 }
 
 .product-detail {
@@ -3359,24 +3431,30 @@ li.pagination-prev.page-item.disabled span {
 .chat-messages {
     min-height: 100px;
 }
+
 .human-message {
     padding: 10px;
     margin: 5px 0;
     border-radius: 5px;
 }
+
 .system-message {
     padding: 10px;
     margin: 5px 0;
     border-radius: 5px;
 }
-.system-message p, .system-message ul, .system-message li {
+
+.system-message p,
+.system-message ul,
+.system-message li {
     margin: 5px 0;
 }
+
 .system-message strong {
     font-weight: bold;
 }
 
-.waitList-content{
+.waitList-content {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -3391,17 +3469,20 @@ li.pagination-prev.page-item.disabled span {
     overflow-y: auto;
     cursor: pointer;
 }
-.waitList-content p.header{
+
+.waitList-content p.header {
     font-size: 0.9rem;
     font-weight: 600;
     color: var(--secondary-color);
 }
-.waitList-content p.description{
+
+.waitList-content p.description {
     font-size: 0.7rem;
     font-weight: 100;
     color: var(--secondary-color);
 }
-.waitList-content:hover{
+
+.waitList-content:hover {
     background-color: var(--button-hover);
     color: var(--text-color);
     border: 2px solid var(--button-border-hover);

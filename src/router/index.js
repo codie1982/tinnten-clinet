@@ -1,6 +1,10 @@
 import { createBrowserRouter } from "react-router-dom";
 import Home from "../screens/Home"
+import Profile from "../screens/Profile"
+import CompanyProfile from "../screens/CompanyProfile"
+import OurOffer from "../screens/OurOffer";
 import MainLayout from "../layouts/Main";
+import AILayout from "../layouts/AILayout";
 import AuthLayout from "../layouts/AuthLayout";
 import ProtectedRoute from "../components/ProtectedRoute";
 import Login from "../screens/Login"
@@ -15,6 +19,7 @@ import PrivatePolicy from "screens/PrivatePolicy";
 import Contact from "screens/Contact";
 import GoogleAuth from "screens/GoogleAuth";
 import React, { useEffect } from "react";
+
 
 
 // İndirme işlemini yapan bileşen
@@ -43,19 +48,29 @@ const routes = createBrowserRouter([
             { path: "/privatepolicy", element: <PrivatePolicy /> },
             { path: "/contact", element: <Contact /> },
             { path: "/google-auth", element: <GoogleAuth /> },
-            {
-                element: <ProtectedRoute />,
-                children: [
-                    { path: "conversation", element: <Home /> },
-                    { path: "conversation/:id", element: <Home /> },
-                ],
-            },
             { path: "*", element: <h1>404 - Sayfa Bulunamadı</h1> },
         ],
     },
     {
+        path: "/",
+        element: <AILayout />,
+        children: [
+            {
+                element: <ProtectedRoute />,
+                children: [
+                    { path: "ouroffer", element: <OurOffer /> },
+                    { path: "profile", element: <Profile /> },
+                    { path: "companyprofile", element: <CompanyProfile /> },
+                    { path: "conversation", element: <Home /> },
+                    { path: "conversation/:id", element: <Home /> },
+                    { path: "*", element: <h1>404 - Sayfa Bulunamadı</h1> },
+                ],
+            },
+        ]
+    },
+    {
         path: "/loaderio-7685311382253a34a6fb6901560ffa03",
-        element:<DownloadTxt /> ,
+        element: <DownloadTxt />,
     },
     {
         element: <AuthLayout />,
