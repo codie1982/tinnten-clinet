@@ -14,7 +14,7 @@ import { toast } from 'react-toastify'
 import { useModal } from '../../components/Modals/ModalProvider'
 import tinntenLogo from "../../assets/char-logo.png"
 import UserPackagesModal from "../../components/Modals/UserPackagesModal";
-export default function CompanyProfile() {
+export default function Profile() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [active, setActive] = useState(false);

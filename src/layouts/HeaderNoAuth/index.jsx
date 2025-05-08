@@ -24,7 +24,7 @@ export default function HeaderNoAuth() {
                 </ul>
             </nav>
             <div className="auth-buttons">
-                <Col><Button onClick={() => { openModal("ourOffer") }} className="" variant='secondary'>Firmanı Ekle</Button></Col>
+                <Col><Button onClick={() => { openModal("buissnessPackages") }} className="" variant='secondary'>Firmanı Ekle</Button></Col>
             </div>
             <OurOfferModal/>
         </header>

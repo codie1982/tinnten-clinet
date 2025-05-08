@@ -1,10 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faDollar, faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import { Modal, Button, Form, ButtonGroup } from 'react-bootstrap'
 import { useModal } from '../ModalProvider'
 import BuisnessPackage from "../../../screens/BuisnessPackage/index.jsx"
-
 export default function UserPackagesModal() {
     const [active, setActive] = useState(false);
     const { closeModal, isOpen, modals } = useModal();
@@ -12,11 +11,16 @@ export default function UserPackagesModal() {
         e.preventDefault();
         console.log('submit')
     }
+
+    
+ 
+
+
     return (
         <Modal
             size="xl"
-            show={isOpen("ourOffer")}
-            onHide={() => closeModal("ourOffer")}
+            show={isOpen("buissnessPackages")}
+            onHide={() => closeModal("buissnessPackages")}
             aria-labelledby="example-modal-sizes-title-lg plans-container"
         >
             <Modal.Header className='feature-plan-container' closeButton>
@@ -25,7 +29,7 @@ export default function UserPackagesModal() {
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                  <BuisnessPackage />
+                <BuisnessPackage />
             </Modal.Body>
         </Modal>
     )

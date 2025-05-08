@@ -7,6 +7,7 @@ const initialState = {
     isSuccess:null,
     isError:null,
     image: null,
+    images: null,
     message: '',
 }
 
@@ -14,6 +15,23 @@ const initialState = {
 // Logout user
 export const uploadprofileimage = createAsyncThunk(
     'upload/profile/image',
+    async (files) => {
+        try {
+            return await uploadServices.updateProfilImage(files)
+        } catch (error) {
+            const message =
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return message
+        }
+    }
+)
+
+export const uploadGalleryimage = createAsyncThunk(
+    'upload/gallery/image',
     async (files) => {
         try {
             return await uploadServices.updateProfilImage(files)
@@ -38,6 +56,8 @@ export const uploadSlice = createSlice({
             state.isLoading = false
             state.isSuccess = false
             state.isError = false
+            state.images = null
+            state.image = null
             state.message = ''
         },
     },
@@ -57,6 +77,22 @@ export const uploadSlice = createSlice({
                 state.isSuccess = false
                 state.isError = true
                 state.image = null
+            })
+
+            .addCase(uploadGalleryimage.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(uploadGalleryimage.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.isError = false
+                state.images = action.payload.data?.image
+            })
+            .addCase(uploadGalleryimage.rejected, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = false
+                state.isError = true
+                state.images = null
             })
     }
 })

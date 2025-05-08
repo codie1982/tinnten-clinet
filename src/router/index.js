@@ -2,6 +2,8 @@ import { createBrowserRouter } from "react-router-dom";
 import Home from "../screens/Home"
 import Profile from "../screens/Profile"
 import CompanyProfile from "../screens/CompanyProfile"
+import AddProduct from "../screens/AddProduct";
+import AddServices from "../screens/AddServices";
 import OurOffer from "../screens/OurOffer";
 import MainLayout from "../layouts/Main";
 import AILayout from "../layouts/AILayout";
@@ -19,6 +21,7 @@ import PrivatePolicy from "screens/PrivatePolicy";
 import Contact from "screens/Contact";
 import GoogleAuth from "screens/GoogleAuth";
 import React, { useEffect } from "react";
+
 
 
 
@@ -61,6 +64,8 @@ const routes = createBrowserRouter([
                     { path: "ouroffer", element: <OurOffer /> },
                     { path: "profile", element: <Profile /> },
                     { path: "companyprofile", element: <CompanyProfile /> },
+                    { path: "addproduct", element: <AddProduct /> },
+                    { path: "addservices", element: <AddServices /> },
                     { path: "conversation", element: <Home /> },
                     { path: "conversation/:id", element: <Home /> },
                     { path: "*", element: <h1>404 - Sayfa Bulunamadı</h1> },

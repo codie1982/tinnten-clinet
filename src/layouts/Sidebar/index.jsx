@@ -9,6 +9,8 @@ import FeaturesPrice from '../../components/Modals/UserPackagesModal';
 import RenameHistoryModal from '../../components/Modals/RenameHistoryModal';
 import DeleteConversationModal from '../../components/Modals/DeleteConversationModal';
 import HistorySearchModal from '../../components/Modals/HistorySearchModal';
+import BuisnessPackageModal from '../../components/Modals/BuisnessPackageModal';
+
 import { useTranslation } from "react-i18next";
 
 import {
@@ -21,7 +23,6 @@ import {
 } from "../../api/conversation/conversationSlicer";
 import useChat from '../../hooks/useChat';
 import { useModal } from "../../../src/components/Modals/ModalProvider.jsx";
-import WaitlistModal from '../../components/Modals/WaitlistModal';
 export default function Sidebar({ openSidebar }) {
   const [t] = useTranslation("global");
   const dispatch = useDispatch();
@@ -259,9 +260,9 @@ export default function Sidebar({ openSidebar }) {
           )}
         </ul>
 
-        <div className='waitList-content' onClick={() => openModal("waitlist")}>
-          <p className='header'>Bekleme Listesine Katıl</p>
-          <p className='description'>Ürün ve hizmetlerini ekle</p>
+        <div className='waitList-content' onClick={() => openModal("buissnessPackages")}>
+          <p className='header'>Firma Profili Oluştur</p>
+          <p className='description'>Firma profili için paketler</p>
         </div>
       </div>
 
@@ -287,7 +288,7 @@ export default function Sidebar({ openSidebar }) {
         hasMoreResults={hasMoreResults}
         searchLimit={SEARCHLIMIT}
       />
-      <WaitlistModal />
+      <BuisnessPackageModal onSelectedPackage={(id, title, name) => { console.log("id,title,name", id, title, name) }} />
     </div>
   );
 }

@@ -67,9 +67,15 @@ export default function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         // 🔥 FORM SUBMIT OLACAĞI ZAMAN YENİ TOKEN AL
-        const { token: freshToken } = await refreshAndGet();
-        console.log("freshToken", freshToken)
-        if (!freshToken) return alert("reCAPTCHA token alınamadı.");
+        let freshToken;;
+        console.log("process.env.REACT_APP_ENV", process.env.REACT_APP_ENV)
+        if (process.env.REACT_APP_ENV === "production") {
+            const { token: freshToken } = await refreshAndGet();
+            if (!freshToken) return alert("reCAPTCHA token alınamadı.");
+            console.log("token", freshToken)
+        }
+
+        
         resetValidation();
 
         const email = e.target.email.value;
@@ -104,7 +110,11 @@ export default function Login() {
         if (hasError) return; // 🚩 Hata varsa işlemi durdur
         console.log("email, password", email, password)
         // Doğruysa login işlemi başlat
-        dispatch(login({ email, password, device: "web", rememberme, captcha_token: freshToken, }));
+        if (process.env.REACT_APP_ENV == "production") {
+            dispatch(login({ email, password, device: "web", rememberme, captcha_token: freshToken, }));
+        } else {
+            dispatch(login({ email, password, device: "web", rememberme, }));
+        }
     };
     // ✅ Yüklenme tamamlanana kadar beklet
     if (authLoading) {

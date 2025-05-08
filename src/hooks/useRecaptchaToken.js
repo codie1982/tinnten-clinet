@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from "react";
-const SITEKEY ="6LfmgCgrAAAAAITG5dRGnT5ejEZye6UXDI6Pyq8w"
 export function useRecaptchaToken(action) {
   const [token, setToken] = useState(null);
   const [error, setError] = useState(null);
@@ -12,8 +11,8 @@ export function useRecaptchaToken(action) {
         throw new Error("reCAPTCHA yüklenmedi.");
       }
 
-      await window.grecaptcha.ready(() => {});
-      const result = await window.grecaptcha.execute(SITEKEY, { action });
+      await window.grecaptcha.ready(() => { });
+      const result = await window.grecaptcha.execute(process.env.REACT_GOOGLE_RECAPTCHA_SITEKEY, { action });
       setToken(result);
       setError(null);
     } catch (err) {
@@ -23,10 +22,10 @@ export function useRecaptchaToken(action) {
       setLoading(false);
     }
   }, [action]);
-
+/* 
   useEffect(() => {
     fetchToken();
-  }, [fetchToken]);
+  }, [fetchToken]); */
 
   return { token, loading, error, refresh: fetchToken };
 }

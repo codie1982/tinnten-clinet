@@ -4,13 +4,10 @@ import { faCheck, faDollar, faEnvelope } from '@fortawesome/free-solid-svg-icons
 import { Modal, Button, Form, ButtonGroup } from 'react-bootstrap'
 import { useModal } from '../ModalProvider'
 import BuisnessPackage from '../../../screens/BuisnessPackage'
-export default function BuisnessPackageModal() {
+export default function BuisnessPackageModal({ onSelectedPackage }) {
 
     const { closeModal, isOpen } = useModal();
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('submit')
-    }
+
     return (
         <Modal
             size="xl"
@@ -24,7 +21,7 @@ export default function BuisnessPackageModal() {
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <BuisnessPackage />
+                <BuisnessPackage onSelectedPackage={onSelectedPackage} />
             </Modal.Body>
         </Modal>
     )

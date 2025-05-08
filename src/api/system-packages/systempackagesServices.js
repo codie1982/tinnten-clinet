@@ -1,11 +1,11 @@
 import axiosInstance from "../axiosinstance";
 
 const getuserpackages = async () => {
-    const response = await axiosInstance.post("system-packages/user", {})
+    const response = await axiosInstance.get("system-packages/user", {})
     return response.data;
 }
 const getbuisnesspackages = async () => {
-    const response = await axiosInstance.post("system-packages/buisness", {})
+    const response = await axiosInstance.get("system-packages/buisness", {})
     return response.data;
 }
 const systemPackagesService = {
