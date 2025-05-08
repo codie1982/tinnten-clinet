@@ -4,6 +4,8 @@ import Profile from "../screens/Profile"
 import CompanyProfile from "../screens/CompanyProfile"
 import AddProduct from "../screens/AddProduct";
 import AddServices from "../screens/AddServices";
+import FormBuilder from "../screens/FormBuilder";
+
 import OurOffer from "../screens/OurOffer";
 import MainLayout from "../layouts/Main";
 import AILayout from "../layouts/AILayout";
@@ -66,6 +68,7 @@ const routes = createBrowserRouter([
                     { path: "companyprofile", element: <CompanyProfile /> },
                     { path: "addproduct", element: <AddProduct /> },
                     { path: "addservices", element: <AddServices /> },
+                    { path: "addform", element: <FormBuilder /> },
                     { path: "conversation", element: <Home /> },
                     { path: "conversation/:id", element: <Home /> },
                     { path: "*", element: <h1>404 - Sayfa Bulunamadı</h1> },
