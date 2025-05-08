@@ -26,7 +26,7 @@ export default function MapPicker({ lat, lng, radius, onLocationChange }) {
     if (!isLoaded) return <div>Harita yükleniyor...</div>;
 
     return (
-        <LoadScript googleMapsApiKey={"AIzaSyCwnvGupv6Qy6fd_fC6gm3y_Qugl_sV8yE"}>
+        <LoadScript googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAP_API}>
             <GoogleMap
                 mapContainerStyle={containerStyle}
                 center={center}
