@@ -10,7 +10,7 @@ export default function MapPicker({ lat, lng, radius, onLocationChange }) {
     const center = { lat, lng };
     const containerStyle = { width: '100%', height: '400px' };
     const { isLoaded } = useJsApiLoader({
-        id: "google-maps-script", // default
+        id: "script-loader", // default
         googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAP_API,
         libraries: ["places"], // daima sabit
     });
@@ -26,25 +26,23 @@ export default function MapPicker({ lat, lng, radius, onLocationChange }) {
     if (!isLoaded) return <div>Harita yükleniyor...</div>;
 
     return (
-        <LoadScript googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAP_API}>
-            <GoogleMap
-                mapContainerStyle={containerStyle}
+        <GoogleMap
+            mapContainerStyle={containerStyle}
+            center={center}
+            zoom={12}
+            onClick={handleClick}
+        >
+            <Marker position={center} />
+            <Circle
                 center={center}
-                zoom={12}
-                onClick={handleClick}
-            >
-                <Marker position={center} />
-                <Circle
-                    center={center}
-                    radius={radius * 1000}
-                    options={{
-                        fillColor: '#2196F3',
-                        fillOpacity: 0.2,
-                        strokeColor: '#2196F3',
-                        strokeWeight: 1
-                    }}
-                />
-            </GoogleMap>
-        </LoadScript >
+                radius={radius * 1000}
+                options={{
+                    fillColor: '#2196F3',
+                    fillOpacity: 0.2,
+                    strokeColor: '#2196F3',
+                    strokeWeight: 1
+                }}
+            />
+        </GoogleMap>
     );
 };
