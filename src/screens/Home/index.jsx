@@ -3,8 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useAuth } from "../../context/authContext";
-import Header from "../../layouts/Header";
-import Sidebar from "../../layouts/Sidebar";
+
 import Chat from "../../components/Chat";
 import Paginations from "../../components/Paginations";
 import ProductDetail from "../../components/ProductDetail";
@@ -131,52 +130,39 @@ export default function Home() {
     hook içindeki yönetimi veya Redux state'lerini de kullanabilirsiniz.
   */
 
-  const toggleSidebar = () => setOpenSidebar((prev) => !prev);
+ 
 
   return (
     <>
-      {isLogin && (
-        <Sidebar openSidebar={openSidebar} />
-      )}
-      <div className="content">
-        {isLogin && <Header toggleSidebar={toggleSidebar} />}
-        {/*  {isLogin && totalCount !== 0 && (
-          <Paginations
-            totalCount={totalCount}
-            currentPage={currentPage}
-            changePage={changePage}
-          />
-        )} */}
-        <div className="chat-section">
-          <div className={`chat-container ${isOpenFavorite ? "open-favorite" : ""}`}>
-            <div className="chat-blok">
-              <div className={`message-blok ${openChatMessage ? "" : "hidden"}`}>
-                <Chat
-                  intent={userIntent}
-                  viewAction={viewAction}
-                  isLoading={conversationLoading}
-                  actionState={() => setOpenProductDetail((prev) => !prev)}
-                />
-              </div>
-              <div className={`detail-blok ${openProductDetail ? "" : "hidden"}`}>
-                <ProductDetail
-                  product={selectedProduct}
-                  closeDetail={() => {
-                    setOpenProductDetail((prev) => !prev)
-                    //setChatInputPosition("middle");
-                    //handleViewAction();
-                  }}
-                />
-              </div>
+      <div className="chat-section">
+        <div className={`chat-container ${isOpenFavorite ? "open-favorite" : ""}`}>
+          <div className="chat-blok">
+            <div className={`message-blok ${openChatMessage ? "" : "hidden"}`}>
+              <Chat
+                intent={userIntent}
+                viewAction={viewAction}
+                isLoading={conversationLoading}
+                actionState={() => setOpenProductDetail((prev) => !prev)}
+              />
+            </div>
+            <div className={`detail-blok ${openProductDetail ? "" : "hidden"}`}>
+              <ProductDetail
+                product={selectedProduct}
+                closeDetail={() => {
+                  setOpenProductDetail((prev) => !prev)
+                  //setChatInputPosition("middle");
+                  //handleViewAction();
+                }}
+              />
             </div>
           </div>
-          <Favorite
-            isOpenFavorite={isOpenFavorite}
-            closeFavoriteSection={() => setOpenFavorite(false)}
-          />
         </div>
-        {isLogin && <ChatInput selectedid={selectedProductid} position={chatInputPosition} />}
+        <Favorite
+          isOpenFavorite={isOpenFavorite}
+          closeFavoriteSection={() => setOpenFavorite(false)}
+        />
       </div>
+      {isLogin && <ChatInput selectedid={selectedProductid} position={chatInputPosition} />}
     </>
   );
 }

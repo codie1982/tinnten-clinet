@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { Navigate,Outlet } from "react-router-dom";
 import { useAuth } from "../../context/authContext";
-import { Outlet } from "react-router-dom";
 import MailVerify from "screens/MailVerify";
 export default function ProtectedRoute() {
     const { isLogin, user, profile } = useAuth();

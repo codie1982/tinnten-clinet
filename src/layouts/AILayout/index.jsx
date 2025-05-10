@@ -7,24 +7,31 @@ import { Link, useNavigate, } from "react-router-dom";
 
 //Components
 import { useAuth } from '../../context/authContext';
-import HeaderNoAuth from "layouts/HeaderNoAuth";
 import Header from "layouts/Header";
-import FooterNoAuth from "layouts/FooterNoAuth";
+import Sidebar from "../../layouts/Sidebar";
 export default function AILayout() {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const [t, i18n] = useTranslation("global")
     const { isLogin, isLoading, user } = useAuth();
+    const [openSidebar, setOpenSidebar] = useState(true);
 
     if (isLoading) {
         return <>Yükleniyor...</>
     }
     //if (isLogin) navigate("/conversation")
+    const toggleSidebar = () => setOpenSidebar((prev) => !prev);
     return (
         <div data-bs-spy="scroll" data-bs-target="#navbar-example" >
             <Container fluid className={`page-container `}>
                 <div className={`page-content page-horizontal`}>
-                    <Outlet lang={global} />
+                    <>
+                        {isLogin && <Sidebar openSidebar={openSidebar} />}
+                        <div className="content">
+                            {isLogin && <Header toggleSidebar={toggleSidebar} />}
+                            <Outlet lang={global} />
+                        </div>
+                    </>
                 </div>
             </Container>
         </div>

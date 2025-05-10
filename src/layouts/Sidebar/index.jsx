@@ -288,7 +288,7 @@ export default function Sidebar({ openSidebar }) {
         hasMoreResults={hasMoreResults}
         searchLimit={SEARCHLIMIT}
       />
-      <BuisnessPackageModal onSelectedPackage={(id, title, name) => { console.log("id,title,name", id, title, name) }} />
+      <BuisnessPackageModal onSelectedPackage={(id, title, name) => { Navigate("/company/create") }} />
     </div>
   );
 }

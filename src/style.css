@@ -3556,3 +3556,113 @@ li.pagination-prev.page-item.disabled span {
     border: 2px solid var(--button-border-hover);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
+
+
+.dashboard-layout {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+}
+
+/* Sol Menü */
+.dashboard-sidebar {
+    width: 240px;
+    background-color: var(--chat-header);
+    padding: 20px;
+    box-sizing: border-box;
+    border-right: 1px solid var(--border-color);
+}
+
+.dashboard-sidebar-header {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.dashboard-menu {
+    list-style: none;
+    padding: 0;
+}
+
+.dashboard-menu li {
+    margin-bottom: 12px;
+}
+
+.dashboard-menu li a {
+    color: var(--text-color);
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.2s ease;
+}
+
+.dashboard-menu li a:hover {
+    background-color: var(--background-open2-color);
+}
+
+/* İçerik */
+.dashboard-content {
+    flex: 1;
+    padding: 30px;
+    background-color: var(--background-open1-color);
+    overflow-y: auto;
+    width: 100%;
+}
+
+
+/* Kartlar */
+.dashboard-cards {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.dashboard-card {
+    background-color: var(--background-open2-color);
+    padding: 20px;
+    border-radius: 10px;
+    width: 240px;
+    border: 1px solid var(--border-color);
+    box-sizing: border-box;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.dashboard-card:hover {
+    transform: scale(1.05);
+}
+
+.dashboard-card h3 {
+    margin: 0;
+    font-size: 16px;
+    color: var(--standart-text-light-color);
+}
+
+.dashboard-card p {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 10px;
+    color: var(--text-color);
+}
+
+.breadcrumb-item {
+    cursor: pointer;
+}
+
+.breadcrumb-item.active {
+    color: var(--button-hover);
+    /* Bootstrap primary rengini uygular */
+    font-weight: 500;
+
+}
+
+.breadcrumb-item.active:hover {
+    color: var(--button-border-hover);
+    /* Bootstrap primary rengini uygular */
+    font-weight: 500;
+}

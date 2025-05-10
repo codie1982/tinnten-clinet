@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useNavigate, useParams, Link } from "react-router-dom";
+import { useNavigate, useParams,Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimesCircle, faCheckCircle, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons'
@@ -16,7 +16,7 @@ import MapPicker from "../../components/MapPicker";
 import Breadcrumb from "../../components/Breadcrumb";
 
 
-export default function AddService() {
+export default function Settings() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { openModal, closeModal } = useModal();
@@ -99,15 +99,14 @@ export default function AddService() {
             <div className="container-fluid">
               <div class="container mt-3">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                  <Link to={"dashboard/services"} class="btn btn-outline-light" >
+                  <Link to={navigate("/dashboard")} class="btn btn-outline-light" >
                     ⬅ Geri
                   </Link>
 
                   <Breadcrumb
                     items={[
                       { label: "Ana Sayfa", path: "/dashboard" },
-                      { label: "Hizmet Yönetimi", path: "/dashboard/services" },
-                      { label: "Yeni Hizmet Ekle" },
+                      { label: "Ayarlar", path: "/dashboard/settings" },
                     ]}
                   />
                 </div>

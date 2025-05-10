@@ -1,11 +1,18 @@
 import { createBrowserRouter } from "react-router-dom";
 import Home from "../screens/Home"
+import Dashboard from "../screens/Dashboard";
 import Profile from "../screens/Profile"
-import CompanyProfile from "../screens/CompanyProfile"
+import CompanyProfile from "../screens/CreateCompany"
+import CreateCompany from "../screens/CreateCompany"
 import AddProduct from "../screens/AddProduct";
 import AddServices from "../screens/AddServices";
+import Settings from "../screens/Settings";
+import Products from "../screens/Products";
+import Services from "../screens/Services";
+import Bids from "../screens/Bids";
+import BidForms from "../screens/BidForms";
 import FormBuilder from "../screens/FormBuilder";
-
+import Main from "../screens/Main";
 import OurOffer from "../screens/OurOffer";
 import MainLayout from "../layouts/Main";
 import AILayout from "../layouts/AILayout";
@@ -23,6 +30,9 @@ import PrivatePolicy from "screens/PrivatePolicy";
 import Contact from "screens/Contact";
 import GoogleAuth from "screens/GoogleAuth";
 import React, { useEffect } from "react";
+
+
+
 
 
 
@@ -63,14 +73,31 @@ const routes = createBrowserRouter([
             {
                 element: <ProtectedRoute />,
                 children: [
-                    { path: "ouroffer", element: <OurOffer /> },
-                    { path: "profile", element: <Profile /> },
-                    { path: "companyprofile", element: <CompanyProfile /> },
-                    { path: "addproduct", element: <AddProduct /> },
-                    { path: "addservices", element: <AddServices /> },
-                    { path: "addform", element: <FormBuilder /> },
                     { path: "conversation", element: <Home /> },
                     { path: "conversation/:id", element: <Home /> },
+                    { path: "profile", element: <Profile /> },
+                    { path: "ouroffer", element: <OurOffer /> },
+                    { path: "company/create", element: <CreateCompany /> },
+                    {
+                        children: [
+                            {
+                                path: "dashboard", element: <Dashboard />,
+                                children: [
+                                    { path: "", element: <Main /> },
+                                    { path: "products", element: <Products /> },
+                                    { path: "services", element: <Services /> },
+                                    { path: "bids", element: <Bids /> },
+                                    { path: "forms", element: <BidForms /> },
+                                    { path: "products/add", element: <AddProduct /> },
+                                    { path: "services/add", element: <AddServices /> },
+                                    { path: "forms/add", element: <FormBuilder /> },
+                                    { path: "settings", element: <CompanyProfile />  },
+                                ]
+                            },
+
+
+                        ],
+                    },
                     { path: "*", element: <h1>404 - Sayfa Bulunamadı</h1> },
                 ],
             },
