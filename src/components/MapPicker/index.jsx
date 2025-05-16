@@ -6,23 +6,26 @@ import tinntenLogo from "../../assets/char-logo.png"
 import { GoogleMap, LoadScript, Marker, Circle, useJsApiLoader } from '@react-google-maps/api';
 
 export default function MapPicker({ lat, lng, radius, onLocationChange }) {
-    const dispatch = useDispatch();
-    const center = { lat, lng };
+    const center = {
+        lat: parseFloat(lat),
+        lng: parseFloat(lng),
+    };
+
     const containerStyle = { width: '100%', height: '400px' };
+
     const { isLoaded } = useJsApiLoader({
-        id: "script-loader", // default
+        id: "script-loader",
         googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAP_API,
-        libraries: ["places"], // daima sabit
+        libraries: ["places"],
     });
 
     const handleClick = (e) => {
-        onLocationChange({
-            lat: e.latLng.lat(),
-            lng: e.latLng.lng(),
-            radius
-        });
+        const clickedLat = e.latLng.lat();
+        const clickedLng = e.latLng.lng();
+        console.log("Tıklanan koordinat:", clickedLat, clickedLng);
+        onLocationChange({ lat: clickedLat, lng: clickedLng, radius });
     };
-    console.log("isLoaded", isLoaded)
+
     if (!isLoaded) return <div>Harita yükleniyor...</div>;
 
     return (
@@ -32,17 +35,27 @@ export default function MapPicker({ lat, lng, radius, onLocationChange }) {
             zoom={12}
             onClick={handleClick}
         >
-            <Marker position={center} />
-            <Circle
-                center={center}
-                radius={radius * 1000}
-                options={{
-                    fillColor: '#2196F3',
-                    fillOpacity: 0.2,
-                    strokeColor: '#2196F3',
-                    strokeWeight: 1
-                }}
-            />
+            <Marker position={center}
+                draggable={true}
+                onDragEnd={(e) => {
+                    const lat = e.latLng.lat();
+                    const lng = e.latLng.lng();
+                    onLocationChange({ lat, lng, radius });
+                }} />
+
+            {/* Radius tanımlıysa ve pozitifse Circle çiz */}
+            {radius > 0 && (
+                <Circle
+                    center={center}
+                    radius={radius * 1000}
+                    options={{
+                        fillColor: '#2196F3',
+                        fillOpacity: 0.2,
+                        strokeColor: '#2196F3',
+                        strokeWeight: 1,
+                    }}
+                />
+            )}
         </GoogleMap>
     );
-};
+}

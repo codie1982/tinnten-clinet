@@ -10,9 +10,16 @@ const updateProfilImage = async (files) => {
     return response.data;
 }
 
-
+const uploadFile = async (files) => {
+    const response = await axiosInstance.post("upload/multiple", files,{
+        headers: {
+            'Content-Type': undefined, // Veya hiç yazma
+        },
+    });
+    return response.data;
+}
 
 const uploadService = {
-    updateProfilImage
+    updateProfilImage,uploadFile
 }
 export default uploadService

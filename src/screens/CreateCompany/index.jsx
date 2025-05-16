@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimesCircle, faCheckCircle, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons'
@@ -8,24 +8,33 @@ import { useTranslation } from "react-i18next"
 import { useAuth } from 'context/authContext';
 import Select from "react-select";
 import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter, FaYoutube, FaTiktok } from "react-icons/fa";
-
-
-import { updateProfile } from "../../api/profile/profileSlicer"
 import { useModal } from '../../components/Modals/ModalProvider'
-import Sidebar from "../../layouts/Sidebar";
-import Header from "../../layouts/Header";
+import { createCompany, checkCompanySlug } from "../../api/company/companySlicer"
+
 import BuisnessPackageModal from "../../components/Modals/BuisnessPackageModal";
 import LogoImageUploader from "../../components/LogoImageUploader";
+import { toast } from "react-toastify";
+import MapPicker from "../../components/MapPicker";
 export default function CreateCompany() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [searchParams] = useSearchParams();
+
+  const { packagename, id } = useParams();
   const { openModal, closeModal } = useModal();
   const [t, i18n] = useTranslation("global")
   const { user, isLogin } = useAuth();
 
+
+  const [showMap, setShowMap] = useState(false);
+  const [coordinates, setCoordinates] = useState({ lat: 41.015137, lng: 28.979530 }); // örnek: İstanbul
+  const [radius, setRadius] = useState(1);
+
   const [uploadid, setUploadid] = useState("");
+  const [uploadImage, setUploadImage] = useState({});
   const [companyName, setCompanyName] = useState("");
   const [companySlug, setCompanySlug] = useState("");
+  const [companyType, setCompanyType] = useState("ƒ")
   const [isCompanySlugValid, setIsCompanySlugValid] = useState(null);
   const [selectedPackage, setSelectedPackage] = useState("");
   const [selectedPackageName, setSelectedPackageName] = useState("");
@@ -49,12 +58,50 @@ export default function CreateCompany() {
     { value: "youtube", label: <span style={{ display: "flex", alignItems: "center", gap: "8px" }}><FaYoutube className="me-1" /> YouTube</span> },
     { value: "tiktok", label: <span style={{ display: "flex", alignItems: "center", gap: "8px" }}><FaTiktok className="me-1" /> TikTok</span> },
   ];
+  const getFullSocialLink = (platform, username) => {
+    const baseUrls = {
+      facebook: "https://facebook.com/",
+      instagram: "https://instagram.com/",
+      twitter: "https://twitter.com/",
+      linkedin: "https://linkedin.com/in/",
+      youtube: "https://youtube.com/@",
+      tiktok: "https://tiktok.com/@",
+    };
+    return `${baseUrls[platform]}${username}`;
+  };
+
+  function parseSocialUrl(url) {
+    try {
+      const parsed = new URL(url);
+      const hostname = parsed.hostname.replace("www.", "");
+      const pathParts = parsed.pathname.split("/").filter(Boolean);
+
+      const platformMap = {
+        "facebook.com": "facebook",
+        "instagram.com": "instagram",
+        "linkedin.com": "linkedin",
+        "twitter.com": "twitter",
+        "youtube.com": "youtube",
+        "tiktok.com": "tiktok",
+      };
+
+      const platform = platformMap[hostname];
+      const username = pathParts.length > 0 ? pathParts[pathParts.length - 1] : "";
+
+      return platform && username ? { platform, username } : null;
+    } catch (e) {
+      return null; // URL hatalıysa null döner
+    }
+  }
+
+  const { isSlugLoading, isSlugSuccess, isSlugError } = useSelector((state) => state.company);
+
 
   const today = new Date().toISOString().split("T")[0];
 
-  const handleImageUploaded = (uploadedImageUrl) => {
-    console.log("Yeni resim URL'si:", uploadedImageUrl);
-    setUploadid(uploadedImageUrl.uploadid);
+  const handleImageUploaded = (image) => {
+    console.log("Yeni resim URL'si:", image);
+    setUploadImage(image);
   };
   const handleIndustryKeyDown = (e) => {
     if (e.key === "," || e.key === "Enter") {
@@ -66,10 +113,15 @@ export default function CreateCompany() {
       setIndustryInput("");
     }
   };
+
+
   const handleSubmitForm = (e) => {
     e.preventDefault();
+
     const formData = new FormData(e.target);
     const payload = {};
+
+    // Düz alanlar
     formData.forEach((value, key) => {
       if (value !== "") {
         try {
@@ -79,19 +131,77 @@ export default function CreateCompany() {
         }
       }
     });
+
+    // Zorunlu alanlar
+    payload.companySlug = companySlug;
+    payload.companyName = companyName;
+    payload.companyType = companyType;
+    payload.description = description;
+    payload.foundedDate = foundedDate;
     payload.industry = industryTags;
-    payload.phone = phones;
+    payload.packagename = selectedPackageName;
+    payload.logo = uploadImage;
+    payload.email = user.email;
+
+    // Telefonlar
+    payload.phone = phones.filter(p => p.number.length >= 10);
+
+    // Konum
+    payload.location = {
+      lat: coordinates.lat,
+      lng: coordinates.lng,
+      radius: radius
+    };
+
+    // Adres
+    payload.address = {
+      street: address.street,
+      city: address.city,
+      state: address.state,
+      zip: address.zip,
+      country: address.country
+    };
+
+    // Sosyal Medya
+    payload.social = socials
+      .filter(s => s.username && s.platform)
+      .map(s => ({
+        platform: s.platform,
+        username: s.username,
+        link: s.link || getFullSocialLink(s.platform, s.username)
+      }));
+
     console.log("Form gönderilen payload:", payload);
-    // dispatch(createCompany(payload));
+
+    // Gönderim
+    dispatch(createCompany(payload));
   };
 
   useEffect(() => {
     if (companySlug.length < 3) return;
     const timeout = setTimeout(() => {
-      // dispatch(checkCompanySlug(companySlug));
+      console.log("checkCompanySlug", companySlug)
+      dispatch(checkCompanySlug({ slug: companySlug }));
     }, 500);
+
     return () => clearTimeout(timeout);
   }, [companySlug, dispatch]);
+
+  useEffect(() => {
+    console.log("isSlugLoading, isSlugSuccess, isSlugError", isSlugLoading, isSlugSuccess, isSlugError)
+    if (!isSlugLoading) {
+      if (isSlugSuccess) {
+        setIsCompanySlugValid(true)
+        toast.success(`${companySlug} ismini kullanabilirsiniz.`)
+      }
+      if (isSlugError) {
+        setIsCompanySlugValid(false)
+        toast.error("Bu isim kullanılamaz")
+      }
+
+    }
+  }, [isSlugLoading, isSlugSuccess, isSlugError])
+
 
   const updatePhone = (index, field, value) => {
     const updated = [...phones];
@@ -113,19 +223,50 @@ export default function CreateCompany() {
   };
 
   const updateSocial = (index, field, value) => {
-    const updated = [...socials];
-    updated[index][field] = value;
-    setSocials(updated);
+    setSocials(prevSocials =>
+      prevSocials.map((item, i) =>
+        i === index ? { ...item, [field]: value } : item
+      )
+    );
   };
 
   const addSocial = () => {
-    setSocials([...socials, { platform: "facebook", link: "" }]);
+    setSocials([
+      ...socials,
+      {
+        platform: "facebook",  // varsayılan platform
+        username: "",           // varsayılan boş kullanıcı adı
+        link: ""               // otomatik üretilecek link (gerekirse)
+      }
+    ]);
   };
 
   const removeSocial = (index) => {
     const updated = socials.filter((_, i) => i !== index);
     setSocials(updated);
   };
+  useEffect(() => {
+    setCompanySlug(companyName.toLowerCase()
+      .normalize("NFD")                      // Türkçe karakterleri ayıkla
+      .replace(/[\u0300-\u036f]/g, "")       // aksanları kaldır
+      .replace(/[^a-z0-9\s-]/g, "")          // sadece harf, rakam, boşluk ve tire
+      .replace(/\s+/g, "-")                  // boşlukları tire yap
+      .replace(/-+/g, "-")                   // çoklu tireyi teke indir
+      .replace(/^-+|-+$/g, ""));
+  }, [companyName])
+
+  const clearIndustryTags = (tag) => {
+    setIndustryTags(prev => prev.filter((tg) => tg !== tag));
+  }
+
+  useEffect(() => {
+    const packagename = searchParams.get("packagename");
+    const id = searchParams.get("id");
+
+    if (packagename) setSelectedPackageName(packagename);
+    if (id) setSelectedPackage(id);
+  }, []);
+
   return (
     <>
       <div className="form-section">
@@ -142,7 +283,9 @@ export default function CreateCompany() {
                 <input type="hidden" name="logo" value={uploadid} />
                 <input type="hidden" name="email" value={user.email} />
                 <input type="hidden" name="certifications" value="[]" />
+                <input type="hidden" name="taxOrIdentityNumber" value="" />
                 <input type="hidden" name="packagename" value={selectedPackageName} />
+                <input type="hidden" name="packageid" value={selectedPackage} />
                 <Form.Group as={Row} className="mb-3">
                   <Form.Label column sm={2}>Logo</Form.Label>
                   <Col sm={10}>
@@ -175,27 +318,38 @@ export default function CreateCompany() {
                       <Form.Control
                         name="companySlug"
                         value={companySlug}
+                        disabled={isSlugLoading}
+                        className={`form-control ${isSlugLoading ? "opacity-50 cursor-not-allowed" : ""}`}
                         onChange={(e) => {
-                          let input = e.target.value
+                          const input = e.target.value
                             .toLowerCase()
-                            .replace(/[^a-z0-9\s-]/g, "")    // sadece küçük harf, rakam, tire ve boşluk bırak
-                            .replace(/\\s+/g, "-")            // boşlukları tire yap
-                            .replace(/-+/g, "-")              // birden fazla tireyi teke indir
-                            .replace(/^-+|-+$/g, "");         // baştaki/sondaki tireleri sil
+                            .normalize("NFD")                      // Türkçe karakterleri ayıkla
+                            .replace(/[\u0300-\u036f]/g, "")       // aksanları kaldır
+                            .replace(/[^a-z0-9\s-]/g, "")          // sadece harf, rakam, boşluk ve tire
+                            .replace(/\s+/g, "-")                  // boşlukları tire yap
+                            .replace(/-+/g, "-")                   // çoklu tireyi teke indir
+                            .replace(/^-+|-+$/g, "");              // baş/son tireyi sil
+
                           setCompanySlug(input);
                         }}
                         placeholder="benzersizfirma"
                         required
                       />
-                      {isCompanySlugValid !== null && (
-                        <InputGroup.Text className="bg-transparent border-0">
-                          {isCompanySlugValid ? (
-                            <FontAwesomeIcon icon={faCheckCircle} className="text-success" />
-                          ) : (
-                            <FontAwesomeIcon icon={faTimesCircle} className="text-danger" />
-                          )}
+                      {isSlugLoading ?
+                        <InputGroup.Text className="bg-transparent">
+                          <Spinner animation="border" role="status" />
                         </InputGroup.Text>
-                      )}
+                        :
+                        isCompanySlugValid !== null && (
+                          <InputGroup.Text className="bg-transparent border-0">
+                            {isCompanySlugValid ? (
+                              <FontAwesomeIcon icon={faCheckCircle} className="text-success" />
+                            ) : (
+                              <FontAwesomeIcon icon={faTimesCircle} className="text-danger" />
+                            )}
+                          </InputGroup.Text>
+                        )}
+
                     </InputGroup>
                     <Form.Text className={isCompanySlugValid === false ? "text-danger" : "text-white"}>
                       Bu alan benzersiz olmalıdır. Firma URL'niz şu şekilde olacaktır: /company@{companySlug || "firmaniz"}
@@ -206,7 +360,7 @@ export default function CreateCompany() {
                 <Form.Group as={Row} className="mb-3">
                   <Form.Label column sm={2}>Seçili Paket</Form.Label>
                   <Col sm={6} className="d-flex align-items-center">
-                    <span>{selectedPackage}</span>
+                    <span>{selectedPackageName}</span>
                   </Col>
                   <Col sm={4} className="text-end">
                     <Button variant="outline-primary" onClick={() => openModal("buissnessPackages")}>Paketleri Gör</Button>
@@ -224,7 +378,7 @@ export default function CreateCompany() {
                     />
                     <div className="d-flex flex-wrap mt-2">
                       {industryTags.map((tag, index) => (
-                        <span key={index} className="badge bg-secondary me-2">{tag}</span>
+                        <span key={index} className="badge bg-secondary me-2" style={{ cursor: "pointer" }} onClick={() => { clearIndustryTags(tag) }}>{tag}</span>
                       ))}
                     </div>
                     <Form.Text className="text-white">Birden fazla sektör girebilirsiniz, her biri virgül ile ayrılmalıdır.</Form.Text>
@@ -273,17 +427,9 @@ export default function CreateCompany() {
                 <Form.Group as={Row} className="mb-3">
                   <Form.Label column sm={2}>Firma Tipi</Form.Label>
                   <Col sm={10}>
-                    <Form.Check type="radio" label="Bireysel" name="companyType" value="bireysel" />
-                    <Form.Check type="radio" label="Kurumsal" name="companyType" value="kurumsal" />
+                    <Form.Check type="radio" label="Bireysel" name="companyType" value="individual" onChange={(e) => { setCompanyType(e.target.value) }} />
+                    <Form.Check type="radio" label="Kurumsal" name="companyType" value="corporate" onChange={(e) => { setCompanyType(e.target.value) }} />
                     <Form.Text className="text-white">Firmanız bireysel mi kurumsal mı belirtiniz.</Form.Text>
-                  </Col>
-                </Form.Group>
-
-                <Form.Group as={Row} className="mb-3">
-                  <Form.Label column sm={2}>Vergi / TC No</Form.Label>
-                  <Col sm={10}>
-                    <Form.Control name="taxOrIdentityNumber" />
-                    <Form.Text className="text-white">Vergi numarası ya da T.C. kimlik numarası giriniz.</Form.Text>
                   </Col>
                 </Form.Group>
 
@@ -305,8 +451,7 @@ export default function CreateCompany() {
                             value={phone.type}
                             onChange={(e) => updatePhone(index, "type", e.target.value)}>
                             <option value="mobile">Mobil</option>
-                            <option value="home">Ev</option>
-                            <option value="work">İş</option>
+                            <option value="work">Sabit</option>
                           </Form.Select>
                         </Col>
                         <Col sm={6}>
@@ -314,7 +459,19 @@ export default function CreateCompany() {
                             type="text"
                             placeholder="Telefon numarası"
                             value={phone.number}
-                            onChange={(e) => updatePhone(index, "number", e.target.value)}
+                            onChange={(e) => {
+                              let input = e.target.value.replace(/\D/g, ""); // sadece rakam
+
+                              if (input.length > 11) {
+                                input = input.slice(0, 11); // en fazla 11 hane
+                              }
+
+                              // 0 ile başlamıyorsa başına 0 ekle
+                              if (input.length > 0 && !input.startsWith("0")) {
+                                input = "0" + input;
+                              }
+                              updatePhone(index, "number", input);
+                            }}
                           />
                         </Col>
                         <Col sm={2}>
@@ -379,7 +536,23 @@ export default function CreateCompany() {
                         />
                       </Col>
                     </Row>
-                    <Form.Text className="text-white">Adres bilgilerinizi doğru ve eksiksiz giriniz.</Form.Text>
+                    <Row><Col>
+                      <Button variant="primary" onClick={() => setShowMap(!showMap)}>
+                        {showMap ? "Haritayı Gizle" : "Haritadan Seç"}
+                      </Button>
+                    </Col></Row>
+                    {showMap &&
+                      <Row>
+                        <Col>
+                          <MapPicker
+                            lat={coordinates.lat}
+                            lng={coordinates.lng}
+                            onLocationChange={({ lat, lng, radius }) => {
+                              setCoordinates({ lat, lng });
+                            }} />
+
+                        </Col>
+                      </Row>}
                   </Col>
                 </Form.Group>
 
@@ -394,34 +567,81 @@ export default function CreateCompany() {
                 <Form.Group as={Row} className="mb-3">
                   <Form.Label column sm={2}>Sosyal Medya</Form.Label>
                   <Col sm={10}>
-                    {socials.map((social, index) => (
-                      <Row key={index} className="mb-2 align-items-center">
-                        <Col sm={4}>
-                          <Select
-                            classNamePrefix="react-select"
-                            options={socialOptions}
-                            isSearchable={false} // ✅ arama özelliğini kapatır
-                            value={socialOptions.find(opt => opt.value === social.platform)}
-                            onChange={(selected) => updateSocial(index, "platform", selected.value)}
-                          />
-                        </Col>
-                        <Col sm={6}>
-                          <Form.Control
-                            type="url"
-                            placeholder="Platform bağlantı linki"
-                            value={social.link}
-                            onChange={(e) => updateSocial(index, "link", e.target.value)}
-                          />
-                        </Col>
-                        <Col sm={2}>
-                          <Button variant="danger" onClick={() => removeSocial(index)}>
-                            <FontAwesomeIcon icon={faTrash} />
-                          </Button>
-                        </Col>
-                      </Row>
-                    ))}
+                    {socials.map((social, index) => {
+                      const platformOption = socialOptions.find(opt => opt.value === social.platform);
+                      const generatedLink = getFullSocialLink(social.platform, social.username);
+
+                      return (
+                        <>
+                          <Row key={index} className="mb-3 align-items-center">
+                            {/* Platform Seçici */}
+                            <Col sm={3}>
+                              <Select
+                                classNamePrefix="react-select"
+                                options={socialOptions}
+                                isSearchable={false}
+                                value={platformOption}
+                                onChange={(selected) => updateSocial(index, "platform", selected.value)}
+                              />
+                            </Col>
+
+                            {/* Kullanıcı Adı */}
+                            <Col sm={5}>
+                              <Form.Control
+                                type="text"
+                                placeholder="https://instagram.com/kullaniciadi veya sadece kullaniciadi"
+                                value={social.link || social.username}
+                                onChange={(e) => {
+                                  const value = e.target.value.trim();
+
+                                  // Kullanıcı sadece username girdiyse
+                                  if (!value.includes(" ") && !value.startsWith("http") && !value.includes("www.")) {
+                                    updateSocial(index, "username", value.replace(/^@/, ""));
+                                    updateSocial(index, "link", ""); // Link boş olsun ama username korunsun
+                                    return;
+                                  }
+
+                                  const normalizedValue = value.startsWith("http") ? value : "https://" + value;
+                                  const parsed = parseSocialUrl(normalizedValue);
+                                  console.log("parsed:", parsed);
+
+                                  if (parsed) {
+                                    updateSocial(index, "platform", parsed.platform);
+                                    updateSocial(index, "username", parsed.username);
+                                    updateSocial(index, "link", normalizedValue);
+                                  } else {
+                                    updateSocial(index, "link", ""); // geçersizse link silinsin ama kullanıcı adı korunabilir
+                                  }
+                                }}
+                              />
+                            </Col>
+
+                            {/* Silme Butonu */}
+                            <Col sm={2}>
+                              <Button variant="danger" onClick={() => removeSocial(index)}>
+                                <FontAwesomeIcon icon={faTrash} />
+                              </Button>
+                            </Col>
+                          </Row>
+                          <Row className="mb-3"><Col> {social.username && (
+                            <Form.Text className="text-white">
+                              Link:{" "}
+                              <a
+                                href={generatedLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {generatedLink}
+                              </a>
+                            </Form.Text>
+                          )}</Col></Row>
+                        </>
+
+                      );
+                    })}
 
                     <Form.Text className="text-white">Firmanızın sosyal medya bağlantılarını ekleyin.</Form.Text>
+
                   </Col>
                 </Form.Group>
 

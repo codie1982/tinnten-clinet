@@ -3666,3 +3666,41 @@ li.pagination-prev.page-item.disabled span {
     /* Bootstrap primary rengini uygular */
     font-weight: 500;
 }
+.image-section .carousel-item img {
+    max-width: 300px;
+    max-height: 300px;
+    object-fit: cover;
+    margin: auto;
+  }
+
+.product-detail-image-list {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    padding-left: 0;
+    list-style: none;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .product-detail-image-list li {
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-radius: 4px;
+  }
+  
+  .product-detail-image-list li.active {
+    border-color: #007bff;
+  }
+  
+  .product-image {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+
+  .image-section {
+    text-align: center;
+    margin-top: 20px;
+  }

@@ -9,8 +9,6 @@ import { useAuth } from 'context/authContext';
 import Select from "react-select";
 import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter, FaYoutube, FaTiktok } from "react-icons/fa";
 import { useModal } from '../../components/Modals/ModalProvider'
-import Sidebar from "../../layouts/Sidebar";
-import Header from "../../layouts/Header";
 import ImageGalleryUploader from "../../components/ImageGalleryUploader";
 import Breadcrumb from "../../components/Breadcrumb";
 export default function AddProduct() {
@@ -33,11 +31,22 @@ export default function AddProduct() {
   const [isOfferable, setIsOfferable] = useState(false);
   const [requestRequired, setRequestRequired] = useState(false);
 
-  const [galleryImages, setGalleryImages] = useState([]); // Şimdilik placeholder
-
   const [slug, setSlug] = useState("");
 
   const [attributes, setAttributes] = useState([{ name: "", value: "" }]);
+  
+  const [galleryTitle, setGalleryTitle] = useState("");
+  const [galleryDescription, setGalleryDescription] = useState("");
+  const [galleryImages, setGalleryImages] = useState([]); // ImageGalleryUploader'dan gelen
+
+  const [variants, setVariants] = useState([
+    {
+      sku: "",
+      stock: 0,
+      price: { originalPrice: 0, discountRate: 0, currency: "TL" },
+      attributes: [{ name: "", value: "" }],
+    }
+  ]);
 
   const handleCategoryKeyDown = (e) => {
     if (e.key === "," || e.key === "Enter") {
@@ -53,6 +62,8 @@ export default function AddProduct() {
   const handleSubmitForm = (e) => {
     e.preventDefault();
     const payload = {
+      companyid: "6824aace3bd66ed798e41bbb",
+      type: "product", // Zorunlu alan
       title,
       meta,
       description,
@@ -67,8 +78,18 @@ export default function AddProduct() {
         requestRequired,
       } : {
         isOfferable: true,
-        requestRequired: true
+        requestRequired: true,
       },
+      gallery: {
+        title: galleryTitle,
+        description: galleryDescription,
+        images: galleryImages.map(({ uploadid, path }) => ({
+          uploadid,
+          path,
+          type: "internal"
+        }))
+      },
+      variants
     };
     console.log("Ürün Payload:", payload);
     // dispatch(addProduct(payload));
@@ -128,8 +149,9 @@ export default function AddProduct() {
                 <Form.Label column sm={2}>Görseller</Form.Label>
                 <Col sm={10}>
                   <ImageGalleryUploader
-                    onAllImagesUploaded={(gallery) => {
-                      console.log("Tüm yüklenenler:", gallery);
+                    companyid={"6824aace3bd66ed798e41bbb"}
+                    onAllImagesUploaded={(images) => {
+                      setGalleryImages(images)
                     }}
                   />
                 </Col>
@@ -261,6 +283,172 @@ export default function AddProduct() {
                       />
                     </Col>
                   </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Varyantlar</Form.Label>
+                    <Form.Text className="text-muted d-block mb-3">
+                      Varyantlar, ürününüzün farklı seçeneklerini temsil eder (örneğin renk, boyut, depolama). Her varyant için ayrı stok ve fiyat belirleyebilirsiniz.
+                    </Form.Text>
+
+                    {variants.map((variant, vIdx) => (
+                      <div key={vIdx} className="border p-3 mb-4 rounded bg-dark-subtle position-relative">
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          onClick={() => {
+                            const updatedVariants = variants.filter((_, idx) => idx !== vIdx);
+                            setVariants(updatedVariants);
+                          }}
+                          className="position-absolute top-0 end-0 m-2"
+                        >
+                          Varyantı Sil
+                        </Button>
+
+                        {/* SKU ve Stok */}
+                        <Row className="mb-3">
+                          <Col sm={6}>
+                            <Form.Control
+                              placeholder="SKU (Örn. iphone-15pm-256-siyah)"
+                              value={variant.sku}
+                              onChange={(e) => {
+                                const updated = [...variants];
+                                updated[vIdx].sku = e.target.value;
+                                setVariants(updated);
+                              }}
+                            />
+                          </Col>
+                          <Col sm={3}>
+                            <Form.Control
+                              type="number"
+                              placeholder="Stok"
+                              value={variant.stock}
+                              onChange={(e) => {
+                                const updated = [...variants];
+                                updated[vIdx].stock = Number(e.target.value);
+                                setVariants(updated);
+                              }}
+                            />
+                          </Col>
+                        </Row>
+
+                        {/* Fiyat ve İndirim */}
+                        <Row className="mb-3">
+                          <Col sm={4}>
+                            <Form.Control
+                              type="number"
+                              placeholder="Fiyat"
+                              value={variant.price.originalPrice}
+                              onChange={(e) => {
+                                const updated = [...variants];
+                                updated[vIdx].price.originalPrice = Number(e.target.value);
+                                setVariants(updated);
+                              }}
+                            />
+                          </Col>
+                          <Col sm={4}>
+                            <Form.Control
+                              type="number"
+                              placeholder="İndirim (%)"
+                              value={variant.price.discountRate}
+                              onChange={(e) => {
+                                const updated = [...variants];
+                                updated[vIdx].price.discountRate = Number(e.target.value);
+                                setVariants(updated);
+                              }}
+                            />
+                          </Col>
+                        </Row>
+                        {/* 📸 Varyanta Özel Görseller */}
+                        <Row className="mt-3">
+                          <Col>
+                            <strong>Varyant Görselleri</strong>
+                            <ImageGalleryUploader
+                              key={vIdx}
+                              initialImages={variant.images} // daha önce yüklenen varsa
+                              companyid={"6824aace3bd66ed798e41bbb"}
+                              onAllImagesUploaded={(images) => {
+                                const updated = [...variants];
+                                updated[vIdx].images = images.map(img => ({
+                                  uploadid: img.uploadid,
+                                  type: "internal",
+                                  path: img.url
+                                }));
+                                setVariants(updated);
+                              }}
+                            />
+                          </Col>
+                        </Row>
+                        {/* Özellikler */}
+                        <Row>
+                          <Col>
+                            <strong>Varyant Özellikleri</strong>
+                            {variant.attributes.map((attr, aIdx) => (
+                              <Row key={aIdx} className="mt-2 align-items-center">
+                                <Col sm={5}>
+                                  <Form.Control
+                                    placeholder="Özellik adı (örn. Renk)"
+                                    value={attr.name}
+                                    onChange={(e) => {
+                                      const updated = [...variants];
+                                      updated[vIdx].attributes[aIdx].name = e.target.value;
+                                      setVariants(updated);
+                                    }}
+                                  />
+                                </Col>
+                                <Col sm={5}>
+                                  <Form.Control
+                                    placeholder="Değer (örn. Kırmızı)"
+                                    value={attr.value}
+                                    onChange={(e) => {
+                                      const updated = [...variants];
+                                      updated[vIdx].attributes[aIdx].value = e.target.value;
+                                      setVariants(updated);
+                                    }}
+                                  />
+                                </Col>
+                                <Col sm={2}>
+                                  <Button
+                                    variant="outline-danger"
+                                    size="sm"
+                                    onClick={() => {
+                                      const updated = [...variants];
+                                      updated[vIdx].attributes = updated[vIdx].attributes.filter((_, i) => i !== aIdx);
+                                      setVariants(updated);
+                                    }}
+                                  >
+                                    ❌
+                                  </Button>
+                                </Col>
+                              </Row>
+                            ))}
+                          </Col>
+                        </Row>
+
+
+                        <Button
+                          variant="outline-light"
+                          size="sm"
+                          className="mt-3"
+                          onClick={() => {
+                            const updated = [...variants];
+                            updated[vIdx].attributes.push({ name: "", value: "" });
+                            setVariants(updated);
+                          }}
+                        >
+                          + Özellik Ekle
+                        </Button>
+                      </div>
+                    ))}
+                  </Form.Group>
+                  <Button variant="outline-primary" onClick={() => {
+                    setVariants([...variants, {
+                      sku: "",
+                      stock: 0,
+                      price: { originalPrice: 0, discountRate: 0, currency: "TL" },
+                      attributes: [{ name: "", value: "" }],
+                    }]);
+                  }}>
+                    Yeni Varyant Ekle
+                  </Button>
                 </>
               )}
 

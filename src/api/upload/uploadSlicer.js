@@ -1,13 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import uploadServices from './uploadServices'
-import { data } from "autoprefixer";
 
 const initialState = {
-    isLoading:null,
-    isSuccess:null,
-    isError:null,
+    isLoading: null,
+    isSuccess: null,
+    isError: null,
     image: null,
-    images: null,
+    data: null,
     message: '',
 }
 
@@ -30,11 +29,11 @@ export const uploadprofileimage = createAsyncThunk(
     }
 )
 
-export const uploadGalleryimage = createAsyncThunk(
-    'upload/gallery/image',
+export const uploadMultipleImage = createAsyncThunk(
+    'upload/gallery',
     async (files) => {
         try {
-            return await uploadServices.updateProfilImage(files)
+            return await uploadServices.uploadFile(files)
         } catch (error) {
             const message =
                 (error.response &&
@@ -58,6 +57,7 @@ export const uploadSlice = createSlice({
             state.isError = false
             state.images = null
             state.image = null
+            state.data = null
             state.message = ''
         },
     },
@@ -79,20 +79,21 @@ export const uploadSlice = createSlice({
                 state.image = null
             })
 
-            .addCase(uploadGalleryimage.pending, (state) => {
+            .addCase(uploadMultipleImage.pending, (state) => {
                 state.isLoading = true
             })
-            .addCase(uploadGalleryimage.fulfilled, (state, action) => {
+            .addCase(uploadMultipleImage.fulfilled, (state, action) => {
+                console.log("state, action", state, action)
                 state.isLoading = false
                 state.isSuccess = true
                 state.isError = false
-                state.images = action.payload.data?.image
+                state.data = action.payload.data
             })
-            .addCase(uploadGalleryimage.rejected, (state, action) => {
+            .addCase(uploadMultipleImage.rejected, (state, action) => {
                 state.isLoading = false
                 state.isSuccess = false
                 state.isError = true
-                state.images = null
+                state.data = null
             })
     }
 })

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Dropdown, DropdownButton, Spinner } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingCart, faSearch } from '@fortawesome/free-solid-svg-icons';
@@ -26,8 +26,9 @@ import { useModal } from "../../../src/components/Modals/ModalProvider.jsx";
 export default function Sidebar({ openSidebar }) {
   const [t] = useTranslation("global");
   const dispatch = useDispatch();
+  const navigate = useNavigate()
   const LIMIT = 5;
-  const { openModal } = useModal()
+  const { openModal, closeModal } = useModal()
 
   const { createNewConversation, getConversationDetail } = useChat()
   const [modals, setModals] = useState({
@@ -181,6 +182,11 @@ export default function Sidebar({ openSidebar }) {
   const onSelectedItem = (item) => {
     console.log("item", item)
   };
+
+  const onSelectedPackage = (id, title, name) => {
+    navigate(`/company/create?packagename=${name}&id=${id}`)
+    closeModal("buissnessPackages")
+  }
   return (
     <div className={`sidebar ${openSidebar ? 'open' : 'closed'}`}>
       <div className={`sidebar-content ${openSidebar ? '' : 'closed'}`}>
@@ -288,7 +294,7 @@ export default function Sidebar({ openSidebar }) {
         hasMoreResults={hasMoreResults}
         searchLimit={SEARCHLIMIT}
       />
-      <BuisnessPackageModal onSelectedPackage={(id, title, name) => { Navigate("/company/create") }} />
+      <BuisnessPackageModal onSelectedPackage={(id, title, name) => { onSelectedPackage(id, title, name) }} />
     </div>
   );
 }

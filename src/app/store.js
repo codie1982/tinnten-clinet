@@ -6,6 +6,7 @@ import productReducer from '../api/product/productSlicer'
 import conversationReducer from '../api/conversation/conversationSlicer'
 import systemPackagesReducer from '../api/system-packages/systempackagesSlicer'
 import streamReducer from '../api/stream/streamSlicer'
+import companysReducer from '../api/company/companySlicer'
 export const store = configureStore({
     reducer: {
         auth: authReducer,
@@ -15,5 +16,6 @@ export const store = configureStore({
         product: productReducer,
         conversation: conversationReducer,
         systempackages: systemPackagesReducer,
+        company: companysReducer,
     }
 })
