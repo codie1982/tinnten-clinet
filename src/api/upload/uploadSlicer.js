@@ -1,14 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import uploadServices from './uploadServices'
 
-const initialState = {
-    isLoading: null,
-    isSuccess: null,
-    isError: null,
-    image: null,
-    data: null,
-    message: '',
-}
+const initialState = {};
 
 
 // Logout user
@@ -31,70 +24,67 @@ export const uploadprofileimage = createAsyncThunk(
 
 export const uploadMultipleImage = createAsyncThunk(
     'upload/gallery',
-    async (files) => {
+    async ({ uploaderId, files }, { rejectWithValue }) => {
         try {
-            return await uploadServices.uploadFile(files)
+            const result = await uploadServices.uploadFile(files);
+            return { uploaderId, result }; // fulfilled'de bu gelir
         } catch (error) {
             const message =
-                (error.response &&
-                    error.response.data &&
-                    error.response.data.message) ||
-                error.message ||
-                error.toString()
-            return message
+                (error.response?.data?.message) ||
+                error.message || error.toString();
+            return rejectWithValue({ uploaderId, error: message });
         }
     }
-)
+);
 
 
 export const uploadSlice = createSlice({
     name: 'upload',
     initialState,
     reducers: {
-        resetUpload: (state) => {
-            state.isLoading = false
-            state.isSuccess = false
-            state.isError = false
-            state.images = null
-            state.image = null
-            state.data = null
-            state.message = ''
-        },
+        resetUpload: (state, action) => {
+            const uploaderId = action.payload;
+            delete state[uploaderId];
+        }
     },
     extraReducers: (builder) => {
         builder
-            .addCase(uploadprofileimage.pending, (state) => {
-                state.isLoading = true
-            })
-            .addCase(uploadprofileimage.fulfilled, (state, action) => {
-                state.isLoading = false
-                state.isSuccess = true
-                state.isError = false
-                state.image = action.payload.data?.image
-            })
-            .addCase(uploadprofileimage.rejected, (state, action) => {
-                state.isLoading = false
-                state.isSuccess = false
-                state.isError = true
-                state.image = null
-            })
-
-            .addCase(uploadMultipleImage.pending, (state) => {
-                state.isLoading = true
+            .addCase(uploadMultipleImage.pending, (state, action) => {
+                const uploaderId = action.meta.arg.uploaderId;
+                state[uploaderId] = {
+                    isLoading: true,
+                    isSuccess: false,
+                    isError: false,
+                    images: [],
+                    data: null
+                };
             })
             .addCase(uploadMultipleImage.fulfilled, (state, action) => {
-                console.log("state, action", state, action)
-                state.isLoading = false
-                state.isSuccess = true
-                state.isError = false
-                state.data = action.payload.data
+                const { uploaderId, result } = action.payload;
+                state[uploaderId] = {
+                    isLoading: false,
+                    isSuccess: true,
+                    isError: false,
+                    images: result?.data?.successfullUploads || [],
+                    data: result?.data,
+                    successCount: result?.data?.successCount,
+                    failureCount: result?.data?.failureCount,
+                    totalFiles: result?.data?.totalFiles
+                };
             })
             .addCase(uploadMultipleImage.rejected, (state, action) => {
-                state.isLoading = false
-                state.isSuccess = false
-                state.isError = true
-                state.data = null
-            })
+                const { uploaderId, error } = action.payload || {};
+                if (!uploaderId) return;
+
+                state[uploaderId] = {
+                    isLoading: false,
+                    isSuccess: false,
+                    isError: true,
+                    images: [],
+                    error: error || action.error.message,
+                    data: null
+                };
+            });
     }
 })
 

@@ -7,6 +7,7 @@ import conversationReducer from '../api/conversation/conversationSlicer'
 import systemPackagesReducer from '../api/system-packages/systempackagesSlicer'
 import streamReducer from '../api/stream/streamSlicer'
 import companysReducer from '../api/company/companySlicer'
+
 export const store = configureStore({
     reducer: {
         auth: authReducer,

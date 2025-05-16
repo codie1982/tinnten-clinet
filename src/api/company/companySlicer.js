@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
-import updateUserProfile from '../profile/profileServices'
-import { data } from "autoprefixer";
+
 import companyServices from "../company/companyServices";
 
 const initialState = {

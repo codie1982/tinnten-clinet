@@ -14,8 +14,12 @@ const getProductDetail = async (data) => {
     const response = await axiosInstance.get("products/" + data.productid)
     return response.data;
 }
+const addProduct = async (data) => {
+    const response = await axiosInstance.post("products", data)
+    return response.data;
+}
 
 const productService = {
-    addFavorite, getProductDetail
+    addFavorite, getProductDetail, addProduct
 }
 export default productService

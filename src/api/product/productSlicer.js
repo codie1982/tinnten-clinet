@@ -3,7 +3,8 @@ import productServices from "./productServices"
 
 const initialState = {
     data: null,
-    productData:null,
+    productData: null,
+    productList: null,
     isProductError: false,
     isProcudtSuccess: false,
     isProductLoading: false,
@@ -48,6 +49,41 @@ export const getProductDetail = createAsyncThunk(
         }
     }
 )
+
+export const addProduct = createAsyncThunk(
+    'product/add',
+    async (data, thunkAPI) => {
+        try {
+            const response = await productServices.addProduct(data)
+            return response
+        } catch (error) {
+            const message =
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    }
+)
+export const getProducts = createAsyncThunk(
+    'product/get',
+    async (data, thunkAPI) => {
+        try {
+            const response = await productServices.addProduct(data)
+            return response
+        } catch (error) {
+            const message =
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    }
+)
 export const productSlicer = createSlice({
     name: 'product',
     initialState,
@@ -57,6 +93,7 @@ export const productSlicer = createSlice({
             state.isSuccess = false
             state.isError = false
             state.message = ''
+            state.productList = []
         },
     },
     extraReducers: (builder) => {
@@ -93,6 +130,37 @@ export const productSlicer = createSlice({
                 state.isProcudtSuccess = false
                 state.isProductError = true
                 state.productData = null
+            })
+
+            .addCase(addProduct.pending, (state) => {
+                state.isProductLoading = true
+            })
+            .addCase(addProduct.fulfilled, (state, action) => {
+                state.isProductLoading = false
+                state.isProcudtSuccess = true
+                state.isProductError = false
+                state.productData = action.payload.data
+            })
+            .addCase(addProduct.rejected, (state, action) => {
+                state.isLoading = false
+                state.isProcudtSuccess = false
+                state.isProductError = true
+                state.productData = null
+            })
+            .addCase(getProducts.pending, (state) => {
+                state.isProductLoading = true
+            })
+            .addCase(getProducts.fulfilled, (state, action) => {
+                state.isProductLoading = false
+                state.isProcudtSuccess = true
+                state.isProductError = false
+                state.productList = action.payload.data
+            })
+            .addCase(getProducts.rejected, (state, action) => {
+                state.isLoading = false
+                state.isProcudtSuccess = false
+                state.isProductError = true
+                state.productList = null
             })
     }
 })

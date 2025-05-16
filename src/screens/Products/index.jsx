@@ -12,12 +12,18 @@ import { useModal } from '../../components/Modals/ModalProvider'
 import Sidebar from "../../layouts/Sidebar";
 import Header from "../../layouts/Header";
 import ImageGalleryUploader from "../../components/ImageGalleryUploader";
+import { addProduct } from "../../api/product/productSlicer"
+
 export default function Products() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { openModal, closeModal } = useModal();
   const [t, i18n] = useTranslation("global")
   const { user, isLogin } = useAuth();
+
+  useEffect(() => {
+    dispatch(getProducts("6824aace3bd66ed798e41bbb"))
+  }, [])
 
   return (
     <>

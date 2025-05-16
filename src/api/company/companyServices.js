@@ -11,6 +11,7 @@ const createCompany = async (data) => {
     return response.data;
 }
 
+
 export default {
     checkCompanySlug,createCompany
 }
