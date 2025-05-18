@@ -4,7 +4,7 @@ import { useModal } from '../ModalProvider'
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons'
-import { addProduct, updateProduct, getProductPrice,updateProductPrice } from "../../../api/product/productSlicer"
+import { addProduct, updateProduct, getProductPrice, updateProductPrice } from "../../../api/product/productSlicer"
 import { toast } from 'react-toastify';
 export default function UpdateProductPriceModal({ companyid, productid, onRefresh }) {
     const [active, setActive] = useState(false);
@@ -40,14 +40,34 @@ export default function UpdateProductPriceModal({ companyid, productid, onRefres
           return;
         }
       
-        const payload = {
-          originalPrice: Number(originalPrice),
-          discountRate: Number(discountRate),
-          currency,
-          isOfferable,
-          requestRequired
-        };
-      
+        let payload = {};
+        if (priceType === "fixed") {
+          payload = {
+            type: "fixed",
+            originalPrice: Number(originalPrice),
+            discountRate: Number(discountRate),
+            currency,
+            isOfferable,
+            requestRequired
+          };
+        } else if (priceType === "offer") {
+          payload = {
+            type: "offer",
+            requestRequired
+          };
+        } else if (priceType === "rental") {
+          payload = {
+            type: "rental",
+            rentalType,
+            rentalCurrency,
+            originalPrice: Number(originalPrice),
+            pricingModifiers,
+            multiplier: {
+              type: multiplierType,
+              value: multiplierValue
+            }
+          };
+        }
         dispatch(updateProductPrice({ companyid, productid, payload }));
       };
 
@@ -75,26 +95,26 @@ export default function UpdateProductPriceModal({ companyid, productid, onRefres
 
     useEffect(() => {
         if (Array.isArray(updateData) && updateData.length > 0) {
-          const sorted = [...updateData].sort(
-            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-          );
-          setPriceHistory(sorted);
-          setActiveIndex(0);
+            const sorted = [...updateData].sort((a, b) => {
+                return new Date(b?.createdAt || 0) - new Date(a?.createdAt || 0);
+            });
+            setPriceHistory(sorted);
+            setActiveIndex(0);
         }
-      }, [updateData]);
-      useEffect(() => {
+    }, [updateData]);
+    useEffect(() => {
         if (priceHistory.length > 0 && activeIndex >= 0) {
-          const price = priceHistory[activeIndex];
-      
-          setOriginalPrice(price.originalPrice?.toString() || "");
-          setDiscountRate(price.discountRate?.toString() || "");
-          setCurrency(price.currency || "TL");
-          setIsOfferable(price.isOfferable || false);
-          setRequestRequired(price.requestRequired || false);
-      
-          setIsLatest(activeIndex === 0); // Sadece en yeni veri düzenlenebilir
+            const price = priceHistory[activeIndex];
+
+            setOriginalPrice(price.originalPrice?.toString() || "");
+            setDiscountRate(price.discountRate?.toString() || "");
+            setCurrency(price.currency || "TL");
+            setIsOfferable(price.isOfferable || false);
+            setRequestRequired(price.requestRequired || false);
+
+            setIsLatest(activeIndex === 0); // Sadece en yeni veri düzenlenebilir
         }
-      }, [priceHistory, activeIndex]);
+    }, [priceHistory, activeIndex]);
     return (
         <Modal
             size='xl'

@@ -11,6 +11,7 @@ const axiosInstance = axios.create({
     timeout: 10000, // 10 saniyelik timeout ekliyoruz
 });
 
+
 // 🚀 Silent Authentication Function (Backend üzerinden istek)
 const silentAuth = async () => {
     try {
@@ -35,8 +36,8 @@ axiosInstance.interceptors.request.use(
                 config.headers['Authorization'] = `Bearer ${token}`;
             }
         }
-         // Sadece JSON istekleri için Content-Type
-         if (!(config.data instanceof FormData)) {
+        // Sadece JSON istekleri için Content-Type
+        if (!(config.data instanceof FormData)) {
             config.headers['Content-Type'] = 'application/json';
         }
         return config;

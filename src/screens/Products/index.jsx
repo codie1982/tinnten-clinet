@@ -36,6 +36,10 @@ export default function Products() {
   const [selectedProductId, setselectedProductId] = useState("")
 
   useEffect(() => {
+    console.log("productList", productList)
+  }, [productList])
+
+  useEffect(() => {
     dispatch(getProducts({ companyid: COMPANYID, page, limit }));
   }, [page]);
 

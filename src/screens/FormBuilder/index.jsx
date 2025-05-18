@@ -16,7 +16,7 @@ import { toast } from 'react-toastify';
 import Breadcrumb from "../../components/Breadcrumb";
 import { addForm } from "../../api/form/dynamicFormSlicer"
 
-export default function UpdateFormBuilder() {
+export default function FormBuilder() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { openModal, closeModal } = useModal();

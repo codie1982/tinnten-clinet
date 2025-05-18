@@ -7,38 +7,38 @@ const addForm = async (data) => {
 };
 
 // 📌 Tüm formları getirir (kullanıcının erişebileceği)
-const getForms = async ({companyid}) => {
+const getForms = async ({ companyid }) => {
   const response = await axiosInstance.get(`/forms/${companyid}`);
   return response.data;
 };
 
 // 📌 Belirli bir formun detayını getirir
-const getFormDetail = async (formid) => {
-  const response = await axiosInstance.get(`/forms/${formid}`);
+const getFormDetail = async ({ formid }) => {
+  const response = await axiosInstance.get(`/forms/detail/${formid}`);
   return response.data;
 };
 
 // 📌 Belirli bir formu günceller
-const updateForm = async (formid, data) => {
-  const response = await axiosInstance.put(`/forms/${formid}`, data);
+const updateForm = async ({ companyid, formid, data }) => {
+  const response = await axiosInstance.put(`/forms/${companyid}/${formid}`, data);
   return response.data;
 };
 
 // 📌 Belirli bir formu siler
-const deleteForm = async (formid) => {
-  const response = await axiosInstance.delete(`/forms/${formid}`);
+const deleteForm = async ({ companyid, formid }) => {
+  const response = await axiosInstance.delete(`/forms/${companyid}/${formid}`);
   return response.data;
 };
 
 // 📌 Belirli bir form alanını (field) günceller
-const updateFormField = async (formid, fieldid, data) => {
-  const response = await axiosInstance.put(`/forms/${formid}/fields/${fieldid}`, data);
+const updateFormField = async ({ companyid, formid, fieldid, data }) => {
+  const response = await axiosInstance.put(`/forms/${companyid}/${formid}/fields/${fieldid}`, data);
   return response.data;
 };
 
 // 📌 Belirli bir form alanını (field) siler
-const deleteFormField = async (formid, fieldid) => {
-  const response = await axiosInstance.delete(`/forms/${formid}/fields/${fieldid}`);
+const deleteFormField = async ({ companyid, formid, fieldid }) => {
+  const response = await axiosInstance.delete(`/forms/${companyid}/${formid}/fields/${fieldid}`);
   return response.data;
 };
 

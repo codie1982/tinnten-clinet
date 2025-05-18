@@ -4,7 +4,7 @@ import { useModal } from '../ModalProvider'
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons'
-import { getProductVariants } from "../../../api/product/productSlicer"
+import { getProductVariants ,updateProductVariants} from "../../../api/product/productSlicer"
 import { toast } from 'react-toastify';
 import ImageGalleryUploader from "../../../components/ImageGalleryUploader";
 
@@ -72,8 +72,12 @@ export default function UpdateProductVariantModal({ companyid, productid, onRefr
             variants
         };
         console.log("payload", payload)
-        //dispatch(updateProductVariants(payload));
+        dispatch(updateProductVariants([companyid, productid, { variants: cleanedVariants }]));
     };
+    const cleanedVariants = variants.map(v => {
+        const { _id, ...rest } = v;
+        return rest;
+    });
     return (
         <Modal
             size="xl"
@@ -137,7 +141,7 @@ export default function UpdateProductVariantModal({ companyid, productid, onRefr
                                                                         const newVariant = {
                                                                             sku: "",
                                                                             stock: 0,
-                                                                            price: { originalPrice: 0, discountRate: 0, currency: "TL" },
+                                                                            price: { originalPrice: parseFloat(current.price?.originalPrice || 0), discountRate: 0, currency: "TL" },
                                                                             attributes: [{ name: "", value: "" }],
                                                                             images: [],
                                                                         };
@@ -335,6 +339,6 @@ export default function UpdateProductVariantModal({ companyid, productid, onRefr
                     </Row>
                 </Container>
             </Modal.Body>
-        </Modal>
+        </Modal >
     )
 }
