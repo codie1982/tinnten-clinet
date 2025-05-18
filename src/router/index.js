@@ -12,6 +12,7 @@ import Services from "../screens/Services";
 import Bids from "../screens/Bids";
 import BidForms from "../screens/BidForms";
 import FormBuilder from "../screens/FormBuilder";
+import UpdateFormBuilder from "../screens/UpdateFormBuilder";
 import Main from "../screens/Main";
 import OurOffer from "../screens/OurOffer";
 import MainLayout from "../layouts/Main";
@@ -77,6 +78,8 @@ const routes = createBrowserRouter([
                     { path: "conversation/:id", element: <Home /> },
                     { path: "profile", element: <Profile /> },
                     { path: "ouroffer", element: <OurOffer /> },
+                    { path: "c/:companyname", element:  <Home /> },
+                    { path: "p/:productname", element:  <Home /> },
                     { path: "company/create", element: <CreateCompany /> },
                     {
                         children: [
@@ -85,12 +88,11 @@ const routes = createBrowserRouter([
                                 children: [
                                     { path: "", element: <Main /> },
                                     { path: "products", element: <Products /> },
-                                    { path: "services", element: <Services /> },
                                     { path: "bids", element: <Bids /> },
                                     { path: "forms", element: <BidForms /> },
                                     { path: "products/add", element: <AddProduct /> },
-                                    { path: "services/add", element: <AddServices /> },
                                     { path: "forms/add", element: <FormBuilder /> },
+                                    { path: "forms/edit/:id", element: <UpdateFormBuilder /> },
                                     { path: "settings", element: <CompanyProfile />  },
                                 ]
                             },

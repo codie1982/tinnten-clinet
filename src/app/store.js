@@ -7,6 +7,7 @@ import conversationReducer from '../api/conversation/conversationSlicer'
 import systemPackagesReducer from '../api/system-packages/systempackagesSlicer'
 import streamReducer from '../api/stream/streamSlicer'
 import companysReducer from '../api/company/companySlicer'
+import dynamicformReducer from '../api/form/dynamicFormSlicer'
 
 export const store = configureStore({
     reducer: {
@@ -18,5 +19,6 @@ export const store = configureStore({
         conversation: conversationReducer,
         systempackages: systemPackagesReducer,
         company: companysReducer,
+        dynamicform: dynamicformReducer,
     }
 })

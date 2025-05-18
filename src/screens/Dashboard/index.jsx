@@ -30,9 +30,8 @@ export default function Dashboard() {
         <aside className="dashboard-sidebar">
           <ul className="dashboard-menu">
             <li><Link to="/dashboard" >Ana Sayfa</Link></li>
-            <li><Link to="/dashboard/bids" >Talepler</Link></li>
             <li><Link to="/dashboard/products" >Ürünler</Link></li>
-            <li><Link to="/dashboard/services" >Hizmetler</Link></li>
+            <li><Link to="/dashboard/bids" >Talepler</Link></li>
             <li><Link to="/dashboard/forms" >Formlar</Link></li>
             <li><Link to="/dashboard/settings" >Ayarlar</Link></li>
           </ul>

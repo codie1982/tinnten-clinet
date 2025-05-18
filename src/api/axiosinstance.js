@@ -71,13 +71,13 @@ axiosInstance.interceptors.response.use(
                         return axiosInstance(originalRequest);
                     } else {
                         toast.error("Oturum süreniz doldu. Lütfen tekrar giriş yapın.");
-                        //localStorage.clear();
+                        localStorage.clear();
                         //window.location.href = '/login';
                     }
                 } catch (silentAuthError) {
                     console.log("silentAuthError", silentAuthError);
                     toast.error('Oturum süreniz doldu. Lütfen tekrar giriş yapın.');
-                    //localStorage.clear();
+                    localStorage.clear();
                     //window.location.href = '/login';
                     return Promise.reject(silentAuthError);
                 }

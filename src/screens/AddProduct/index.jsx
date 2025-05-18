@@ -679,7 +679,6 @@ export default function AddProduct() {
         </Col>
       </Row>
     </Container>
-
   );
 }
 

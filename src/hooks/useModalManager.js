@@ -14,6 +14,12 @@ const initialModals = {
   userPackages:false,
   buissnessPackages:false,
   ourOffer:false,
+  isRemoveProduct:false,
+  updateProduct:false,
+  updateProductGallery:false,
+  updateProductPrice:false,
+  updateProductVariant:false,
+  updateProductRequestForm:false,
 };
 
 export function useModalManager() {
