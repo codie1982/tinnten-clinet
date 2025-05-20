@@ -41,8 +41,8 @@ const updateProductVariants = async ({ companyid, productid, payload }) => {
     return response.data;
 }
 
-const updateProductRequestForm = async ({ companyid, productid, payload }) => {
-    const response = await axiosInstance.put(`products/request-form/${companyid}/${productid}`, payload)
+const updateProductRequestForm = async ({ companyid, productid, formid }) => {
+    const response = await axiosInstance.put(`products/request-form/${companyid}/${productid}/${formid}`)
     return response.data;
 }
 
@@ -96,6 +96,11 @@ const deleteProductBasePrice = async ({ companyid, productid }) => {
     return response.data;
 }
 
+const deleteProductBasePriceItem = async ({ companyid, productid, priceid }) => {
+    const response = await axiosInstance.delete(`products/base-price/${companyid}/${productid}/${priceid}`)
+    return response.data;
+}
+
 const deleteImageFromGallery = async ({ companyid, productid, imageid }) => {
     const response = await axiosInstance.delete(`products/gallery/${companyid}/${productid}/image/${imageid}`)
     return response.data;
@@ -120,6 +125,7 @@ const productService = {
     deleteProductGallery,
     deleteProductRequestForm,
     deleteProductBasePrice,
+    deleteProductBasePriceItem,
     deleteImageFromGallery
 }
 

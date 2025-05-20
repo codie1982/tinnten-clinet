@@ -2,8 +2,10 @@ import { createBrowserRouter } from "react-router-dom";
 import Home from "../screens/Home"
 import Dashboard from "../screens/Dashboard";
 import Profile from "../screens/Profile"
-import CompanyProfile from "../screens/CreateCompany"
-import CreateCompany from "../screens/CreateCompany"
+import SetupCompany from "../screens/SetupCompany"
+import CompleteCompany from "../screens/CompleteCompany"
+import SettingsCompany from "../screens/SettingsCompany"
+
 import AddProduct from "../screens/AddProduct";
 import AddServices from "../screens/AddServices";
 import Settings from "../screens/Settings";
@@ -80,7 +82,8 @@ const routes = createBrowserRouter([
                     { path: "ouroffer", element: <OurOffer /> },
                     { path: "c/:companyname", element:  <Home /> },
                     { path: "p/:productname", element:  <Home /> },
-                    { path: "company/create", element: <CreateCompany /> },
+                    { path: "company/create", element: <SetupCompany /> },
+                    { path: "company/complete", element: <CompleteCompany /> },
                     {
                         children: [
                             {
@@ -93,7 +96,7 @@ const routes = createBrowserRouter([
                                     { path: "products/add", element: <AddProduct /> },
                                     { path: "forms/add", element: <FormBuilder /> },
                                     { path: "forms/edit/:id", element: <UpdateFormBuilder /> },
-                                    { path: "settings", element: <CompanyProfile />  },
+                                    { path: "settings", element: <SettingsCompany />  },
                                 ]
                             },
 

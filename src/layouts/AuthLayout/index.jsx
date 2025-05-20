@@ -16,24 +16,6 @@ export default function AuthLayout() {
     const [t, i18n] = useTranslation("global")
     const { isLogin } = useAuth();
     const [isOpenFavorite, setOpenFavoite] = useState(false)
-
-    const resetAll = () => {
-
-    }
-    const { data } = useSelector(
-        (state) => {
-            return state.product
-        }
-    )
-    useEffect(() => {
-        if (data) {
-            setOpenFavoite(!isOpenFavorite)
-        }
-    }, [data])
-
-    const closeFavoriteSection = () => {
-        setOpenFavoite(false)
-    }
     return (
 
             <div data-bs-spy="scroll" data-bs-target="#navbar-example" >

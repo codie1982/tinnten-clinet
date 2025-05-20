@@ -4,7 +4,7 @@ import { useModal } from '../ModalProvider'
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons'
-import { getProductVariants ,updateProductVariants} from "../../../api/product/productSlicer"
+import { getProductVariants, updateProductVariants } from "../../../api/product/productSlicer"
 import { toast } from 'react-toastify';
 import ImageGalleryUploader from "../../../components/ImageGalleryUploader";
 
@@ -14,7 +14,7 @@ export default function UpdateProductVariantModal({ companyid, productid, onRefr
     const dispatch = useDispatch()
     const { closeModal, isOpen, modals } = useModal();
     const { updateData, isProductLoading, isProcudtSuccess, isProductError } = useSelector(state => state.product)
-    const { isUpdateLoading, isUpdateSuccess, isUpdateError } = useSelector(state => state.product)
+    const { isUpdateLoading, isUpdateSuccess, isUpdateError, operation } = useSelector(state => state.product)
     const [variants, setVariants] = useState([]);
     const [variantIndex, setVariantIndex] = useState(0); // aktif varyant index
     const current = variants[variantIndex] || {
@@ -32,15 +32,16 @@ export default function UpdateProductVariantModal({ companyid, productid, onRefr
 
 
     useEffect(() => {
-        if (!isUpdateLoading && isUpdateSuccess && !isUpdateError) {
-            toast.success("Güncelleme Başarılı")
-            closeModal("updateProductVariant")
-            if (onRefresh) {
-                onRefresh()
-            }
+        if (operation == "getVariants")
+            if (!isUpdateLoading && isUpdateSuccess && !isUpdateError) {
+                toast.success("Güncelleme Başarılı")
+                closeModal("updateProductVariant")
+                if (onRefresh) {
+                    onRefresh()
+                }
 
-        }
-    }, [isUpdateLoading, isUpdateSuccess, isUpdateError])
+            }
+    }, [isUpdateLoading, isUpdateSuccess, isUpdateError, operation])
     useEffect(() => {
         if (Array.isArray(updateData) && updateData.length > 0) {
             const enrichedVariants = updateData.map((variant) => ({

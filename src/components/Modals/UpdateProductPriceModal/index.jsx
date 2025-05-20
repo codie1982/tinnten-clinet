@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { Row, Col, Container, Modal, Form, Button } from 'react-bootstrap'
+import { Row, Col, Container, Modal, Form, Button, Spinner } from 'react-bootstrap'
 import { useModal } from '../ModalProvider'
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons'
-import { addProduct, updateProduct, getProductPrice, updateProductPrice } from "../../../api/product/productSlicer"
+import { addProduct, updateProduct, getProductPrice, updateProductPrice, resetOperation, deleteProductBasePriceItem } from "../../../api/product/productSlicer"
 import { toast } from 'react-toastify';
 export default function UpdateProductPriceModal({ companyid, productid, onRefresh }) {
     const [active, setActive] = useState(false);
@@ -17,107 +17,174 @@ export default function UpdateProductPriceModal({ companyid, productid, onRefres
     const [rentalType, setRentalType] = useState("continuous"); // veya "periodic"
     const [isOfferable, setIsOfferable] = useState(false);
     const [requestRequired, setRequestRequired] = useState(false);
-    const [periodType, setPeriodType] = useState("daily"); // daily, weekly, monthly, customRange
-    const [multiplierType, setMultiplierType] = useState("percentage");
-    const [multiplierValue, setMultiplierValue] = useState(0);
-    const [pricingModifiers, setPricingModifiers] = useState([
-        { label: "", type: "increase", value: 0 }
-    ]);
-    const [rentalCurrency, setRentalCurrency] = useState("TL");
-    const [rentalBasePrice, setRentalBasePrice] = useState(0)
-
     const [priceHistory, setPriceHistory] = useState([]);
     const [activeIndex, setActiveIndex] = useState(0); // [0] = en yeni
     const [isLatest, setIsLatest] = useState(true);
+    const [isGetLoading, setIsGetLoading] = useState(false)
+    const [isUpdateLoading, setIsUpdateLoading] = useState()
 
+    const [discountedPrice, setDiscountedPrice] = useState("");
 
+    const [originalPriceDisplay, setOriginalPriceDisplay] = useState("");
+    const [discountedPriceDisplay, setDiscountedPriceDisplay] = useState("");
 
-    const handleSubmitForm = (e) => {
-        e.preventDefault();
-      
-        if (!isLatest) {
-          toast.warning("Sadece en güncel fiyat düzenlenebilir.");
-          return;
+    // originalPrice değiştiğinde gösterim alanını güncelle
+    useEffect(() => {
+        setOriginalPriceDisplay(formatCurrency(originalPrice));
+    }, [originalPrice]);
+
+    // discountedPrice değiştiğinde gösterim alanını güncelle
+    useEffect(() => {
+        setDiscountedPriceDisplay(formatCurrency(discountedPrice));
+    }, [discountedPrice]);
+
+    // 🔁 1️⃣ İndirim oranı ve satış fiyatı varsa → indirimli fiyat hesapla
+    useEffect(() => {
+        const price = parseFloat(originalPrice);
+        const rate = parseFloat(discountRate);
+
+        if (!isNaN(price) && !isNaN(rate)) {
+            const discounted = price - (price * (rate / 100));
+            setDiscountedPrice(discounted.toFixed(2));
         }
-      
-        let payload = {};
-        if (priceType === "fixed") {
-          payload = {
-            type: "fixed",
-            originalPrice: Number(originalPrice),
-            discountRate: Number(discountRate),
-            currency,
-            isOfferable,
-            requestRequired
-          };
-        } else if (priceType === "offer") {
-          payload = {
-            type: "offer",
-            requestRequired
-          };
-        } else if (priceType === "rental") {
-          payload = {
-            type: "rental",
-            rentalType,
-            rentalCurrency,
-            originalPrice: Number(originalPrice),
-            pricingModifiers,
-            multiplier: {
-              type: multiplierType,
-              value: multiplierValue
-            }
-          };
+    }, [originalPrice, discountRate]);
+
+    // 🔁 2️⃣ İndirimli fiyat ve indirim oranı varsa → satış fiyatı hesapla
+    useEffect(() => {
+        const discounted = parseFloat(discountedPrice);
+        const rate = parseFloat(discountRate);
+
+        // Kullanıcı indirimli fiyat alanına odaklanmışsa ve oran belliyse
+        if (
+            document.activeElement.name === "discountedPrice" &&
+            !isNaN(discounted) &&
+            !isNaN(rate) &&
+            rate < 100
+        ) {
+            const calculatedOriginal = discounted / (1 - rate / 100);
+            setOriginalPrice(calculatedOriginal.toFixed(2));
         }
-        dispatch(updateProductPrice({ companyid, productid, payload }));
-      };
+    }, [discountedPrice]);
 
 
-    const { updateData, isProductLoading, isProcudtSuccess, isProductError } = useSelector(state => state.product)
-    const { isUpdateLoading, isUpdateSuccess, isUpdateError } = useSelector(state => state.product)
+
+
+    // 1000.50 → "1.000,50 ₺"
+    const formatCurrency = (value) => {
+        if (value === "" || isNaN(value)) return "";
+        return new Intl.NumberFormat("tr-TR", {
+            style: "currency",
+            currency: "TRY",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }).format(value);
+    };
+
+    // "1.000,50 ₺" → 1000.50
+    const parseCurrency = (str) => {
+        const clean = str.replace(/\./g, "").replace(",", ".").replace(/[^\d.]/g, "");
+        return parseFloat(clean) || 0;
+    };
+
+    const { updateData, deletePriceItem, isLoading, isSuccess, isError, operation } = useSelector(state => state.product)
 
     useEffect(() => {
+        console.log("isOpen(updateProductPrice)")
         if (isOpen("updateProductPrice") && companyid && productid) {
+            dispatch(resetOperation())
             dispatch(getProductPrice({ companyid, productid }));
         }
     }, [isOpen("updateProductPrice"), companyid, productid]);
 
 
     useEffect(() => {
-        if (!isUpdateLoading && isUpdateSuccess && !isUpdateError) {
-            toast.success("Güncelleme Başarılı")
-            closeModal("updateProductPrice")
-            if (onRefresh) {
-                onRefresh()
+        console.log("operation", operation)
+        if (operation == "getPrice") {
+            setIsGetLoading(isLoading)
+            setIsUpdateLoading(isUpdateLoading)
+            if (!isLoading && isSuccess && !isError) {
+                toast.success("Güncelleme Başarılı")
             }
-
+        } else if (operation == "updatePrice") {
+            setIsUpdateLoading(isUpdateLoading)
+            if (!isLoading && isSuccess && !isError) {
+                toast.success("Güncelleme Başarılı")
+                closeModal("updateProductPrice")
+                if (onRefresh) {
+                    onRefresh()
+                }
+            }
         }
-    }, [isUpdateLoading, isUpdateSuccess, isUpdateError])
+    }, [isLoading, isSuccess, isError, operation, dispatch])
 
     useEffect(() => {
         if (Array.isArray(updateData) && updateData.length > 0) {
             const sorted = [...updateData].sort((a, b) => {
-                return new Date(b?.createdAt || 0) - new Date(a?.createdAt || 0);
+                return new Date(a?.createdAt || 0) - new Date(b?.createdAt || 0); // 👈 A'dan B'ye
             });
             setPriceHistory(sorted);
-            setActiveIndex(0);
+            setActiveIndex(sorted.length - 1); // 👈 En yeniyi seç
         }
     }, [updateData]);
+
+    useEffect(() => {
+        if (!deletePriceItem || !deletePriceItem._id) return;
+
+        setPriceHistory((prev) => {
+            const updated = prev.filter((item) => item._id !== deletePriceItem._id);
+            // index güncellemesi gerekiyorsa burada yap
+            setActiveIndex(Math.max(updated.length - 1, 0)); // en son elemana dön
+            return updated;
+        });
+        toast.success("Fiyat başarıyla silindi");
+    }, [deletePriceItem]);
+
+
     useEffect(() => {
         if (priceHistory.length > 0 && activeIndex >= 0) {
             const price = priceHistory[activeIndex];
+            setOriginalPrice(price.originalPrice ?? "");
+            setDiscountRate(price.discountRate?.toString() ?? "");
+            setCurrency(price.currency ?? "TL");
+            setIsOfferable(price.isOfferable ?? false);
+            setRequestRequired(price.requestRequired ?? false);
 
-            setOriginalPrice(price.originalPrice?.toString() || "");
-            setDiscountRate(price.discountRate?.toString() || "");
-            setCurrency(price.currency || "TL");
-            setIsOfferable(price.isOfferable || false);
-            setRequestRequired(price.requestRequired || false);
+            // 🆕 Burası eksikti:
+            const calculated = price.originalPrice - (price.originalPrice * (price.discountRate / 100));
+            setDiscountedPrice(calculated.toFixed(2));
 
-            setIsLatest(activeIndex === 0); // Sadece en yeni veri düzenlenebilir
+            setIsLatest(activeIndex === 0);
         }
     }, [priceHistory, activeIndex]);
+    const handleSubmitForm = (e) => {
+        e.preventDefault();
+
+        let payload = {};
+        payload = {
+            type: "fixed",
+            originalPrice: Number(originalPrice),
+            discountRate: Number(discountRate),
+            currency,
+            isOfferable,
+            requestRequired
+        };
+        // 👇 Son değilse payload'a `_id` ekle
+        if (priceHistory[activeIndex] && activeIndex !== priceHistory.length - 1) {
+            payload._id = priceHistory[activeIndex]._id;
+        }
+
+        dispatch(updateProductPrice({ companyid, productid, payload }));
+    };
+    const handleDeletePrice = () => {
+        const id = priceHistory[activeIndex]?._id;
+        if (!id) return;
+
+        if (window.confirm("Bu fiyat bilgisini silmek istediğine emin misin?")) {
+            dispatch(deleteProductBasePriceItem({ companyid, productid, priceid: id }));
+        }
+    };
     return (
         <Modal
-            size='xl'
             show={isOpen("updateProductPrice")}
             onHide={() => closeModal("updateProductPrice")}
             aria-labelledby="example-modal-sizes-title-lg plans-container"
@@ -133,256 +200,134 @@ export default function UpdateProductPriceModal({ companyid, productid, onRefres
                         <Col md={12}>
                             <div className="form-section">
                                 <div className="form-content">
-                                    <div className="form-container">
-                                        <div className="container-fluid">
-                                            <div className="form-header">
-                                                <h2 className="form-title">Ürünün Fiyatını güncelle</h2>
-                                                <p className="form-description">
-                                                    ürün fiyatları güncellenmez. yeni bir fiyat bilgisi olarak eklenir.
-                                                </p>
-                                                <div className="d-flex justify-content-between align-items-center mb-3">
-                                                    <div>
-                                                        <strong>Fiyat Tarihi:</strong>{" "}
-                                                        {priceHistory[activeIndex]?.createdAt
-                                                            ? new Date(priceHistory[activeIndex].createdAt).toLocaleString("tr-TR")
-                                                            : "—"}
-                                                    </div>
+                                    <div className="d-flex flex-col form-container w-100 justify-between">
 
-                                                    <div className="d-flex gap-2">
+                                        {isGetLoading && (
+                                            <div className="text-center my-3">
+                                                <Spinner animation="border" variant="primary" />
+                                            </div>
+                                        )}
+                                        <div className="form-header">
+                                            <Row>
+                                                <Col>
+                                                    <h2 className="form-title">Ürünün Fiyatını güncelle</h2>
+                                                    <p className="form-description">
+                                                        ürün fiyatları güncellenmez. yeni bir fiyat bilgisi olarak eklenir.
+                                                    </p>
+                                                </Col>
+                                            </Row>
+                                            <Row>
+                                                <Col>
+                                                    <div className="d-flex align-middle justify-content-between w-100 align-items-center mb-3">
+                                                        {/* ◀️ Geri */}
                                                         <Button
                                                             variant="outline-secondary"
                                                             size="sm"
-                                                            onClick={() => setActiveIndex((i) => Math.max(i - 1, 0))}
-                                                            disabled={activeIndex === priceHistory.length - 1}
+                                                            onClick={() => setActiveIndex((prev) => Math.max(prev - 1, 0))}
+                                                            disabled={activeIndex === 0}
                                                         >
                                                             ◀️ Geri
                                                         </Button>
+
+                                                        {/* Fiyat Tarihi Ortada */}
+                                                        <div className="fw-semibold text-center flex-grow-1">
+                                                            <span className="me-2">Fiyat Tarihi:</span>
+                                                            {priceHistory[activeIndex]?.createdAt
+                                                                ? new Date(priceHistory[activeIndex].createdAt).toLocaleString("tr-TR")
+                                                                : "—"}
+                                                        </div>
+
+                                                        {/* İleri ▶️ */}
                                                         <Button
                                                             variant="outline-secondary"
                                                             size="sm"
-                                                            onClick={() => setActiveIndex((i) => Math.min(i + 1, priceHistory.length - 1))}
-                                                            disabled={activeIndex === 0}
+                                                            onClick={() => setActiveIndex((prev) => Math.min(prev + 1, priceHistory.length - 1))}
+                                                            disabled={activeIndex === priceHistory.length - 1}
                                                         >
                                                             İleri ▶️
                                                         </Button>
                                                     </div>
-                                                </div>
-                                            </div>
-                                            <Form onSubmit={handleSubmitForm}>
+                                                </Col>
+                                            </Row>
 
-                                                <Form.Group as={Row} className="mb-3">
-                                                    <Form.Label column sm={2}>Fiyat Türü</Form.Label>
-                                                    <Col sm={10} className="d-flex gap-3">
-                                                        <Form.Check
-                                                            type="radio"
-                                                            label="Sabit Fiyat"
-                                                            name="priceType"
-                                                            value="fixed"
-                                                            checked={priceType === "fixed"}
-                                                            disabled={!isLatest}
-                                                            onChange={() => setPriceType("fixed")}
-                                                        />
-                                                        <Form.Check
-                                                            type="radio"
-                                                            label="Teklif Alınabilir"
-                                                            name="priceType"
-                                                            value="offer"
-                                                            checked={priceType === "offer"}
-                                                            disabled={!isLatest}
-                                                            onChange={() => setPriceType("offer")}
-                                                        />
-                                                        <Form.Check
-                                                            type="radio"
-                                                            label="Kiralana Bilir"
-                                                            name="priceType"
-                                                            value="rental"
-                                                            disabled={true}
-                                                            checked={priceType === "rental"}
-                                                            onChange={() => setPriceType("rental")}
-                                                        />
-                                                    </Col>
-                                                </Form.Group>
 
-                                                {priceType === "fixed" && (
-                                                    <>
-                                                        <Form.Group as={Row} className="mb-3">
-                                                            <Form.Label column sm={2}>Satış Fiyatı</Form.Label>
-                                                            <Col sm={7}>
-                                                                <Form.Control
-                                                                    type="text"
-                                                                    value={originalPrice}
-                                                                    onChange={(e) => setOriginalPrice(e.target.value)}
-                                                                    onInput={(e) => {
-                                                                        e.target.value = e.target.value.replace(/[^\d.]/g, "");
-                                                                    }}
-                                                                    disabled={!isLatest}
-                                                                    placeholder="Ürünün fiyatı"
-                                                                />
-                                                            </Col>
-                                                            <Col sm={3}>
-                                                                <Form.Select value={currency} onChange={(e) => setCurrency(e.target.value)}>
-                                                                    <option value="TL">TL</option>
-                                                                    <option value="DL">DL</option>
-                                                                </Form.Select>
-                                                            </Col>
-                                                        </Form.Group>
-
-                                                        <Form.Group as={Row} className="mb-3">
-                                                            <Form.Label column sm={2}>İndirim Oranı (%)</Form.Label>
-                                                            <Col sm={10}>
-                                                                <Form.Control
-                                                                    type="number"
-                                                                    value={discountRate}
-                                                                    onChange={(e) => setDiscountRate(e.target.value)}
-                                                                    disabled={!isLatest}
-                                                                    placeholder="Varsa, indirim yüzdesi"
-                                                                />
-                                                            </Col>
-                                                        </Form.Group>
-                                                    </>
-                                                )}
-                                                {priceType === "offer" && (
-                                                    <Form.Group as={Row} className="mb-3">
-                                                        <Form.Label column sm={2}>Teklif Formu</Form.Label>
-                                                        <Col sm={10}>
-                                                            <Form.Select disabled>
-                                                                <option>Teklif formu listesi (backend entegresi sonra yapılacak)</option>
-                                                            </Form.Select>
-                                                        </Col>
-                                                    </Form.Group>
-                                                )}
-                                                {priceType === "rental" && (
-                                                    <>
-                                                        {/* Kiralama Tipi ve Periyot Seçimi zaten var */}
-
-                                                        {/* 1️⃣ Ana Kiralama Fiyatı */}
-                                                        <Form.Group as={Row} className="mb-3">
-                                                            <Form.Label column sm={2}>Kiralama Tipi</Form.Label>
-                                                            <Col sm={10} className="d-flex gap-3">
-                                                                <Form.Check
-                                                                    type="radio"
-                                                                    label="Sürekli Kiralık"
-                                                                    name="rentalType"
-                                                                    value="continuous"
-                                                                    disabled={!isLatest}
-                                                                    checked={rentalType === "continuous"}
-                                                                    onChange={() => setRentalType("continuous")}
-                                                                />
-                                                                <Form.Check
-                                                                    type="radio"
-                                                                    label="Günlük Kiralık"
-                                                                    name="rentalType"
-                                                                    value="daily"
-                                                                    disabled={!isLatest}
-                                                                    checked={rentalType === "daily"}
-                                                                    onChange={() => setRentalType("daily")}
-                                                                />
-                                                            </Col>
-                                                        </Form.Group>
-                                                        <Form.Group as={Row} className="mb-3">
-                                                            <Form.Label column sm={2}>Kiralama Fiyatı</Form.Label>
-                                                            <Col sm={7}>
-                                                                <Form.Control
-                                                                    type="text"
-                                                                    value={originalPrice}
-                                                                    onChange={(e) => setOriginalPrice(e.target.value)}
-                                                                    disabled={!isLatest}
-                                                                    onInput={(e) => {
-                                                                        e.target.value = e.target.value.replace(/[^\d.]/g, "");
-                                                                    }}
-                                                                    placeholder="Ürünün fiyatı"
-                                                                />
-                                                            </Col>
-                                                            <Col sm={3}>
-                                                                <Form.Select value={rentalCurrency} onChange={(e) => setRentalCurrency(e.target.value)}>
-                                                                    <option value="TL">₺ TL</option>
-                                                                    <option value="DL">$ Dolar</option>
-                                                                </Form.Select>
-                                                            </Col>
-                                                        </Form.Group>
-
-                                                        {/* 2️⃣ Çarpanlı Fiyat Kuralları */}
-                                                        <Form.Group className="mb-3">
-                                                            <Form.Label>Fiyat Seçenek Kuralları</Form.Label>
-
-                                                            {pricingModifiers.map((rule, idx) => (
-                                                                <Row className="mb-2" key={idx}>
-                                                                    <Col sm={4}>
-                                                                        <Form.Control
-                                                                            placeholder="Etiket (örn. 2 kişi)"
-                                                                            value={rule.label}
-                                                                            disabled={!isLatest}
-                                                                            onChange={(e) => {
-                                                                                const updated = [...pricingModifiers];
-                                                                                updated[idx].label = e.target.value;
-                                                                                setPricingModifiers(updated);
-                                                                            }}
-                                                                        />
-                                                                    </Col>
-                                                                    <Col sm={3}>
-                                                                        <Form.Select
-                                                                            value={rule.type}
-                                                                            disabled={!isLatest}
-                                                                            onChange={(e) => {
-                                                                                const updated = [...pricingModifiers];
-                                                                                updated[idx].type = e.target.value;
-                                                                                setPricingModifiers(updated);
-                                                                            }}
-                                                                        >
-                                                                            <option value="increase">Artış (+)</option>
-                                                                            <option value="decrease">Azalış (-)</option>
-                                                                        </Form.Select>
-                                                                    </Col>
-                                                                    <Col sm={3}>
-                                                                        <Form.Control
-                                                                            type="text"
-                                                                            placeholder="% Değer"
-                                                                            value={rule.value}
-                                                                            disabled={!isLatest}
-                                                                            onChange={(e) => {
-                                                                                const updated = [...pricingModifiers];
-                                                                                updated[idx].value = e.target.value.replace(/[^\d.]/g, "");
-                                                                                setPricingModifiers(updated);
-                                                                            }}
-                                                                        />
-                                                                    </Col>
-                                                                    <Col sm={2}>
-                                                                        <Button
-                                                                            variant="outline-danger"
-                                                                            size="sm"
-                                                                            disabled={!isLatest}
-                                                                            onClick={() => {
-                                                                                setPricingModifiers(pricingModifiers.filter((_, i) => i !== idx));
-                                                                            }}
-                                                                        >
-                                                                            ❌
-                                                                        </Button>
-                                                                    </Col>
-                                                                </Row>
-                                                            ))}
-
-                                                            <Button
-                                                                variant="outline-primary"
-                                                                size="sm"
-                                                                disabled={!isLatest}
-                                                                onClick={() =>
-                                                                    setPricingModifiers([...pricingModifiers, { label: "", type: "increase", value: "" }])
-                                                                }
-                                                            >
-                                                                + Yeni Seçenek
-                                                            </Button>
-                                                        </Form.Group>
-                                                    </>
-                                                )}
-
-                                                <Form.Group as={Row} className="mb-3">
-                                                    <Col sm={{ span: 10, offset: 2 }}>
-                                                        <Button disabled={!isLatest} type="submit">Güncelle</Button>
-                                                    </Col>
-                                                </Form.Group>
-
-                                            </Form>
                                         </div>
+                                        <Form onSubmit={handleSubmitForm}>
+                                            <Form.Group as={Row} className="mb-3">
+                                                <Form.Label column sm={4}>Satış Fiyatı</Form.Label>
+                                                <Col sm={5}>
+                                                    <Form.Control
+                                                        type="text"
+                                                        name="originalPrice"
+                                                        value={originalPriceDisplay}
+                                                        onChange={(e) => {
+                                                            const parsed = parseCurrency(e.target.value);
+                                                            setOriginalPrice(parsed);
+                                                            setOriginalPriceDisplay(e.target.value);
+                                                        }}
+                                                        placeholder="₺ Satış fiyatı"
+                                                    />
+                                                </Col>
+                                                <Col sm={3}>
+                                                    <Form.Select value={currency} onChange={(e) => setCurrency(e.target.value)}>
+                                                        <option value="TL">TL</option>
+                                                        <option value="DL">DL</option>
+                                                    </Form.Select>
+                                                </Col>
+                                            </Form.Group>
+
+                                            <Form.Group as={Row} className="mb-3">
+                                                <Form.Label column sm={4}>İndirim Oranı (%)</Form.Label>
+                                                <Col sm={8}>
+                                                    <Form.Control
+                                                        type="number"
+                                                        name="discountRate"
+                                                        value={discountRate}
+                                                        onChange={(e) => setDiscountRate(e.target.value.replace(/[^\d.]/g, ""))}
+                                                        placeholder="% indirim oranı"
+                                                    />
+                                                </Col>
+                                            </Form.Group>
+
+                                            <Form.Group as={Row} className="mb-3">
+                                                <Form.Label column sm={4}>İndirimli Fiyat</Form.Label>
+                                                <Col sm={5}>
+                                                    <Form.Control
+                                                        type="text"
+                                                        name="discountedPrice"
+                                                        value={discountedPriceDisplay}
+                                                        onChange={(e) => {
+                                                            const parsed = parseCurrency(e.target.value);
+                                                            setDiscountedPrice(parsed);
+                                                            setDiscountedPriceDisplay(e.target.value);
+                                                        }}
+                                                        placeholder="₺ İndirimli fiyat"
+                                                    />
+                                                </Col>
+                                                <Col sm={3}>
+                                                    <Form.Label className="pt-2">{currency}</Form.Label>
+                                                </Col>
+                                            </Form.Group>
+
+                                            <Form.Group as={Row} className="mb-3">
+                                                <Col sm={{ span: 10, offset: 2 }}>
+                                                    {activeIndex === priceHistory.length - 1 ? (
+                                                        <Button type="submit" variant="primary" disabled={isUpdateLoading}>
+                                                            💾 Ekle
+                                                        </Button>
+                                                    ) : (
+                                                        <>
+                                                            <Button type="submit" variant="warning" disabled={isUpdateLoading}>
+                                                                📝 Güncelle
+                                                            </Button>{" "}
+                                                            <Button variant="danger" onClick={handleDeletePrice}>
+                                                                🗑️ Sil
+                                                            </Button>
+                                                        </>
+                                                    )}
+                                                </Col>
+                                            </Form.Group>
+                                        </Form>
                                     </div>
                                 </div>
                             </div>

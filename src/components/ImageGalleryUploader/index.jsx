@@ -22,7 +22,7 @@ export default function ImageGalleryUploader({
   const [defaultImageId, setDefaultImageId] = useState(null);
 
   const uploadState = useSelector((state) => state.upload?.[uploaderId] || {});
-  
+
   const {
     isLoading,
     isSuccess,
@@ -46,15 +46,22 @@ export default function ImageGalleryUploader({
     resetUpload();
   }, []);
 
+
+
   useEffect(() => {
     if (!isLoading && isSuccess && Array.isArray(images)) {
-      const updatedGallery = [...gallery, ...images];
+      const existingIds = new Set(gallery.map(img => img._id || img.path));
+  
+      const newUniqueImages = images.filter(img => !existingIds.has(img._id || img.path));
+  
+      const updatedGallery = [...gallery, ...newUniqueImages];
+  
       setGallery(updatedGallery);
-      
+  
       const success = successCount ?? images.length;
       const fail = failureCount ?? 0;
       const total = totalFiles ?? success + fail;
-
+  
       if (fail === total) {
         toast.error(`${fail} dosya başarısız yüklendi.`);
       } else if (success === total) {
@@ -62,16 +69,17 @@ export default function ImageGalleryUploader({
       } else {
         toast.info(`${success} başarılı, ${fail} başarısız dosya yüklendi.`);
       }
-
+  
       if (onAllImagesUploaded) {
         onAllImagesUploaded(uploaderId, updatedGallery);
       }
     }
-
+  
     if (!isLoading && isError) {
       toast.error(`Yükleme sırasında hata oluştu: ${error || "Bilinmeyen hata"}`);
     }
   }, [images, isError, isSuccess, isLoading]);
+  
 
   const onDrop = useCallback((acceptedFiles) => {
     const formData = new FormData();
@@ -98,11 +106,11 @@ export default function ImageGalleryUploader({
     e.stopPropagation();
     const newGallery = gallery.filter((_, i) => i !== index);
     setGallery(newGallery);
-    
+
     if (onAllImagesUploaded) {
       onAllImagesUploaded(uploaderId, newGallery);
     }
-    
+
     if (onDeleteImages) {
       onDeleteImages(image._id);
     }
@@ -129,9 +137,9 @@ export default function ImageGalleryUploader({
     const newGallery = [...gallery];
     const [reorderedItem] = newGallery.splice(result.source.index, 1);
     newGallery.splice(result.destination.index, 0, reorderedItem);
-    
+
     setGallery(newGallery);
-    
+
     if (onOrderChange) {
       onOrderChange(uploaderId, newGallery);
     }
@@ -148,7 +156,7 @@ export default function ImageGalleryUploader({
   return (
     <div className="image-gallery-uploader">
       <div className="edit-mode-toggle mb-3">
-        <button 
+        <button
           className="btn btn-secondary"
           onClick={() => setIsEditMode(!isEditMode)}
         >

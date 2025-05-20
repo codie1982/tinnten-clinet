@@ -159,62 +159,64 @@ export default function Products() {
                         <td>{product.title}</td>
                         <td>{(product.categories || []).join(", ") || "-"}</td>
                         <td>
-                          {product.basePrice && product.basePrice.length > 0 ? (() => {
-                            const sortedPrices = [...product.basePrice].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                            const currentIndex = priceIndexes[product._id] || 0;
-                            const priceItem = sortedPrices[currentIndex];
+                          {product.pricetype == "fixed" ?
+                            product.basePrice && product.basePrice.length > 0 ? (() => {
+                              const sortedPrices = [...product.basePrice].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                              const currentIndex = priceIndexes[product._id] || 0;
+                              const priceItem = sortedPrices[currentIndex];
 
-                            const hasDiscount = priceItem.discountRate > 0 && priceItem.discountedPrice > 0;
-                            const formattedDate = new Date(priceItem.createdAt).toLocaleDateString("tr-TR", {
-                              day: "2-digit",
-                              month: "2-digit",
-                              year: "numeric",
-                            });
+                              const hasDiscount = priceItem.discountRate > 0 && priceItem.discountedPrice > 0;
+                              const formattedDate = new Date(priceItem.createdAt).toLocaleDateString("tr-TR", {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "numeric",
+                              });
 
-                            const showArrows = sortedPrices.length > 1;
+                              const showArrows = sortedPrices.length > 1;
 
-                            return (
-                              <div className="d-flex flex-column align-items-center">
-                                <div className="d-flex align-items-center">
-                                  {showArrows && (
-                                    <button
-                                      className="btn btn-sm btn-outline-light me-1"
-                                      onClick={() => handlePriceNav(product._id, "prev", sortedPrices.length)}
-                                      disabled={currentIndex === 0}
-                                    >
-                                      <FontAwesomeIcon icon={faChevronLeft} />
-                                    </button>
+                              return (
+                                <div className="d-flex flex-column align-items-center">
+                                  <div className="d-flex align-items-center">
+                                    {showArrows && (
+                                      <button
+                                        className="btn btn-sm btn-outline-light me-1"
+                                        onClick={() => handlePriceNav(product._id, "prev", sortedPrices.length)}
+                                        disabled={currentIndex === 0}
+                                      >
+                                        <FontAwesomeIcon icon={faChevronLeft} />
+                                      </button>
+                                    )}
+
+                                    <span className="fw-bold">
+                                      {hasDiscount ? priceItem.discountedPrice : priceItem.originalPrice} {priceItem.currency}
+                                    </span>
+
+                                    {showArrows && (
+                                      <button
+                                        className="btn btn-sm btn-outline-light ms-1"
+                                        onClick={() => handlePriceNav(product._id, "next", sortedPrices.length)}
+                                        disabled={currentIndex === sortedPrices.length - 1}
+                                      >
+                                        <FontAwesomeIcon icon={faChevronRight} />
+                                      </button>
+                                    )}
+                                  </div>
+
+                                  {hasDiscount ? (
+                                    <small className="text-success">
+                                      İndirim: {priceItem.originalPrice} → {priceItem.discountedPrice} ({priceItem.discountRate}%)
+                                    </small>
+                                  ) : (
+                                    <small className="text-white">
+                                      Net Fiyat: {priceItem.originalPrice} {priceItem.currency}
+                                    </small>
                                   )}
 
-                                  <span className="fw-bold">
-                                    {hasDiscount ? priceItem.discountedPrice : priceItem.originalPrice} {priceItem.currency}
-                                  </span>
-
-                                  {showArrows && (
-                                    <button
-                                      className="btn btn-sm btn-outline-light ms-1"
-                                      onClick={() => handlePriceNav(product._id, "next", sortedPrices.length)}
-                                      disabled={currentIndex === sortedPrices.length - 1}
-                                    >
-                                      <FontAwesomeIcon icon={faChevronRight} />
-                                    </button>
-                                  )}
+                                  <small className="text-white">Tarih: {formattedDate}</small>
                                 </div>
+                              );
+                            })() : "-" : "Teklif formu"}
 
-                                {hasDiscount ? (
-                                  <small className="text-success">
-                                    İndirim: {priceItem.originalPrice} → {priceItem.discountedPrice} ({priceItem.discountRate}%)
-                                  </small>
-                                ) : (
-                                  <small className="text-white">
-                                    Net Fiyat: {priceItem.originalPrice} {priceItem.currency}
-                                  </small>
-                                )}
-
-                                <small className="text-white">Tarih: {formattedDate}</small>
-                              </div>
-                            );
-                          })() : "-"}
                         </td>
                         <td>{product.variants?.length ?? "-"}</td>
                         <td>
@@ -242,17 +244,19 @@ export default function Products() {
                               <Dropdown.Item onClick={() => openModal("updateProductGallery")}>
                                 Resimleri Güncelle
                               </Dropdown.Item>
-                              <Dropdown.Item onClick={() => openModal("updateProductPrice")}>
-                                Fiyat Güncelle
-                              </Dropdown.Item>
-                              <Dropdown.Item onClick={() => openModal("updateProductVariant")}>
-                                Varyantları Güncelle
-                              </Dropdown.Item>
-                              {product.type === "offer_based" && (
+                              {product.pricetype === "fixed" && (
+                                <Dropdown.Item onClick={() => openModal("updateProductPrice")}>
+                                  Fiyat Güncelle
+                                </Dropdown.Item>
+                              )}
+                              {product.pricetype === "offer_based" && (
                                 <Dropdown.Item onClick={() => openModal("updateProductRequestForm")}>
                                   İstek Formu Güncelle
                                 </Dropdown.Item>
                               )}
+                              <Dropdown.Item onClick={() => openModal("updateProductVariant")}>
+                                Varyantları Güncelle
+                              </Dropdown.Item>
                             </DropdownButton>
 
                             <button className="btn btn-sm btn-danger" onClick={() => { openModal("isRemoveProduct") }}>

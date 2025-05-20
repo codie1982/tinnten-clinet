@@ -8,7 +8,7 @@ const AuthContext = createContext(null);
 
 export function useAuth() {
     const context = useContext(AuthContext);
-   
+
     if (context === undefined || context === null) {
         throw new Error("useAuth() must be used within an AuthProvider.");
     }
@@ -16,7 +16,7 @@ export function useAuth() {
 }
 export function AuthProvider({ children }) {
     const dispatch = useDispatch()
- 
+
 
     const { data, sendCode, isError, isLoading: reduxLoading, isSuccess, isLogout, mailverify } = useSelector((state) => state.auth);
     const [settings, setSettings] = useState({
@@ -48,17 +48,19 @@ export function AuthProvider({ children }) {
             if (isSuccess && data) {
                 toast.success(data.message)
                 console.log("data:", data);
-                localStorage.setItem('access_token', data.data.accessToken);
-                localStorage.setItem('user', JSON.stringify(data.data.info));
-                localStorage.setItem('userid', JSON.stringify(data.data.userid));
+                localStorage.setItem('access_token', data.accessToken);
+                localStorage.setItem('user', JSON.stringify(data.info));
+                localStorage.setItem('userid', JSON.stringify(data.userid));
+                localStorage.setItem('company', JSON.stringify(data.company));
                 localStorage.setItem('settings', JSON.stringify(settings));
-                const user = data.data.info || null;
-                setAuthState({ isLogin: true, sendCode, user, settings, isLoading: false });
+                const user = data.info || null;
+                const company = data.company || null;
+                setAuthState({ isLogin: true, sendCode, user, company, settings, isLoading: false });
             }
 
 
             if (isLogout) {
-                setAuthState({ isLogin: false, user: null, isLoading: false });
+                setAuthState({ isLogin: false, user: null, company: null, isLoading: false });
                 localStorage.clear()
                 console.log("isLogout:", isLogout);
                 toast.success("Oturumunuz sonlandırıldı.");

@@ -16,7 +16,7 @@ import LogoImageUploader from "../../components/LogoImageUploader";
 import { toast } from "react-toastify";
 import MapPicker from "../../components/MapPicker";
 
-export default function CreateCompany() {
+export default function SetupCompany() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();

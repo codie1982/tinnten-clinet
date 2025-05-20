@@ -16,6 +16,7 @@ const initialState = {
     isDeleteSuccess: false,
     isDeleteLoading: false,
     message: '',
+    operation: "",
 }
 
 // Standard error handling for async thunk creation helper
@@ -51,6 +52,7 @@ export const deleteProductVariants = createProductThunk("delete/variants", produ
 export const deleteProductGallery = createProductThunk("delete/gallery", productServices.deleteProductGallery);
 export const deleteProductRequestForm = createProductThunk("delete/request-form", productServices.deleteProductRequestForm);
 export const deleteProductBasePrice = createProductThunk("delete/base-price", productServices.deleteProductBasePrice);
+export const deleteProductBasePriceItem = createProductThunk("delete/base-price/item", productServices.deleteProductBasePriceItem);
 export const deleteImageFromGallery = createProductThunk("delete/gallery/image", productServices.deleteImageFromGallery);
 
 
@@ -91,6 +93,9 @@ export const productSlicer = createSlice({
     reducers: {
         // Reset state to initial values
         resetProduct: () => initialState,
+        resetOperation: (state) => {
+            state.operation = "";
+        },
     },
     extraReducers: (builder) => {
         // CRUD Operations
@@ -106,7 +111,7 @@ export const productSlicer = createSlice({
         buildReducerCases(builder, getProductVariants, 'getVariants', 'updateData');
 
         // Update Operations
-        buildReducerCases(builder, updateProduct, 'updateProduct');
+        buildReducerCases(builder, updateProduct, 'updateProduct',"updateData");
         buildReducerCases(builder, updateProductPrice, 'updatePrice');
         buildReducerCases(builder, updateProductGallery, 'updateGallery');
         buildReducerCases(builder, updateProductVariants, 'updateVariants');
@@ -118,11 +123,12 @@ export const productSlicer = createSlice({
         buildReducerCases(builder, deleteProductGallery, 'deleteGallery');
         buildReducerCases(builder, deleteProductRequestForm, 'deleteRequestForm');
         buildReducerCases(builder, deleteProductBasePrice, 'deleteBasePrice');
-        buildReducerCases(builder, deleteImageFromGallery, 'deleteImageFromGallery');
+        buildReducerCases(builder, deleteProductBasePriceItem, 'deleteBasePriceItem',"deletePriceItem");
+        buildReducerCases(builder, deleteImageFromGallery, 'deleteImageFromGallery', "deleteImage");
     }
 });
 
-export const { resetProduct } = productSlicer.actions;
+export const { resetProduct,resetOperation } = productSlicer.actions;
 export default productSlicer.reducer;
 
 

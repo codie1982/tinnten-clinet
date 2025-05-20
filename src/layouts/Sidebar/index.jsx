@@ -7,10 +7,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import logo from '../../assets/logo.png';
 import FeaturesPrice from '../../components/Modals/UserPackagesModal';
 import RenameHistoryModal from '../../components/Modals/RenameHistoryModal';
+import CompanyDropup from '../../components/CompanyDropup';
 import DeleteConversationModal from '../../components/Modals/DeleteConversationModal';
 import HistorySearchModal from '../../components/Modals/HistorySearchModal';
 import BuisnessPackageModal from '../../components/Modals/BuisnessPackageModal';
-
+import { useAuth } from '../../context/authContext'
 import { useTranslation } from "react-i18next";
 
 import {
@@ -25,6 +26,8 @@ import useChat from '../../hooks/useChat';
 import { useModal } from "../../../src/components/Modals/ModalProvider.jsx";
 export default function Sidebar({ openSidebar }) {
   const [t] = useTranslation("global");
+
+  const { isLogin, company } = useAuth();
   const dispatch = useDispatch();
   const navigate = useNavigate()
   const LIMIT = 5;
@@ -266,10 +269,18 @@ export default function Sidebar({ openSidebar }) {
           )}
         </ul>
 
-        <div className='waitList-content' onClick={() => openModal("buissnessPackages")}>
-          <p className='header'>Firma Profili Oluştur</p>
-          <p className='description'>Firma profili için paketler</p>
-        </div>
+        {isLogin ?
+          company == null ?
+            <div className='waitList-content' onClick={() => openModal("buissnessPackages")}>
+              <p className='header'>Firma Profili Oluştur</p>
+              <p className='description'>Firma profili için paketler</p>
+            </div> :
+            <CompanyDropup companies={company} />
+          : <></>
+        }
+
+
+
       </div>
 
       <FeaturesPrice isModalOpen={modals.features} setIsModalOpen={() => toggleModal("features")} />

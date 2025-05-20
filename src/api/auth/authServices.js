@@ -1,7 +1,6 @@
 
 import axiosInstance from "../axiosinstance";
 
-
 const info = async (userData) => {
     const response = await axiosInstance.post("info")
     return response.data;
@@ -35,27 +34,6 @@ const verifymailcode = async (data) => {
     return response.data
 }
 
-/* const logoutUser = async () => {
-    try {
-        console.log("logoutUser başladı (fetch ile test)");
-
-        const response = await fetch("http://localhost:5001/api/v10/auth/logout", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem('access_token')}`
-            },
-            credentials: "include"
-        });
-
-        const data = await response.json();
-        console.log("fetch logout response:", data);
-        return data;
-    } catch (error) {
-        console.error("Fetch logout hatası:", error);
-        throw error;
-    }
-}; */
 const logoutUser = async () => {
     try {
         console.log("logoutUser başladı");
@@ -89,7 +67,6 @@ const checkToken = async () => {
     const response = await axiosInstance.get("auth/validate", {}, { skipAuth: true });
     return response.data
 }
-
 
 const authService = {
     register, login, googlelogin, createGoogleurl, logoutUser, axiosTest, info, checkToken, sendmailcode, verifymailcode

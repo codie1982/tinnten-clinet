@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { Row, Col, Container, Modal, Form, Button } from 'react-bootstrap'
+import { Row, Col, Container, Modal, Form, Button, Spinner } from 'react-bootstrap'
 import { useModal } from '../ModalProvider'
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons'
 
-import { addProduct, updateProduct, getProductBase } from "../../../api/product/productSlicer"
+import { addProduct, updateProduct, getProductBase, resetOperation } from "../../../api/product/productSlicer"
 import { toast } from 'react-toastify';
 
 export default function UpdateProduct({ companyid, productid, onRefresh }) {
@@ -20,11 +20,13 @@ export default function UpdateProduct({ companyid, productid, onRefresh }) {
     const [redirectUrl, setRedirectUrl] = useState("");
     const [slug, setSlug] = useState("");
     const [attributes, setAttributes] = useState([{ name: "", value: "" }]);
+    const [priceType, setPriceType] = useState("fixed"); // "fixed" or "offer"
+    const [isGetLoading, setisGetLoading] = useState(false)
+    const [isUploadLoading, setIsUploadLoading] = useState(false)
 
 
+    const { updateData, isLoading, isSuccess, isError, operation } = useSelector(state => state.product)
 
-    const { updateData, isProductLoading, isProcudtSuccess, isProductError } = useSelector(state => state.product)
-    const { isUpdateLoading, isUpdateSuccess, isUpdateError } = useSelector(state => state.product)
 
     useEffect(() => {
         if (isOpen("updateProduct") && companyid && productid) {
@@ -33,23 +35,33 @@ export default function UpdateProduct({ companyid, productid, onRefresh }) {
     }, [isOpen("updateProduct"), companyid, productid]);
 
     useEffect(() => {
-        if (!isUpdateLoading && isUpdateSuccess && !isUpdateError) {
-            toast.success("Güncelleme Başarılı")
-            closeModal("updateProduct")
-            if(onRefresh){
-                onRefresh()
+        console.log("operation")
+        if (operation == "getBase") {
+            setisGetLoading(isLoading)
+        } else if (operation == "updateProduct") {
+            setIsUploadLoading(isLoading)
+            if (!isLoading && isSuccess && !isError) {
+                toast.success("Güncelleme Başarılı")
+                closeModal("updateProduct")
+                if (onRefresh) {
+                    onRefresh()
+                }
             }
-          
         }
-    }, [isUpdateLoading, isUpdateSuccess, isUpdateError])
+
+
+
+    }, [isLoading, isSuccess, isError, operation])
 
 
     useEffect(() => {
         if (updateData) {
+            console.log("updateData", updateData)
             setTitle(updateData.title || "");
             setMeta(updateData.meta || "");
             setDescription(updateData.description || "");
             setCategories(updateData.categories || []);
+            setPriceType(updateData.pricetype)
             setRedirectUrl(
                 Array.isArray(updateData.redirectUrl)
                     ? updateData.redirectUrl[0] || ""
@@ -84,6 +96,7 @@ export default function UpdateProduct({ companyid, productid, onRefresh }) {
             meta,
             description,
             categories,
+            priceType,
             redirectUrl: redirectUrl && redirectUrl.trim() !== "" ? [redirectUrl.trim()] : [],
             attributes,
             type: "product",
@@ -140,146 +153,178 @@ export default function UpdateProduct({ companyid, productid, onRefresh }) {
                         <Col md={12}>
                             <div className="form-section">
                                 <div className="form-content">
-                                    <div className="form-container">
-                                        <div className="container-fluid">
-
-                                            <div className="form-header">
-                                                <h2 className="form-title">Ürünü Güncelleyin</h2>
-                                                <p className="form-description">
-                                                    Bu alan ürünün genel alanlarını güncellemenizi sağlar
-                                                </p>
+                                    <div className="d-flex flex-col form-container w-100 justify-between">
+                                        {isGetLoading && (
+                                            <div className="text-center my-3">
+                                                <Spinner animation="border" variant="primary" />
                                             </div>
-                                            <Form onSubmit={handleSubmitForm}>
+                                        )}
 
-                                                <Form.Group as={Row} className="mb-3">
-                                                    <Form.Label column sm={2}>Ürün Adı</Form.Label>
-                                                    <Col sm={10}>
-                                                        <Form.Control
-                                                            value={title}
-                                                            onChange={(e) => setTitle(e.target.value)}
-                                                            required
-                                                            placeholder="Ürün adı girin"
-                                                        />
-                                                    </Col>
-                                                </Form.Group>
-
-                                                <Form.Group as={Row} className="mb-3">
-                                                    <Form.Label column sm={2}>Benzersiz Ürün Kodu</Form.Label>
-                                                    <Col sm={10}>
-                                                        <Form.Control
-                                                            readOnly
-                                                            value={slug}
-                                                            placeholder="Otomatik oluşturulacak"
-                                                        />
-                                                        <Form.Text className="text-white">
-                                                            Bu alan ürün adı temel alınarak oluşturulur ve sistemde benzersiz tanımlama sağlar.
-                                                        </Form.Text>
-                                                    </Col>
-                                                </Form.Group>
-
-
-                                                <Form.Group as={Row} className="mb-3">
-                                                    <Form.Label column sm={2}>Meta Açıklama</Form.Label>
-                                                    <Col sm={10}>
-                                                        <Form.Control
-                                                            value={meta}
-                                                            onChange={(e) => setMeta(e.target.value)}
-                                                            placeholder="Kısa açıklama - SEO amaçlı"
-                                                        />
-                                                    </Col>
-                                                </Form.Group>
-
-                                                <Form.Group as={Row} className="mb-3">
-                                                    <Form.Label column sm={2}>Açıklama</Form.Label>
-                                                    <Col sm={10}>
-                                                        <Form.Control
-                                                            as="textarea"
-                                                            rows={4}
-                                                            value={description}
-                                                            onChange={(e) => setDescription(e.target.value)}
-                                                            placeholder="Ürünün detaylı açıklaması"
-                                                        />
-                                                    </Col>
-                                                </Form.Group>
-
-                                                <Form.Group as={Row} className="mb-3">
-                                                    <Form.Label column sm={2}>Kategoriler</Form.Label>
-                                                    <Col sm={10}>
-                                                        <Form.Control
-                                                            value={categoryInput}
-                                                            onChange={(e) => setCategoryInput(e.target.value)}
-                                                            onKeyDown={handleCategoryKeyDown}
-                                                            placeholder="Her kategori için virgül veya Enter kullanın"
-                                                        />
-                                                        <div className="d-flex flex-wrap mt-2">
-                                                            {categories.map((tag, index) => (
-                                                                <span key={index} className="badge bg-secondary me-2">{tag}</span>
-                                                            ))}
-                                                        </div>
-                                                    </Col>
-                                                </Form.Group>
-
-                                                <Form.Group as={Row} className="mb-3">
-                                                    <Form.Label column sm={2}>Yönlendirme Linki</Form.Label>
-                                                    <Col sm={10}>
-                                                        <Form.Control
-                                                            type="url"
-                                                            value={redirectUrl}
-                                                            onChange={(e) => setRedirectUrl(e.target.value)}
-                                                            placeholder="Kullanıcının yönlendirileceği URL"
-                                                        />
-                                                    </Col>
-                                                </Form.Group>
-
-
-
-                                                <Row className="mb-3">
-                                                    <Col sm={2}>  </Col>
-                                                    <Col sm={10} className="d-flex gap-3">
-                                                        <Button variant="outline-primary" onClick={addAttribute} className="mt-2">
-                                                            <FontAwesomeIcon icon={faPlus} className="me-2" /> Özellik Ekle
-                                                        </Button>
-                                                    </Col>
-                                                </Row>
-                                                <Form.Group as={Row} className="mb-3">
-                                                    <Form.Label column sm={2}>Özellikler</Form.Label>
-                                                    <Col sm={10}>
-                                                        {attributes.map((attr, index) => (
-                                                            <Row key={index} className="mb-2 align-items-center">
-                                                                <Col sm={5}>
-                                                                    <Form.Control
-                                                                        placeholder="Özellik adı (örn. Renk)"
-                                                                        value={attr.name}
-                                                                        onChange={(e) => updateAttribute(index, "name", e.target.value)}
-                                                                    />
-                                                                </Col>
-                                                                <Col sm={5}>
-                                                                    <Form.Control
-                                                                        placeholder="Değer (örn. Kırmızı)"
-                                                                        value={attr.value}
-                                                                        onChange={(e) => updateAttribute(index, "value", e.target.value)}
-                                                                    />
-                                                                </Col>
-                                                                <Col sm={2}>
-                                                                    <Button variant="danger" onClick={() => removeAttribute(index)}>
-                                                                        <FontAwesomeIcon icon={faTrash} />
-                                                                    </Button>
-                                                                </Col>
-                                                            </Row>
-                                                        ))}
-
-                                                        <Form.Text className="text-white">Ürününüz için ek özellikler tanımlayabilirsiniz.</Form.Text>
-                                                    </Col>
-                                                </Form.Group>
-
-                                                <Form.Group as={Row} className="mb-3">
-                                                    <Col sm={{ span: 10, offset: 2 }}>
-                                                        <Button disabled={isUpdateLoading} type="submit">Güncelle</Button>
-                                                    </Col>
-                                                </Form.Group>
-
-                                            </Form>
+                                        <div className="form-header">
+                                            <h2 className="form-title">Ürünü Güncelleyin</h2>
+                                            <p className="form-description">
+                                                Bu alan ürünün genel alanlarını güncellemenizi sağlar
+                                            </p>
                                         </div>
+
+                                        <Form onSubmit={handleSubmitForm}>
+
+                                            <Form.Group as={Row} className="mb-3">
+                                                <Form.Label column sm={2}>Ürün Adı</Form.Label>
+                                                <Col sm={10}>
+                                                    <Form.Control
+                                                        value={title}
+                                                        onChange={(e) => setTitle(e.target.value)}
+                                                        required
+                                                        placeholder="Ürün adı girin"
+                                                    />
+                                                </Col>
+                                            </Form.Group>
+
+                                            <Form.Group as={Row} className="mb-3">
+                                                <Form.Label column sm={2}>Benzersiz Ürün Kodu</Form.Label>
+                                                <Col sm={10}>
+                                                    <Form.Control
+                                                        readOnly
+                                                        value={slug}
+                                                        placeholder="Otomatik oluşturulacak"
+                                                    />
+                                                    <Form.Text className="text-white">
+                                                        Bu alan ürün adı temel alınarak oluşturulur ve sistemde benzersiz tanımlama sağlar.
+                                                    </Form.Text>
+                                                </Col>
+                                            </Form.Group>
+
+
+                                            <Form.Group as={Row} className="mb-3">
+                                                <Form.Label column sm={2}>Meta Açıklama</Form.Label>
+                                                <Col sm={10}>
+                                                    <Form.Control
+                                                        value={meta}
+                                                        onChange={(e) => setMeta(e.target.value)}
+                                                        placeholder="Kısa açıklama - SEO amaçlı"
+                                                    />
+                                                </Col>
+                                            </Form.Group>
+
+                                            <Form.Group as={Row} className="mb-3">
+                                                <Form.Label column sm={2}>Açıklama</Form.Label>
+                                                <Col sm={10}>
+                                                    <Form.Control
+                                                        as="textarea"
+                                                        rows={4}
+                                                        value={description}
+                                                        onChange={(e) => setDescription(e.target.value)}
+                                                        placeholder="Ürünün detaylı açıklaması"
+                                                    />
+                                                </Col>
+                                            </Form.Group>
+
+                                            <Form.Group as={Row} className="mb-3">
+                                                <Form.Label column sm={2}>Kategoriler</Form.Label>
+                                                <Col sm={10}>
+                                                    <Form.Control
+                                                        value={categoryInput}
+                                                        onChange={(e) => setCategoryInput(e.target.value)}
+                                                        onKeyDown={handleCategoryKeyDown}
+                                                        placeholder="Her kategori için virgül veya Enter kullanın"
+                                                    />
+                                                    <div className="d-flex flex-wrap mt-2">
+                                                        {categories.map((tag, index) => (
+                                                            <span key={index} className="badge bg-secondary me-2">{tag}</span>
+                                                        ))}
+                                                    </div>
+                                                </Col>
+                                            </Form.Group>
+
+                                            <Form.Group as={Row} className="mb-3">
+                                                <Form.Label column sm={2}>Yönlendirme Linki</Form.Label>
+                                                <Col sm={10}>
+                                                    <Form.Control
+                                                        type="url"
+                                                        value={redirectUrl}
+                                                        onChange={(e) => setRedirectUrl(e.target.value)}
+                                                        placeholder="Kullanıcının yönlendirileceği URL"
+                                                    />
+                                                </Col>
+                                            </Form.Group>
+                                            <Row className="mb-3">
+                                                <Col sm={2}>  </Col>
+                                                <Col sm={10} className="d-flex gap-3">
+                                                    <Button variant="outline-primary" onClick={addAttribute} className="mt-2">
+                                                        <FontAwesomeIcon icon={faPlus} className="me-2" /> Özellik Ekle
+                                                    </Button>
+                                                </Col>
+                                            </Row>
+                                            <Form.Group as={Row} className="mb-3">
+                                                <Form.Label column sm={2}>Özellikler</Form.Label>
+                                                <Col sm={10}>
+                                                    {attributes.map((attr, index) => (
+                                                        <Row key={index} className="mb-2 align-items-center">
+                                                            <Col sm={5}>
+                                                                <Form.Control
+                                                                    placeholder="Özellik adı (örn. Renk)"
+                                                                    value={attr.name}
+                                                                    onChange={(e) => updateAttribute(index, "name", e.target.value)}
+                                                                />
+                                                            </Col>
+                                                            <Col sm={5}>
+                                                                <Form.Control
+                                                                    placeholder="Değer (örn. Kırmızı)"
+                                                                    value={attr.value}
+                                                                    onChange={(e) => updateAttribute(index, "value", e.target.value)}
+                                                                />
+                                                            </Col>
+                                                            <Col sm={2}>
+                                                                <Button variant="danger" onClick={() => removeAttribute(index)}>
+                                                                    <FontAwesomeIcon icon={faTrash} />
+                                                                </Button>
+                                                            </Col>
+                                                        </Row>
+                                                    ))}
+
+                                                    <Form.Text className="text-white">Ürününüz için ek özellikler tanımlayabilirsiniz.</Form.Text>
+                                                </Col>
+                                            </Form.Group>
+                                            <Form.Group as={Row} className="mb-3">
+                                                <Form.Label column sm={2}>Fiyat Türü</Form.Label>
+                                                <Col sm={10} className="d-flex gap-3">
+                                                    <Form.Check
+                                                        type="radio"
+                                                        label="Sabit Fiyat"
+                                                        name="priceType"
+                                                        value="fixed"
+                                                        checked={priceType === "fixed"}
+                                                        onChange={() => setPriceType("fixed")}
+                                                    />
+                                                    <Form.Check
+                                                        type="radio"
+                                                        label="Teklif Alınabilir"
+                                                        name="priceType"
+                                                        value="offer_based"
+                                                        checked={priceType === "offer_based"}
+                                                        onChange={() => setPriceType("offer_based")}
+                                                    />
+                                                    <Form.Check
+                                                        type="radio"
+                                                        label="Kiralana Bilir"
+                                                        name="priceType"
+                                                        value="rental"
+                                                        disabled={true}
+                                                        checked={priceType === "rental"}
+                                                        onChange={() => setPriceType("rental")}
+                                                    />
+                                                </Col>
+                                            </Form.Group>
+
+                                            <Form.Group as={Row} className="mb-3">
+                                                <Col sm={{ span: 10, offset: 2 }}>
+                                                    <Button disabled={isUploadLoading} type="submit">Güncelle</Button>
+                                                </Col>
+                                            </Form.Group>
+
+                                        </Form>
+
                                     </div>
                                 </div>
                             </div>
