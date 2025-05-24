@@ -6,6 +6,7 @@ const initialState = {
     productData: null,
     updateData: null,
     productList: null,
+    titles: null,
     isProductError: false,
     isProductSuccess: false,
     isProductLoading: false,
@@ -37,6 +38,10 @@ const createProductThunk = (name, serviceCall) =>
 export const addFavorite = createProductThunk("addFavorite", productServices.addFavorite);
 export const getProductDetail = createProductThunk("detail", productServices.getProductDetail);
 export const addProduct = createProductThunk("add", productServices.addProduct);
+
+export const findProducttitle = createProductThunk("find/title", productServices.findProducttitle);
+export const createProducts = createProductThunk("find/create", productServices.createProducts);
+
 export const updateProduct = createProductThunk("update", productServices.updateProduct);
 export const updateProductPrice = createProductThunk("update/price", productServices.updateProductPrice);
 export const updateProductGallery = createProductThunk("update/gallery", productServices.updateProductGallery);
@@ -102,6 +107,8 @@ export const productSlicer = createSlice({
         buildReducerCases(builder, addFavorite, 'addFavorite', 'data');
         buildReducerCases(builder, getProductDetail, 'getDetail', 'productData');
         buildReducerCases(builder, addProduct, 'addProduct', 'productData');
+        buildReducerCases(builder, findProducttitle, 'findProductTitle', 'titles');
+        buildReducerCases(builder, createProducts, 'createProducts', 'productList');
         buildReducerCases(builder, getProducts, 'getProducts', 'productList');
 
         // Sub-domain Fetch Operations

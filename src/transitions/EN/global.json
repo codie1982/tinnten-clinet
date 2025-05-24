@@ -1,6 +1,6 @@
 {
     "form": {
-        "successMessage": "Form successfully added.",
+        "successMessage": "Form successfully getting info.",
         "errorMessage": "Failed to add form.",
         "locationLimitWarning": "Only one 'Location' field can be added.",
         "nameRequired": "Form name is required.",

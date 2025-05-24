@@ -8,7 +8,6 @@ import Recommendation from '../Recommendation';
 import { Row, Col } from 'react-bootstrap';
 import AgentFeedbackViewer from '../../components/AgentFeedbackViewer';
 import { DETAILVIEW, QUESTIONVIEW, RECOMMENDATOINVIEW } from 'constant/chatContentConstant';
-import useAgentSocket from "../../hooks/useAgentSocket";
 import useChat from "../../hooks/useChat";
 
 export default function Chat({ viewState }) {
@@ -62,7 +61,7 @@ export default function Chat({ viewState }) {
 
 
     const selectedAction = (chatView, item) => {
-        console.log("viewAction, item",chatView, assistansIntent, item)
+        console.log("viewAction, item", chatView, assistansIntent, item)
         if (!item) return null;
 
         switch (chatView) {

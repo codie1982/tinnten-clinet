@@ -1,43 +1,22 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useNavigate, useParams, Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+
+
+
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimesCircle, faCheckCircle, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { Button, Form, Row, Col, InputGroup, Spinner, Alert } from 'react-bootstrap'
-import { useTranslation } from "react-i18next"
+
 import { useAuth } from 'context/authContext';
 import { useModal } from '../../components/Modals/ModalProvider'
-import Sidebar from "../../layouts/Sidebar";
-import Header from "../../layouts/Header";
-import MapPicker from "../../components/MapPicker";
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import { v4 as uuidv4 } from "uuid";
-import { toast } from 'react-toastify';
-import Breadcrumb from "../../components/Breadcrumb";
-import { addForm } from "../../api/form/dynamicFormSlicer"
 
-import React, { useCallback, useMemo, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
-import { useAuth } from '../hooks/useAuth'; // Custom hook
-import { useModal } from '../hooks/useModal'; // Custom hook
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import Breadcrumb from "../../components/Breadcrumb";
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'react-toastify';
-import { addForm } from '../store/slices/dynamicFormSlice'; // Assuming Redux slice
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Form, Button, Row, Col, Breadcrumb, Alert } from 'react-bootstrap';
-import React, { useCallback, useMemo, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
-import { useAuth } from '../hooks/useAuth'; // Custom hook
-import { useModal } from '../hooks/useModal'; // Custom hook
-import { v4 as uuidv4 } from 'uuid';
-import { toast } from 'react-toastify';
-import { addForm } from '../store/slices/dynamicFormSlice'; // Assuming Redux slice
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Form, Button, Row, Col, Breadcrumb, Alert } from 'react-bootstrap';
+import { addForm, updateForm, getFormDetail } from '../../api/form/dynamicFormSlicer'; // Assuming Redux slice
 
 const EditFormBuilder = () => {
   const navigate = useNavigate();
@@ -45,6 +24,7 @@ const EditFormBuilder = () => {
   const { openModal, closeModal } = useModal();
   const { t } = useTranslation('global');
   const { user, isLogin } = useAuth();
+  const { formid } = useParams();
 
   // State management
   const [formName, setFormName] = useState('');
@@ -53,41 +33,48 @@ const EditFormBuilder = () => {
   const [locationPreview, setLocationPreview] = useState({ lat: 39.9208, lng: 32.8541, radius: 5 });
 
   // Redux state
-  const { isLoading, isSuccess, isError } = useSelector((state) => state.dynamicform);
+  const { formDetail, isLoading, isSuccess, isError, operation } = useSelector((state) => state.dynamicform);
 
   // Fetch data from service on component mount
   useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        // Example: Fetch form data from an API
-        const response = await fetch('/api/form/123', {
-          headers: {
-            Authorization: `Bearer ${user.token}`, // Assuming user token for auth
-          },
-        });
-        if (!response.ok) {
-          throw new Error('Failed to fetch form data');
-        }
-        const formData = await response.json();
-
-        // Set fetched data to state
-        setFormName(formData.formName || '');
-        setDescription(formData.description || '');
-        setFields(formData.fields || []);
-        setLocationPreview(
-          formData.locationPreview || { lat: 39.9208, lng: 32.8541, radius: 5 }
-        );
-      } catch (error) {
-        console.error('Error fetching form data:', error);
-        toast.error(t('form.fetchError'));
-      }
-    };
-
-    // Only fetch if user is logged in (optional, based on your auth logic)
-    if (isLogin) {
-      fetchInitialData();
+    if (isLogin && formid) {
+      dispatch(getFormDetail({ formid }));
     }
-  }, []); // Dependencies: run when isLogin or user changes
+  }, [isLogin, formid, dispatch]);
+
+  // Set fetched data to state
+  useEffect(() => {
+    if (operation === 'getFormDetail' && !isLoading && isSuccess && !isError && formDetail) {
+      toast.success(t('form.successMessage'));
+      console.log('formDetail', formDetail);
+
+      // Ensure each field has a unique uuid
+      const updatedFields = formDetail.fields.map((field) => ({
+        ...field,
+        uuid: field.uuid || uuidv4(), // Assign new uuid if missing
+      }));
+
+      // Set fetched data to state
+      setFormName(formDetail.formName || '');
+      setDescription(formDetail.description || '');
+      setFields(updatedFields || []);
+      setLocationPreview(
+        formDetail.locationPreview || { lat: 39.9208, lng: 32.8541, radius: 5 }
+      );
+    } else if (operation === 'getFormDetail' && isError) {
+      toast.error(t('form.fetchError'));
+    }
+  }, [isLoading, isSuccess, isError, operation, formDetail, t]);
+
+  // Toast notifications for form update
+  useEffect(() => {
+    if (operation === 'updateForm' && !isLoading && isSuccess && !isError) {
+      toast.success(t('form.updateSuccessMessage'));
+      navigate('/dashboard/forms');
+    } else if (operation === 'updateForm' && isError) {
+      toast.error(t('form.updateErrorMessage'));
+    }
+  }, [isLoading, isSuccess, isError, operation, navigate, t]);
 
   // Constants
   const fieldTypes = useMemo(
@@ -104,15 +91,6 @@ const EditFormBuilder = () => {
     [t]
   );
 
-  // Toast notifications for form status
-  useEffect(() => {
-    if (!isLoading && isSuccess && !isError) {
-      toast.success(t('form.successMessage'));
-    } else if (isError) {
-      toast.error(t('form.errorMessage'));
-    }
-  }, [isLoading, isSuccess, isError, t]);
-
   // Handlers
   const addField = useCallback(() => {
     const alreadyHasMap = fields.some((f) => f.type === 'location');
@@ -124,7 +102,7 @@ const EditFormBuilder = () => {
     setFields((prev) => [
       ...prev,
       {
-        id: uuidv4(),
+        uuid: uuidv4(),
         label: '',
         type: 'text',
         required: false,
@@ -139,11 +117,26 @@ const EditFormBuilder = () => {
     ]);
   }, [fields, t]);
 
-  const updateField = useCallback((id, key, value) => {
+  const updateField = useCallback((uuid, key, value) => {
     setFields((prevFields) =>
       prevFields.map((field) => {
-        if (field.id !== id) return field;
+        if (field.uuid !== uuid) return field;
         let updatedField = { ...field, [key]: value };
+
+        // Reset incompatible properties when type changes
+        if (key === 'type') {
+          updatedField = {
+            ...updatedField,
+            options: ['dropdown', 'radio', 'checkbox'].includes(value) ? updatedField.options || [] : [],
+            validation: ['text', 'textarea', 'number', 'date'].includes(value) ? updatedField.validation || {} : {},
+            locationType: value === 'location' ? updatedField.locationType || 'point' : undefined,
+            bufferRadius: value === 'location' ? updatedField.bufferRadius || 5 : undefined,
+            points: value === 'location' ? updatedField.points || [] : undefined,
+            accept: value === 'file' ? updatedField.accept || '' : undefined,
+            multiple: value === 'file' ? updatedField.multiple || false : undefined,
+            maxFiles: value === 'file' && updatedField.multiple ? updatedField.maxFiles || 5 : undefined,
+          };
+        }
 
         // Auto-set maxFiles for file type
         if (updatedField.type === 'file' && updatedField.multiple && !updatedField.maxFiles) {
@@ -155,14 +148,14 @@ const EditFormBuilder = () => {
     );
   }, []);
 
-  const removeField = useCallback((id) => {
-    setFields((prev) => prev.filter((f) => f.id !== id));
+  const removeField = useCallback((uuid) => {
+    setFields((prev) => prev.filter((f) => f.uuid !== uuid));
   }, []);
 
-  const addOptionToField = useCallback((id) => {
+  const addOptionToField = useCallback((uuid) => {
     setFields((prev) =>
       prev.map((field) =>
-        field.id === id
+        field.uuid === uuid
           ? { ...field, options: [...(field.options || []), { label: '', value: '' }] }
           : field
       )
@@ -172,11 +165,11 @@ const EditFormBuilder = () => {
   const updateOption = useCallback((fieldId, index, key, value) => {
     setFields((prev) =>
       prev.map((field) =>
-        field.id === fieldId
+        field.uuid === fieldId
           ? {
-            ...field,
-            options: field.options?.map((opt, i) => (i === index ? { ...opt, [key]: value } : opt)),
-          }
+              ...field,
+              options: field.options?.map((opt, i) => (i === index ? { ...opt, [key]: value } : opt)),
+            }
           : field
       )
     );
@@ -202,14 +195,19 @@ const EditFormBuilder = () => {
         description,
         fields: fields.map((field) => {
           const transformedField = {
+            uuid: field.uuid,
             label: field.label,
             type: field.type,
             required: field.required,
             placeholder: field.placeholder,
             options: field.options || [],
             validation: field.validation || {},
-            dependencies: field.dependencies || [],
+            dependencies: (field.dependencies || []).map((dep) => ({
+              ...dep,
+              fieldid: dep.fieldid || field.uuid, // Ensure fieldid matches uuid
+            })),
             locationType: field.locationType || 'point',
+            _id: field._id || null,
           };
 
           if (field.type === 'file') {
@@ -224,9 +222,10 @@ const EditFormBuilder = () => {
         }),
       };
 
-      dispatch(addForm(payload));
+      console.log('payload', payload);
+      dispatch(updateForm({ companyid: '6824aace3bd66ed798e41bbb', formid, payload }));
     },
-    [formName, description, fields, dispatch, t]
+    [formName, description, fields, dispatch, formid, t]
   );
 
   const handleDragEnd = useCallback((result) => {
@@ -271,15 +270,15 @@ const EditFormBuilder = () => {
                 items={[
                   { label: t('breadcrumbs.home'), path: '/dashboard' },
                   { label: t('breadcrumbs.forms'), path: '/dashboard/forms' },
-                  { label: t('breadcrumbs.newForm') },
+                  { label: t('breadcrumbs.editForm') },
                 ]}
               />
             </div>
           </div>
 
           <div className="form-header">
-            <h2 className="form-title">{t('form.title')}</h2>
-            <p className="form-description">{t('form.description')}</p>
+            <h2 className="form-title">{t('form.editTitle')}</h2>
+            <p className="form-description">{t('form.editDescription')}</p>
           </div>
 
           <Row>
@@ -328,7 +327,7 @@ const EditFormBuilder = () => {
                           const isDepUnsupported = ['file', 'location', 'textarea'].includes(field.type);
 
                           return (
-                            <Draggable key={field.id} draggableId={field.id} index={index}>
+                            <Draggable key={field.uuid} draggableId={field.uuid} index={index}>
                               {(provided) => (
                                 <div
                                   ref={provided.innerRef}
@@ -344,7 +343,7 @@ const EditFormBuilder = () => {
                                       <Button
                                         variant="danger"
                                         size="sm"
-                                        onClick={() => removeField(field.id)}
+                                        onClick={() => removeField(field.uuid)}
                                       >
                                         {t('form.remove')}
                                       </Button>
@@ -356,7 +355,7 @@ const EditFormBuilder = () => {
                                       <Form.Label>{t('form.label')}</Form.Label>
                                       <Form.Control
                                         value={field.label}
-                                        onChange={(e) => updateField(field.id, 'label', e.target.value)}
+                                        onChange={(e) => updateField(field.uuid, 'label', e.target.value)}
                                         placeholder={t('form.labelPlaceholder')}
                                         required
                                         isInvalid={
@@ -374,7 +373,7 @@ const EditFormBuilder = () => {
                                       <Form.Label>{t('form.type')}</Form.Label>
                                       <Form.Select
                                         value={field.type}
-                                        onChange={(e) => updateField(field.id, 'type', e.target.value)}
+                                        onChange={(e) => updateField(field.uuid, 'type', e.target.value)}
                                       >
                                         {fieldTypes.map((type) => (
                                           <option key={type} value={type}>
@@ -389,7 +388,7 @@ const EditFormBuilder = () => {
                                         label={t('form.required')}
                                         checked={field.required}
                                         onChange={(e) =>
-                                          updateField(field.id, 'required', e.target.checked)
+                                          updateField(field.uuid, 'required', e.target.checked)
                                         }
                                       />
                                     </Col>
@@ -403,7 +402,7 @@ const EditFormBuilder = () => {
                                           type="text"
                                           value={field.accept || ''}
                                           onChange={(e) =>
-                                            updateField(field.id, 'accept', e.target.value)
+                                            updateField(field.uuid, 'accept', e.target.value)
                                           }
                                           placeholder={t('form.allowedFileTypesPlaceholder')}
                                         />
@@ -415,7 +414,7 @@ const EditFormBuilder = () => {
                                           label={t('form.active')}
                                           checked={field.multiple || false}
                                           onChange={(e) =>
-                                            updateField(field.id, 'multiple', e.target.checked)
+                                            updateField(field.uuid, 'multiple', e.target.checked)
                                           }
                                         />
                                       </Col>
@@ -428,7 +427,7 @@ const EditFormBuilder = () => {
                                             min={2}
                                             max={10}
                                             onChange={(e) =>
-                                              updateField(field.id, 'maxFiles', Number(e.target.value))
+                                              updateField(field.uuid, 'maxFiles', Number(e.target.value))
                                             }
                                             placeholder={t('form.maxFilesPlaceholder')}
                                           />
@@ -445,7 +444,7 @@ const EditFormBuilder = () => {
                                     <Form.Control
                                       value={field.placeholder || ''}
                                       onChange={(e) =>
-                                        updateField(field.id, 'placeholder', e.target.value)
+                                        updateField(field.uuid, 'placeholder', e.target.value)
                                       }
                                       placeholder={t('form.placeholderExample')}
                                     />
@@ -462,7 +461,7 @@ const EditFormBuilder = () => {
                                               placeholder={t('form.optionLabel')}
                                               value={opt.label}
                                               onChange={(e) =>
-                                                updateOption(field.id, idx, 'label', e.target.value)
+                                                updateOption(field.uuid, idx, 'label', e.target.value)
                                               }
                                             />
                                           </Col>
@@ -472,7 +471,7 @@ const EditFormBuilder = () => {
                                               placeholder={t('form.optionValue')}
                                               value={opt.value}
                                               onChange={(e) =>
-                                                updateOption(field.id, idx, 'value', e.target.value)
+                                                updateOption(field.uuid, idx, 'value', e.target.value)
                                               }
                                             />
                                           </Col>
@@ -483,7 +482,7 @@ const EditFormBuilder = () => {
                                               onClick={() => {
                                                 const updated = [...(field.options || [])];
                                                 updated.splice(idx, 1);
-                                                updateField(field.id, 'options', updated);
+                                                updateField(field.uuid, 'options', updated);
                                               }}
                                             >
                                               {t('form.delete')}
@@ -494,7 +493,7 @@ const EditFormBuilder = () => {
                                       <Button
                                         variant="outline-secondary"
                                         size="sm"
-                                        onClick={() => addOptionToField(field.id)}
+                                        onClick={() => addOptionToField(field.uuid)}
                                       >
                                         {t('form.addOption')}
                                       </Button>
@@ -514,7 +513,7 @@ const EditFormBuilder = () => {
                                           type="number"
                                           value={field.validation?.maxLength || ''}
                                           onChange={(e) =>
-                                            updateField(field.id, 'validation', {
+                                            updateField(field.uuid, 'validation', {
                                               ...field.validation,
                                               maxLength: Number(e.target.value),
                                             })
@@ -533,7 +532,7 @@ const EditFormBuilder = () => {
                                           type={field.type}
                                           value={field.validation?.min || ''}
                                           onChange={(e) =>
-                                            updateField(field.id, 'validation', {
+                                            updateField(field.uuid, 'validation', {
                                               ...field.validation,
                                               min: e.target.value,
                                             })
@@ -547,7 +546,7 @@ const EditFormBuilder = () => {
                                           type={field.type}
                                           value={field.validation?.max || ''}
                                           onChange={(e) =>
-                                            updateField(field.id, 'validation', {
+                                            updateField(field.uuid, 'validation', {
                                               ...field.validation,
                                               max: e.target.value,
                                             })
@@ -565,7 +564,7 @@ const EditFormBuilder = () => {
                                         <Form.Select
                                           value={field.locationType || 'point'}
                                           onChange={(e) =>
-                                            updateField(field.id, 'locationType', e.target.value)
+                                            updateField(field.uuid, 'locationType', e.target.value)
                                           }
                                         >
                                           {locationTypeOptions.map((opt) => (
@@ -585,7 +584,7 @@ const EditFormBuilder = () => {
                                             value={field.bufferRadius || 5}
                                             onChange={(e) =>
                                               updateField(
-                                                field.id,
+                                                field.uuid,
                                                 'bufferRadius',
                                                 parseInt(e.target.value)
                                               )
@@ -607,7 +606,7 @@ const EditFormBuilder = () => {
                                         <Form.Select
                                           value={field.dependencies?.[0]?.fieldid || ''}
                                           onChange={(e) =>
-                                            updateField(field.id, 'dependencies', [
+                                            updateField(field.uuid, 'dependencies', [
                                               {
                                                 fieldid: e.target.value,
                                                 condition: {
@@ -622,13 +621,13 @@ const EditFormBuilder = () => {
                                           {fields
                                             .filter(
                                               (f) =>
-                                                f.id !== field.id &&
+                                                f.uuid !== field.uuid &&
                                                 ['text', 'number', 'date', 'dropdown', 'radio', 'checkbox'].includes(
                                                   f.type
                                                 )
                                             )
                                             .map((f) => (
-                                              <option key={f.id} value={f.id}>
+                                              <option key={f.uuid} value={f.uuid}>
                                                 {f.label || t('form.unnamedField')}
                                               </option>
                                             ))}
@@ -641,7 +640,7 @@ const EditFormBuilder = () => {
                                           onChange={(e) => {
                                             const val = e.target.value;
                                             const prev = field.dependencies?.[0] || {};
-                                            updateField(field.id, 'dependencies', [
+                                            updateField(field.uuid, 'dependencies', [
                                               {
                                                 ...prev,
                                                 condition: {
@@ -654,7 +653,7 @@ const EditFormBuilder = () => {
                                         >
                                           {(() => {
                                             const depField = fields.find(
-                                              (f) => f.id === field.dependencies?.[0]?.fieldid
+                                              (f) => f.uuid === field.dependencies?.[0]?.fieldid
                                             );
                                             const type = depField?.type;
 
@@ -680,13 +679,13 @@ const EditFormBuilder = () => {
                                         <Form.Label>{t('form.value')}</Form.Label>
                                         {(() => {
                                           const depField = fields.find(
-                                            (f) => f.id === field.dependencies?.[0]?.fieldid
+                                            (f) => f.uuid === field.dependencies?.[0]?.fieldid
                                           );
                                           const type = depField?.type;
                                           const value = field.dependencies?.[0]?.condition?.value || '';
                                           const onChange = (val) => {
                                             const prev = field.dependencies?.[0] || {};
-                                            updateField(field.id, 'dependencies', [
+                                            updateField(field.uuid, 'dependencies', [
                                               {
                                                 ...prev,
                                                 condition: {
@@ -779,7 +778,7 @@ const EditFormBuilder = () => {
                   const dep = field.dependencies?.[0];
 
                   if (dep) {
-                    const depField = fields.find((f) => f.id === dep.fieldid);
+                    const depField = fields.find((f) => f.uuid === dep.fieldid);
                     if (!depField || isDepUnsupported) return null;
 
                     const operator = dep.condition?.operator || 'equals';
@@ -800,7 +799,7 @@ const EditFormBuilder = () => {
                   }
 
                   return (
-                    <Form.Group className="mb-3" key={field.id}>
+                    <Form.Group className="mb-3" key={field.uuid}>
                       <Form.Label>
                         {field.label} {field.required && <span className="text-danger">*</span>}
                       </Form.Label>
@@ -890,7 +889,7 @@ const EditFormBuilder = () => {
                               type="radio"
                               label={opt.label}
                               value={opt.value}
-                              name={`radio-${field.id}`}
+                              name={`radio-${field.uuid}`}
                               disabled
                             />
                           ))}
@@ -904,7 +903,7 @@ const EditFormBuilder = () => {
                               type="checkbox"
                               label={opt.label}
                               value={opt.value}
-                              name={`checkbox-${field.id}`}
+                              name={`checkbox-${field.uuid}`}
                               disabled
                             />
                           ))}
@@ -924,5 +923,7 @@ const EditFormBuilder = () => {
     </div>
   );
 };
+
+
 
 export default EditFormBuilder;

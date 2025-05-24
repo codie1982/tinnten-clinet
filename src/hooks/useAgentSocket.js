@@ -55,87 +55,86 @@ export default function useAgentSocket() {
 
   const connectSocket = async () => {
     if (!isLogin) {
-      console.log("[useAgentSocket] Giriş yapılmadı", userid, isLogin);
+      console.log("[useAgentSocket] Giriş yapılmadı", userid, isLogin, "Zaman:", new Date().toISOString());
       return;
     }
-
-    let userid = localStorage.getItem("userid")?.replace(/^"|"$/g, '');
-
+  
+    let userid = localStorage.getItem("userid")?.replace(/^"|"$/g, "");
+    if (!userid) {
+      console.error("[useAgentSocket] UserID bulunamadı. Zaman:", new Date().toISOString());
+      return;
+    }
+  
     // Zaten bağlıysa tekrar bağlanma
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
-      console.log("[useAgentSocket] WebSocket zaten açık, tekrar bağlanılmadı");
+      console.log("[useAgentSocket] WebSocket zaten açık, tekrar bağlanılmadı. Zaman:", new Date().toISOString());
       return;
     }
-
+  
     let token = localStorage.getItem("access_token");
     if (!token) {
-      console.log("[useAgentSocket] access_token bulunamadı");
+      console.log("[useAgentSocket] access_token bulunamadı. Zaman:", new Date().toISOString());
       try {
-        //token = await refreshToken();
+        // token = await refreshToken(); // Token yenileme fonksiyonunuzu aktifleştirin
+        console.error("[useAgentSocket] Token yenileme fonksiyonu eksik. Bağlantı iptal. Zaman:", new Date().toISOString());
+        return;
       } catch (error) {
-        console.error("[useAgentSocket] Token alınamadı, bağlantı iptal");
+        console.error("[useAgentSocket] Token alınamadı, bağlantı iptal:", error.message, "Zaman:", new Date().toISOString());
         return;
       }
     }
-
-    const socketUrl = `${process.env.REACT_APP_WS_URL || "ws://localhost:5001/stream"}?token=${token}`;
-    console.log("[useAgentSocket] Bağlanılıyor:", `${process.env.REACT_APP_WS_URL || "ws://localhost:5001/stream"}?token=${"..."}`);
-
+  
+    const socketUrl = `${process.env.REACT_APP_WS_URL || "ws://localhost:5001"}`; // Token'ı URL'den kaldır
+    console.log("[useAgentSocket] Bağlanılıyor:", socketUrl, "Zaman:", new Date().toISOString());
+  
     const socket = new WebSocket(socketUrl);
     socketRef.current = socket;
-
+  
     socket.onopen = () => {
-      console.log("[useAgentSocket] WebSocket bağlantısı kuruldu");
+      console.log("[useAgentSocket] WebSocket bağlantısı kuruldu. Zaman:", new Date().toISOString());
       reconnectAttempts.current = 0;
       // Mikro gecikme ekle
       setTimeout(() => {
-        const userIdStr = userid.toString(); // String’e çevir
-        console.log("[useAgentSocket] Kullanılan userid:", userIdStr);
+        const userIdStr = userid.toString();
+        console.log("[useAgentSocket] Kullanılan userid:", userIdStr, "Zaman:", new Date().toISOString());
         socket.send(
           JSON.stringify({
             event: "identify",
-            data: { userid: userIdStr },
+            data: { userid: userIdStr, token: token }, // Token'ı mesaj gövdesine ekle
           })
         );
-        console.log("[useAgentSocket] Identify mesajı gönderildi:", { userid: userIdStr });
-      }, 100); // 100ms gecikme
+        console.log("[useAgentSocket] Identify mesajı gönderildi:", { userid: userIdStr, token: token ? "Mevcut" : "Eksik" }, "Zaman:", new Date().toISOString());
+      }, 100);
     };
-
+  
     socket.onmessage = (event) => {
       try {
         const parsedData = JSON.parse(event.data);
         const { event: eventType, data } = parsedData;
-        //console.log("[useAgentSocket] Mesaj alındı:", { eventType, data });
-
+        console.log("[useAgentSocket] Mesaj alındı:", { eventType, data }, "Zaman:", new Date().toISOString());
+  
         if (eventType === "identify_success") {
-          console.log("[useAgentSocket] Doğrulama başarılı:", data.message);
+          console.log("[useAgentSocket] Doğrulama başarılı:", data.message, "Zaman:", new Date().toISOString());
         } else if (eventType === "intent") {
-          console.log("[useAgentSocket] Intent alındı:", data.intent);
+          console.log("[useAgentSocket] Intent alındı:", data.intent, "Zaman:", new Date().toISOString());
           setCurrentIntent(data.intent);
         } else if (eventType === "create_message") {
-          // data: { messages }
-          console.log("[useAgentSocket] Yeni Sistem Mesaj oluşturuldu:", data.messages);
-          setCurrentIntent(data.messages.system_message.intent)
-          dispatch(setMessageIntent(data.messages.system_message.intent))
-          dispatch(setConversationMessage(data))
-
-
+          console.log("[useAgentSocket] Yeni Sistem Mesaj oluşturuldu:", data.messages, "Zaman:", new Date().toISOString());
+          setCurrentIntent(data.messages.system_message.intent);
+          dispatch(setMessageIntent(data.messages.system_message.intent));
+          dispatch(setConversationMessage(data));
         } else if (eventType === "agent-feedback") {
           const mcp = data;
-          //console.log("[useAgentSocket] MCP feedback:", mcp);
-          dispatch(stream(mcp.delta?.content))
+          console.log("[useAgentSocket] MCP feedback:", mcp, "Zaman:", new Date().toISOString());
+          dispatch(stream(mcp.delta?.content));
           if (currentIntent) {
-            //console.log("[useAgentSocket] MCP feedback:", mcp.delta.content);
-
             setFeedbackData((prev) => {
               const currentList = prev[currentIntent] || [];
               let newContent = [];
               if (mcp.delta?.content) {
                 newContent = [mcp.delta.content];
               } else if (mcp.messages?.length > 0) {
-                newContent = mcp.messages
-                  .filter((m) => m.content)
-                  .map((m) => m.content);
+                newContent = mcp.messages.filter((m) => m.content).map((m) => m.content);
               }
               return {
                 ...prev,
@@ -143,44 +142,48 @@ export default function useAgentSocket() {
               };
             });
           } else {
-            console.warn("[useAgentSocket] Intent belirlenmeden feedback alındı:", mcp);
+            console.warn("[useAgentSocket] Intent belirlenmeden feedback alındı:", mcp, "Zaman:", new Date().toISOString());
           }
         } else if (eventType === "agent-update-title") {
-          console.log("[useAgentSocket] Yeni konuşma başlığı:", data.title);
+          console.log("[useAgentSocket] Yeni konuşma başlığı:", data.title, "Zaman:", new Date().toISOString());
           dispatch(setConversationTitle(data));
         } else if (eventType === "error") {
-          console.error("[useAgentSocket] Sunucu hatası:", data.message);
+          console.error("[useAgentSocket] Sunucu hatası:", data.message, "Zaman:", new Date().toISOString());
           if (data.message.includes("token")) {
-            console.log("[useAgentSocket] Token hatası, yenileniyor...");
-            refreshToken().then(() => connectSocket()).catch(() => {
-              console.error("[useAgentSocket] Yeniden bağlantı başarısız");
-            });
+            console.log("[useAgentSocket] Token hatası, yenileniyor... Zaman:", new Date().toISOString());
+            refreshToken()
+              .then(() => connectSocket())
+              .catch(() => {
+                console.error("[useAgentSocket] Yeniden bağlantı başarısız. Zaman:", new Date().toISOString());
+              });
           }
         } else {
-          console.warn("[useAgentSocket] Bilinmeyen event tipi:", eventType);
+          console.warn("[useAgentSocket] Bilinmeyen event tipi:", eventType, "Zaman:", new Date().toISOString());
         }
       } catch (error) {
-        console.error("[useAgentSocket] Mesaj parse hatası:", error, "Ham veri:", event.data);
+        console.error("[useAgentSocket] Mesaj parse hatası:", error.message, "Ham veri:", event.data, "Zaman:", new Date().toISOString());
       }
     };
-
+  
     socket.onclose = (event) => {
-      console.log("[useAgentSocket] WebSocket bağlantısı kapandı:", {
-        code: event.code,
-        reason: event.reason,
-      });
+      console.log(
+        "[useAgentSocket] WebSocket bağlantısı kapandı:",
+        { code: event.code, reason: event.reason },
+        "Zaman:",
+        new Date().toISOString()
+      );
       if (event.code === 1008) {
-        console.log("[useAgentSocket] Token geçersiz, yenileniyor...");
+        console.log("[useAgentSocket] Token geçersiz, yenileniyor... Zaman:", new Date().toISOString());
         refreshToken()
           .then(() => {
             reconnectAttempts.current = 0;
             connectSocket();
           })
           .catch(() => {
-            console.error("[useAgentSocket] Token yenileme başarısız");
+            console.error("[useAgentSocket] Token yenileme başarısız. Zaman:", new Date().toISOString());
             if (reconnectAttempts.current < maxReconnectAttempts) {
               setTimeout(() => {
-                console.log("[useAgentSocket] Yeniden bağlanıyor... Deneme:", reconnectAttempts.current + 1);
+                console.log("[useAgentSocket] Yeniden bağlanıyor... Deneme:", reconnectAttempts.current + 1, "Zaman:", new Date().toISOString());
                 reconnectAttempts.current += 1;
                 connectSocket();
               }, reconnectInterval);
@@ -188,17 +191,17 @@ export default function useAgentSocket() {
           });
       } else if (reconnectAttempts.current < maxReconnectAttempts) {
         setTimeout(() => {
-          console.log("[useAgentSocket] Yeniden bağlanıyor... Deneme:", reconnectAttempts.current + 1);
+          console.log("[useAgentSocket] Yeniden bağlanıyor... Deneme:", reconnectAttempts.current + 1, "Zaman:", new Date().toISOString());
           reconnectAttempts.current += 1;
           connectSocket();
         }, reconnectInterval);
       } else {
-        console.error("[useAgentSocket] Maksimum yeniden bağlanma denemesi aşıldı");
+        console.error("[useAgentSocket] Maksimum yeniden bağlanma denemesi aşıldı. Zaman:", new Date().toISOString());
       }
     };
-
+  
     socket.onerror = (error) => {
-      console.error("[useAgentSocket] WebSocket hatası:", error);
+      console.error("[useAgentSocket] WebSocket hatası:", error, "Zaman:", new Date().toISOString());
     };
   };
 

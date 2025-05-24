@@ -22,7 +22,7 @@ export const uploadprofileimage = createAsyncThunk(
     }
 )
 
-export const uploadMultipleImage = createAsyncThunk(
+export const uploadMultipleFile = createAsyncThunk(
     'upload/gallery',
     async ({ uploaderId, files }, { rejectWithValue }) => {
         try {
@@ -38,6 +38,8 @@ export const uploadMultipleImage = createAsyncThunk(
 );
 
 
+
+
 export const uploadSlice = createSlice({
     name: 'upload',
     initialState,
@@ -49,30 +51,32 @@ export const uploadSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(uploadMultipleImage.pending, (state, action) => {
+            .addCase(uploadMultipleFile.pending, (state, action) => {
                 const uploaderId = action.meta.arg.uploaderId;
                 state[uploaderId] = {
                     isLoading: true,
                     isSuccess: false,
                     isError: false,
                     images: [],
+                    files: [],
                     data: null
                 };
             })
-            .addCase(uploadMultipleImage.fulfilled, (state, action) => {
+            .addCase(uploadMultipleFile.fulfilled, (state, action) => {
                 const { uploaderId, result } = action.payload;
                 state[uploaderId] = {
                     isLoading: false,
                     isSuccess: true,
                     isError: false,
                     images: result?.data?.successfullUploads || [],
+                    files: result?.data?.successfullUploads || [],
                     data: result?.data,
                     successCount: result?.data?.successCount,
                     failureCount: result?.data?.failureCount,
                     totalFiles: result?.data?.totalFiles
                 };
             })
-            .addCase(uploadMultipleImage.rejected, (state, action) => {
+            .addCase(uploadMultipleFile.rejected, (state, action) => {
                 const { uploaderId, error } = action.payload || {};
                 if (!uploaderId) return;
 
@@ -81,6 +85,7 @@ export const uploadSlice = createSlice({
                     isSuccess: false,
                     isError: true,
                     images: [],
+                    files: [],
                     error: error || action.error.message,
                     data: null
                 };

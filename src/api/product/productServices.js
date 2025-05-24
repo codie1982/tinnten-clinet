@@ -20,6 +20,14 @@ const addProduct = async (data) => {
     const response = await axiosInstance.post("products", data)
     return response.data;
 }
+const findProducttitle = async (data) => {
+    const response = await axiosInstance.post("products/findproducttitle", data)
+    return response.data;
+}
+const createProducts = async (data) => {
+    const response = await axiosInstance.post("products/createproducts", data)
+    return response.data;
+}
 
 const updateProduct = async ({ companyid, productid, payload }) => {
     const response = await axiosInstance.put(`products/${companyid}/${productid}`, payload)
@@ -110,6 +118,8 @@ const productService = {
     addFavorite,
     getProductDetail,
     addProduct,
+    findProducttitle,
+    createProducts,
     getProducts,
     updateProduct,
     getProductBase,

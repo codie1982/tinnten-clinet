@@ -123,7 +123,8 @@ export default function BidForms() {
                     className="me-2"
                     onClick={() => {
                       setSelectedFormId(form._id);
-                      openModal("updateFormModal");
+                      //openModal("updateFormModal");
+                      navigate(`/dashboard/forms/edit/${form._id}`)
                     }}
                   >
                     Güncelle

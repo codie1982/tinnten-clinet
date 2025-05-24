@@ -19,7 +19,7 @@ const getFormDetail = async ({ formid }) => {
 };
 
 // 📌 Belirli bir formu günceller
-const updateForm = async ({ companyid, formid, data }) => {
+const updateForm = async ({ companyid, formid, payload: data }) => {
   const response = await axiosInstance.put(`/forms/${companyid}/${formid}`, data);
   return response.data;
 };

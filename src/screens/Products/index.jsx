@@ -19,6 +19,8 @@ import UpdateProductGalleryModal from "../../components/Modals/UpdateProductGall
 import UpdateProductPriceModal from "../../components/Modals/UpdateProductPriceModal";
 import UpdateProductVariantModal from "../../components/Modals/UpdateProductVariantModal";
 import UpdateProductRequestFormModal from "../../components/Modals/UpdateProductRequestFormModal";
+
+
 const COMPANYID = "6824aace3bd66ed798e41bbb";
 export default function Products() {
   const navigate = useNavigate();

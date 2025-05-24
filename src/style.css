@@ -3901,6 +3901,7 @@ li.pagination-prev.page-item.disabled span {
     font-size: 12px;
     color: var(--standart-text-light-color);
   }
+
   .file-preview {
     display: flex;
     align-items: center;
@@ -3918,4 +3919,103 @@ li.pagination-prev.page-item.disabled span {
     flex-direction: column;
     align-items: center;
     margin: 5px;
+  }
+  .file-gallery-uploader {
+    padding: 10px;
+  }
+  
+  .upload-drag-area {
+    border: 2px dashed #ccc;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    min-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Align items to the left */
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .upload-drag-area.active {
+    border-color: #007bff;
+    background: #e6f0ff;
+  }
+  
+  .upload-drag-area.disabled {
+    background: #f0f0f0;
+    cursor: not-allowed;
+  }
+  
+  .file-grid {
+    width: 100%;
+  }
+  
+  .file-grid-item {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .file-item-wrapper {
+    position: relative;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+    text-align: center;
+    width: 100%;
+    max-width: 150px;
+  }
+  
+  .file-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .file-name {
+    font-size: 12px;
+    word-break: break-all;
+    max-width: 100%;
+  }
+  
+  .file-actions {
+    display: flex;
+    gap: 5px;
+    margin-top: 5px;
+  }
+  
+  .delete-file-button {
+    font-size: 12px;
+    padding: 4px 8px;
+    border: none;
+    border-radius: 3px;
+    background: #dc3545;
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  .file-add-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #007bff;
+    border-radius: 4px;
+    background: #e6f0ff;
+    width: 60px; /* Perfect square */
+    height: 60px; /* Perfect square */
+    cursor: pointer;
+  }
+  
+  .file-add-button span {
+    font-size: 24px;
+    color: #007bff;
+  }
+  
+  .upload-loader-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
   }

@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback,useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useDropzone } from "react-dropzone";
 import { toast } from "react-toastify";
 import { Carousel, Row, Col, Spinner } from "react-bootstrap";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import { uploadMultipleImage, resetUpload } from "../../api/upload/uploadSlicer"; // Adjust import path as needed
+import { uploadMultipleFile, resetUpload } from "../../api/upload/uploadSlicer"; // Adjust import path as needed
 
 export default function FileGalleryUploader({
   uploaderId,
@@ -12,15 +12,19 @@ export default function FileGalleryUploader({
   initialFiles,
   companyid,
   onDeleteFiles,
-  onOrderChange,
-  onDefaultFileSelect,
-  isEditable = true, // Default to true for backward compatibility
+  isEditable = true,
+  maxFiles = 10,
+  acceptedFileTypes = {
+    "application/pdf": [".pdf"],
+    "application/msword": [".doc"],
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+    "text/plain": [".txt"],
+  },
 }) {
+  const galleryRef = useRef(initialFiles || []);
   const dispatch = useDispatch();
   const [gallery, setGallery] = useState(initialFiles || []);
-  const [fileIndex, setFileIndex] = useState(0);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [defaultFileId, setDefaultFileId] = useState(null);
+  const [hasProcessedUpload, setHasProcessedUpload] = useState(false);
 
   const uploadState = useSelector((state) => state.upload?.[uploaderId] || {});
 
@@ -36,131 +40,119 @@ export default function FileGalleryUploader({
   } = uploadState;
 
   useEffect(() => {
-    setGallery(initialFiles || []);
-    // Set initial default file if provided
-    if (initialFiles?.length > 0 && initialFiles[0]?._id) {
-      setDefaultFileId(
-        initialFiles.find((file) => file.isDefault)?._id || initialFiles[0]._id
-      );
-    }
+    const initial = initialFiles || [];
+    setGallery(initial);
+    galleryRef.current = initial;
   }, [initialFiles]);
 
   useEffect(() => {
-    // Reset upload state on component mount
-    const resetUpload = () => {
-      dispatch({ type: "upload/reset", payload: { uploaderId } });
+    // Cleanup on component unmount
+    return () => {
+      dispatch(resetUpload(uploaderId));
     };
-    resetUpload();
-  }, [dispatch, uploaderId]);
+  }, [uploaderId, dispatch]);
 
   useEffect(() => {
-    if (!isLoading && isSuccess && Array.isArray(files)) {
-      const existingIds = new Set(gallery.map((file) => file._id || file.path));
+    if (!isLoading && isSuccess && Array.isArray(files) && files.length > 0 && !hasProcessedUpload) {
+      const existingIds = new Set(galleryRef.current.map((file) => file._id || file.path));
       const newUniqueFiles = files.filter(
         (file) => !existingIds.has(file._id || file.path)
       );
-      const updatedGallery = [...gallery, ...newUniqueFiles];
-      setGallery(updatedGallery);
-
-      const success = successCount ?? files.length;
-      const fail = failureCount ?? 0;
-      const total = totalFiles ?? success + fail;
-
-      if (fail === total) {
-        toast.error(`${fail} dosya başarısız yüklendi.`);
-      } else if (success === total) {
-        toast.success(`${success} başarılı olmak üzere toplam ${total} dosya yüklendi.`);
-      } else {
-        toast.info(`${success} başarılı, ${fail} başarısız dosya yüklendi.`);
+  
+      const updatedGallery = [...galleryRef.current, ...newUniqueFiles].slice(0, maxFiles);
+      setHasProcessedUpload(true); // her koşulda ayarla
+  
+      if (newUniqueFiles.length > 0) {
+        setGallery(updatedGallery);
+        galleryRef.current = updatedGallery; // ref'i senkronla
+  
+        const success = successCount ?? files.length;
+        const fail = failureCount ?? 0;
+        const total = totalFiles ?? success + fail;
+  
+        if (fail === total) {
+          toast.error(`${fail} dosya başarısız yüklendi.`);
+        } else if (success === total) {
+          toast.success(`${success} başarılı olmak üzere toplam ${total} dosya yüklendi.`);
+        } else {
+          toast.info(`${success} başarılı, ${fail} başarısız dosya yüklendi.`);
+        }
+  
+        if (onAllFilesUploaded) {
+          onAllFilesUploaded(uploaderId, updatedGallery);
+        }
       }
-
-      if (onAllFilesUploaded) {
-        onAllFilesUploaded(uploaderId, updatedGallery);
-      }
+  
+      dispatch(resetUpload(uploaderId));
     }
-
-    if (!isLoading && isError) {
+  
+    if (!isLoading && isError && !hasProcessedUpload) {
       toast.error(`Yükleme sırasında hata oluştu: ${error || "Bilinmeyen hata"}`);
+      setHasProcessedUpload(true);
+      dispatch(resetUpload(uploaderId));
     }
-  }, [files, isError, isSuccess, isLoading, onAllFilesUploaded, uploaderId, error]);
+  }, [
+    files,
+    isError,
+    isSuccess,
+    isLoading,
+    uploaderId,
+    error,
+    maxFiles,
+    dispatch,
+    onAllFilesUploaded,
+    hasProcessedUpload,
+    successCount,
+    failureCount,
+    totalFiles
+  ]);
 
   const onDrop = useCallback(
     (acceptedFiles) => {
+      setHasProcessedUpload(false);
+
+      const remainingSlots = maxFiles - galleryRef.current.length;
+      if (remainingSlots <= 0) {
+        toast.error(`Maksimum dosya sayısına (${maxFiles}) ulaşıldı.`);
+        return;
+      }
+
+      const filesToUpload = acceptedFiles.slice(0, remainingSlots);
+      if (filesToUpload.length < acceptedFiles.length) {
+        toast.warn(
+          `Yalnızca ${filesToUpload.length} dosya yüklenebilir. Maksimum limit: ${maxFiles}.`
+        );
+      }
+
       const formData = new FormData();
       formData.append("companyid", companyid);
-
-      acceptedFiles.forEach((file) => {
+      filesToUpload.forEach((file) => {
         formData.append("files", file);
       });
 
       dispatch(uploadMultipleFile({ uploaderId, files: formData }));
     },
-    [dispatch, companyid, uploaderId]
+    [companyid, uploaderId, gallery.length, maxFiles, dispatch]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: {
-      "application/pdf": [".pdf"],
-      "application/msword": [".doc"],
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
-      "text/plain": [".txt"],
-    },
+    accept: acceptedFileTypes,
     multiple: true,
     onDrop,
-    disabled: !isEditable, // Disable dropzone if not editable
+    disabled: !isEditable || gallery.length >= maxFiles,
   });
 
-  const handleFileSelect = (index) => {
-    setFileIndex(index);
-  };
-
-  const handleDelete = (e, index, file) => {
+  const handleDelete = (e, index) => {
     e.stopPropagation();
     const newGallery = gallery.filter((_, i) => i !== index);
     setGallery(newGallery);
-
+    galleryRef.current = newGallery;
     if (onAllFilesUploaded) {
       onAllFilesUploaded(uploaderId, newGallery);
     }
 
     if (onDeleteFiles) {
-      onDeleteFiles(file._id);
-    }
-
-    if (file._id === defaultFileId) {
-      const newDefault = newGallery[0]?._id || null;
-      setDefaultFileId(newDefault);
-      if (onDefaultFileSelect) {
-        onDefaultFileSelect(newDefault);
-      }
-    }
-
-    if (index === fileIndex) {
-      setFileIndex(0);
-    } else if (index < fileIndex) {
-      setFileIndex(fileIndex - 1);
-    }
-  };
-
-  const handleDragEnd = (result) => {
-    if (!result.destination) return;
-
-    const newGallery = [...gallery];
-    const [reorderedItem] = newGallery.splice(result.source.index, 1);
-    newGallery.splice(result.destination.index, 0, reorderedItem);
-
-    setGallery(newGallery);
-
-    if (onOrderChange) {
-      onOrderChange(uploaderId, newGallery);
-    }
-  };
-
-  const handleDefaultSelect = (e, fileId) => {
-    e.stopPropagation();
-    setDefaultFileId(fileId);
-    if (onDefaultFileSelect) {
-      onDefaultFileSelect(fileId);
+      onDeleteFiles(gallery[index]._id);
     }
   };
 
@@ -181,17 +173,6 @@ export default function FileGalleryUploader({
 
   return (
     <div className="file-gallery-uploader">
-      {isEditable && (
-        <div className="edit-mode-toggle mb-3">
-          <button
-            className="btn btn-secondary"
-            onClick={() => setIsEditMode(!isEditMode)}
-          >
-            {isEditMode ? "Düzenlemeyi Bitir" : "Düzenleme Modu"}
-          </button>
-        </div>
-      )}
-
       {isLoading && (
         <div className="upload-loader-wrapper text-center my-3">
           <Spinner animation="border" role="status" variant="primary" />
@@ -199,109 +180,56 @@ export default function FileGalleryUploader({
         </div>
       )}
 
-      {gallery.length === 0 && isEditable && (
-        <div {...getRootProps()} className={`upload-drag-area ${isDragActive ? "active" : ""}`}>
-          <input {...getInputProps()} />
-          <p>Dosyaları buraya sürükleyin ya da tıklayarak seçin</p>
-        </div>
-      )}
-
-      {gallery.length > 0 && (
-        <>
-          <Row>
-            <Col className="file-section">
-              <div className="file-gallery-carousel-wrapper">
-                <Carousel
-                  activeIndex={fileIndex}
-                  onSelect={handleFileSelect}
-                  indicators={false}
-                  controls={true}
-                  fade={true}
-                  className="file-carousel"
-                >
-                  {gallery.map((item, index) => (
-                    <Carousel.Item key={item.path} className="carousel-item-wrapper">
-                      <div className="carousel-file-container">
-                        <div className="file-preview">
-                          {getFileIcon(item.path)}
-                          <span className="file-name">{item.path.split("/").pop()}</span>
-                        </div>
-                        {item._id === defaultFileId && (
-                          <span className="default-badge">Varsayılan</span>
-                        )}
-                      </div>
-                    </Carousel.Item>
-                  ))}
-                </Carousel>
-              </div>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <DragDropContext onDragEnd={isEditable ? handleDragEnd : () => {}}>
-                <Droppable droppableId="gallery" direction="horizontal">
-                  {(provided) => (
-                    <ul
-                      className="file-detail-list"
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
-                    >
-                      {gallery.map((item, index) => (
-                        <Draggable
-                          key={item.path}
-                          draggableId={item.path}
-                          index={index}
-                          isDragDisabled={!isEditable || !isEditMode}
-                        >
-                          {(provided) => (
-                            <li
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              className={index === fileIndex ? "active" : ""}
-                            >
-                              {isEditable && isEditMode && (
-                                <>
-                                  <button
-                                    className="delete-file-button"
-                                    onClick={(e) => handleDelete(e, index, item)}
-                                  >
-                                    ×
-                                  </button>
-                                  <button
-                                    className={`default-select-button ${item._id === defaultFileId ? "selected" : ""}`}
-                                    onClick={(e) => handleDefaultSelect(e, item._id)}
-                                  >
-                                    {item._id === defaultFileId ? "✓ Varsayılan" : "Varsayılan Yap"}
-                                  </button>
-                                </>
-                              )}
-                              <div
-                                className="file-item"
-                                onClick={() => handleFileSelect(index)}
-                              >
-                                {getFileIcon(item.path)}
-                                <span>{item.path.split("/").pop()}</span>
-                              </div>
-                            </li>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                      {isEditable && (
-                        <li className="file-add-button" {...getRootProps()}>
-                          <input {...getInputProps()} />
-                          <span>＋</span>
-                        </li>
-                      )}
-                    </ul>
+      <div
+        {...getRootProps()}
+        className={`upload-drag-area ${isDragActive ? "active" : ""} ${!isEditable || gallery.length >= maxFiles ? "disabled" : ""
+          }`}
+      >
+        <input {...getInputProps()} />
+        {galleryRef.current.length === 0 ? (
+          <div className="file-add-button">
+            <span>+</span>
+          </div>
+        ) : (
+          <Row className="file-grid">
+            {galleryRef.current.map((item, index) => (
+              <Col
+                key={item.path}
+                xs={6}
+                sm={4}
+                md={3}
+                className="file-grid-item"
+              >
+                <div className="file-item-wrapper">
+                  <div className="file-item">
+                    {getFileIcon(item.path)}
+                    <span className="file-name">
+                      {item.path.split("/").pop()}
+                    </span>
+                  </div>
+                  {isEditable && (
+                    <div className="file-actions">
+                      <button
+                        className="delete-file-button"
+                        onClick={(e) => handleDelete(e, index)}
+                      >
+                        ×
+                      </button>
+                    </div>
                   )}
-                </Droppable>
-              </DragDropContext>
-            </Col>
+                </div>
+              </Col>
+            ))}
+            {isEditable && galleryRef.current.length < maxFiles && (
+              <Col xs={6} sm={4} md={3} className="file-grid-item">
+                <div className="file-add-button">
+                  <span>+</span>
+                </div>
+              </Col>
+            )}
           </Row>
-        </>
-      )}
+        )}
+      </div>
     </div>
   );
 }

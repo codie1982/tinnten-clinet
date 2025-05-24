@@ -4,7 +4,7 @@ import { useDropzone } from "react-dropzone";
 import { toast } from "react-toastify";
 import { Carousel, Row, Col, Spinner } from "react-bootstrap";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import { uploadMultipleImage, resetUpload } from "../../api/upload/uploadSlicer"; // Adjust import path as needed
+import { uploadMultipleFile, resetUpload } from "../../api/upload/uploadSlicer"; // Adjust import path as needed
 
 export default function ImageGalleryUploader({
   uploaderId,
@@ -89,7 +89,7 @@ export default function ImageGalleryUploader({
       formData.append("files", file);
     });
 
-    dispatch(uploadMultipleImage({ uploaderId, files: formData }));
+    dispatch(uploadMultipleFile({ uploaderId, files: formData }));
   }, [dispatch, companyid, uploaderId]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

@@ -2,8 +2,8 @@ import { createBrowserRouter } from "react-router-dom";
 import Home from "../screens/Home"
 import Dashboard from "../screens/Dashboard";
 import Profile from "../screens/Profile"
-import SetupCompany from "../screens/SetupCompany"
-import CompleteCompany from "../screens/CompleteCompany"
+import CreateCompany from "../screens/CreateCompany"
+import FindProductCompany from "../screens/FindProductCompany"
 import SettingsCompany from "../screens/SettingsCompany"
 
 import AddProduct from "../screens/AddProduct";
@@ -14,6 +14,7 @@ import Services from "../screens/Services";
 import Bids from "../screens/Bids";
 import BidForms from "../screens/BidForms";
 import FormBuilder from "../screens/FormBuilder";
+import EditFormBuilder from "../screens/EditFormBuilder";
 import UpdateFormBuilder from "../screens/UpdateFormBuilder";
 import Main from "../screens/Main";
 import OurOffer from "../screens/OurOffer";
@@ -33,12 +34,6 @@ import PrivatePolicy from "screens/PrivatePolicy";
 import Contact from "screens/Contact";
 import GoogleAuth from "screens/GoogleAuth";
 import React, { useEffect } from "react";
-
-
-
-
-
-
 
 // İndirme işlemini yapan bileşen
 const DownloadTxt = () => {
@@ -82,8 +77,7 @@ const routes = createBrowserRouter([
                     { path: "ouroffer", element: <OurOffer /> },
                     { path: "c/:companyname", element:  <Home /> },
                     { path: "p/:productname", element:  <Home /> },
-                    { path: "company/create", element: <SetupCompany /> },
-                    { path: "company/complete", element: <CompleteCompany /> },
+                    { path: "c/create", element:  <CreateCompany /> },
                     {
                         children: [
                             {
@@ -95,8 +89,9 @@ const routes = createBrowserRouter([
                                     { path: "forms", element: <BidForms /> },
                                     { path: "products/add", element: <AddProduct /> },
                                     { path: "forms/add", element: <FormBuilder /> },
-                                    { path: "forms/edit/:id", element: <UpdateFormBuilder /> },
+                                    { path: "forms/edit/:formid", element: <EditFormBuilder /> },
                                     { path: "settings", element: <SettingsCompany />  },
+                                    { path: "find", element: <FindProductCompany /> },
                                 ]
                             },
 
