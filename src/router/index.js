@@ -73,10 +73,10 @@ const routes = createBrowserRouter([
                 children: [
                     { path: "conversation", element: <Home /> },
                     { path: "conversation/:id", element: <Home /> },
+                    { path: "company/:companyname", element:  <Home /> },
+                    { path: "product/:productname", element:  <Home /> },
                     { path: "profile", element: <Profile /> },
                     { path: "ouroffer", element: <OurOffer /> },
-                    { path: "c/:companyname", element:  <Home /> },
-                    { path: "p/:productname", element:  <Home /> },
                     { path: "c/create", element:  <CreateCompany /> },
                     {
                         children: [

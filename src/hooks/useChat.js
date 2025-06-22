@@ -167,7 +167,6 @@ export default function useChat(uiActions) {
 
   // Stream verisi alındığında
   useEffect(() => {
-    console.log("stream", stream)
     if (stream && stream !== "") {
       setCompleteMessage((prev) => {
         const updated = prev + stream;
@@ -180,14 +179,25 @@ export default function useChat(uiActions) {
     }
   }, [stream]);
 
+  useEffect(() => {
+    console.log("✏️ completeMessage güncellendi:", completeMessage);
+  }, [completeMessage])
+  useEffect(() => {
+    console.log("💬 conversationMessages güncellendi:", conversationMessages);
+  }, [conversationMessages])
+
+  useEffect(() => {
+    console.log("📄 systemMessage güncellendi:", systemMessage);
+  }, [systemMessage])
+
+
   // completeMessage değiştiğinde (stream tamamlandığında)
   useEffect(() => {
     if (
       conversation &&
       Array.isArray(conversationMessages) &&
       conversationMessages.length > 0 &&
-      completeMessage &&
-      completeMessage !== conversationMessages[conversationMessages.length - 1]?.content
+      completeMessage
     ) {
       console.log("✏️ Stream tamamlandı, mesaj güncelleniyor");
       const updatedMessages = conversationMessages.map((msg, index) =>
@@ -195,19 +205,20 @@ export default function useChat(uiActions) {
           ? { ...msg, content: completeMessage }
           : msg
       );
-  
+
       setConversationMessages(updatedMessages);
       updateMessageBlock(updatedMessages);
-  
+
       // 🔽 systemMessage güncellenmeli (UI'nin görebilmesi için)
       const pages = Object.keys(groupMessagesByGroupId(updatedMessages));
       const lastPage = pages.length;
       const newSystemMessage = groupMessagesByGroupId(updatedMessages)[pages[lastPage - 1]];
-  
+
+      console.log("✏️ Yeni sistem mesajı:", newSystemMessage);
       setSystemMessage(newSystemMessage);
       console.log("✏️ systemMessage güncellendi (stream sonrası):", newSystemMessage);
     }
-  }, [completeMessage, conversation, conversationMessages, updateMessageBlock]);
+  }, [completeMessage, conversation, conversationMessages]);
 
   // conversationid değiştiğinde konuşma detaylarını yükle
   useEffect(() => {
@@ -284,7 +295,7 @@ export default function useChat(uiActions) {
 
       updateMessageBlock(messages);
     }
-  }, [isConversationMemory, isSuccess, conversation, updateMessageBlock]);
+  }, [isConversationMemory, isSuccess, conversation]);
 
   // Yeni konuşma oluşturulduğunda
   useEffect(() => {

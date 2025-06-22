@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from "react-i18next"
-import { Container, Navbar, Nav, Dropdown, Image } from 'react-bootstrap'
+import { Container, Navbar, Nav, Button, Dropdown, Image } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faEnvelopeSquare, faGear, faSignOut, faTrash } from '@fortawesome/free-solid-svg-icons';
 import tinntenLogo from "../../assets/char-logo.png"
@@ -12,10 +12,12 @@ import ContactUsComponent from '../../components/Modals/ContactUsModal';
 import DeleteAllChatsComponent from '../../components/Modals/AllDeleteModal';
 import LogoutComponent from '../../components/Modals/LogoutModal';
 import { useAuth } from 'context/authContext';
+import { useModal } from '../../components/Modals/ModalProvider';
 import { getUserProfile } from "../../api/profile/profileSlicer"
+import BidModal from '../../components/Modals/BidModal';
 
 export default function Header({ toggleSidebar }) {
-
+  const { openModal } = useModal()
   const dispatch = useDispatch()
   const { isLogin, isLoading, user } = useAuth()
 
@@ -79,7 +81,10 @@ export default function Header({ toggleSidebar }) {
               <Nav className="">
                 <Nav.Link href="#" className="active" aria-current="page">{t("header.main")}</Nav.Link>
               </Nav>
-              <Nav className="ms-auto d-flex">
+              <Nav className="ms-auto d-flex align-middle">
+                <Nav.Item className='mx-10'>
+                  <Button variant="light" className="d-flex align-items-center h-100 w-100 px-10 " onClick={() => { openModal("bid") }} >Teklif Al</Button>
+                </Nav.Item>
                 <Nav.Item>
                   <Nav.Link className="dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <HeaderMenu openContactUs={openContactUs} openDeleteAll={openDeleteAll} openSettings={openSettings} openProfil={openProfil} userprofile={userprofile} isProfileLoading={isProfileLoading} />
@@ -91,10 +96,11 @@ export default function Header({ toggleSidebar }) {
         </Navbar>
       </div>
       <ProfilComponent userProfile={userprofile} isProfileLoading={isProfileLoading} />
-      <SettingsComponent  />
-      <DeleteAllChatsComponent  />
+      <SettingsComponent />
+      <DeleteAllChatsComponent />
       <ContactUsComponent />
       <LogoutComponent />
+      <BidModal />
     </div>
   )
 }

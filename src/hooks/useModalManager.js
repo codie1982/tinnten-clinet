@@ -21,6 +21,7 @@ const initialModals = {
   updateProductVariant:false,
   updateProductRequestForm:false,
   updateFormModal:false,
+  bid:false,
 };
 
 export function useModalManager() {

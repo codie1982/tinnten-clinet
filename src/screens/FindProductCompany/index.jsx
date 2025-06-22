@@ -16,6 +16,8 @@ export default function FindProductCompany() {
   const [uploadFiles, setUploadFiles] = useState([]);
   const [showTabs, setShowTabs] = useState(true);
   const [selectedTitles, setSelectedTitles] = useState([]);
+  const [ownDescription, setOwnDescription] = useState("")
+  const [scrawUrl, setScrawUrl] = useState("")
   const [descriptions, setDescriptions] = useState({}); // Object to store descriptions per title
 
   const { titles, productList, isLoading, isSuccess, isError, operation } = useSelector((state) => state.product);
@@ -29,9 +31,6 @@ export default function FindProductCompany() {
     }
   }, [titles, isLoading, isSuccess, isError, operation, productList]);
 
-  useEffect(() => {
-    console.log('key', key);
-  }, [key]);
 
   useEffect(() => {
     console.log('uploadFiles', uploadFiles);
@@ -41,6 +40,14 @@ export default function FindProductCompany() {
     e.preventDefault();
     dispatch(findProducttitle({ companyid: COMPANYID, uploads: uploadFiles, type: key }));
   };
+  const handleWebScrawSubmit = (e) => {
+    e.preventDefault();
+    dispatch(findProducttitle({ companyid: COMPANYID, uploads: [{ url: scrawUrl }], type: key }));
+  }
+  const handleDescriptionSubmit = (e) => {
+    e.preventDefault();
+    dispatch(findProducttitle({ companyid: COMPANYID, uploads: [{ description: ownDescription }], type: key }));
+  }
 
   const handleDeleteFile = (id) => {
     // Implement file deletion logic here
@@ -357,7 +364,7 @@ export default function FindProductCompany() {
                     border: '1px solid var(--border-color)',
                   }}
                 >
-                  <Form>
+                  <Form onSubmit={handleWebScrawSubmit}>
                     <Form.Group className="mb-3 d-flex align-items-center">
                       <Form.Label
                         style={{
@@ -372,6 +379,8 @@ export default function FindProductCompany() {
                       <Form.Control
                         type="url"
                         placeholder="https://ornekfirma.com"
+                        onChange={(e) => setScrawUrl(e.target.value)}
+                        value={scrawUrl}
                         style={{
                           backgroundColor: 'var(--background-open4-color)',
                           color: 'var(--text-color)',
@@ -383,6 +392,7 @@ export default function FindProductCompany() {
                     </Form.Group>
                     <Button
                       type="submit"
+                      disabled={isLoading}
                       style={{
                         backgroundColor: 'var(--primary-color)',
                         borderColor: 'var(--primary-color)',
@@ -417,7 +427,7 @@ export default function FindProductCompany() {
                     border: '1px solid var(--border-color)',
                   }}
                 >
-                  <Form>
+                  <Form onSubmit={handleDescriptionSubmit}>
                     <Form.Group className="mb-3">
                       <Form.Label style={{ color: 'var(--text-color)', fontWeight: '500' }}>
                         Firmanızı kısaca anlatın
@@ -425,6 +435,8 @@ export default function FindProductCompany() {
                       <Form.Control
                         as="textarea"
                         rows={5}
+                        onChange={(e) => setOwnDescription(e.target.value)}
+                        value={ownDescription}
                         placeholder="Örneğin: Bahçe bakımı, peyzaj ve haftalık çim biçme hizmetleri sunuyorum."
                         style={{
                           backgroundColor: 'var(--background-open4-color)',
@@ -436,6 +448,7 @@ export default function FindProductCompany() {
                     </Form.Group>
                     <Button
                       type="submit"
+                      disabled={isLoading}
                       style={{
                         backgroundColor: 'var(--primary-color)',
                         borderColor: 'var(--primary-color)',

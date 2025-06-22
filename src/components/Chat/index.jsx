@@ -21,6 +21,8 @@ export default function Chat({ viewState }) {
     const [chatView, setChatView] = useState("")
 
     const [isLoading, setIsLoading] = useState(false)
+
+    
     // Mesajları stream olarak işleme
     useEffect(() => {
         console.log("messages", systemMessage)

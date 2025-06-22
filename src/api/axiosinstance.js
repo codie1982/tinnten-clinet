@@ -55,7 +55,7 @@ axiosInstance.interceptors.response.use(
         if (error.response) {
             const status = error.response.status;
 
-            if ((status === 400 || status === 404) && !originalRequest._retry) {
+            if ((status === 400 || status === 401 || status === 404) && !originalRequest._retry) {
                 console.log("error.response.data", error.response.data);
                 originalRequest._retry = true;
                 const errorMessage = error.response.data.message;
@@ -63,7 +63,7 @@ axiosInstance.interceptors.response.use(
                 return Promise.reject(error);
             }
 
-            if ((status === 401 || status === 403 || status === 500) && !originalRequest._retry && !originalRequest.skipAuth) {
+            if ((status === 403 || status === 500) && !originalRequest._retry && !originalRequest.skipAuth) {
                 originalRequest._retry = true;
                 try {
                     const newToken = await silentAuth();

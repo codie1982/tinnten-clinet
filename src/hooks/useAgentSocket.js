@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch,useSelector } from "react-redux";
 import { setConversationTitle, setConversationMessage, setMessageIntent } from "../api/conversation/conversationSlicer";
 import { stream } from "../api/stream/streamSlicer";
 import { useAuth } from "../context/authContext";
@@ -14,6 +14,7 @@ export default function useAgentSocket() {
   const reconnectAttempts = useRef(0);
   const maxReconnectAttempts = 5;
   const reconnectInterval = 3000;
+
 
   const refreshToken = async () => {
     try {
@@ -109,8 +110,10 @@ export default function useAgentSocket() {
   
     socket.onmessage = (event) => {
       try {
+        console.log("[useAgentSocket] event:", event)
         const parsedData = JSON.parse(event.data);
         const { event: eventType, data } = parsedData;
+
         console.log("[useAgentSocket] Mesaj alındı:", { eventType, data }, "Zaman:", new Date().toISOString());
   
         if (eventType === "identify_success") {
@@ -119,15 +122,19 @@ export default function useAgentSocket() {
           console.log("[useAgentSocket] Intent alındı:", data.intent, "Zaman:", new Date().toISOString());
           setCurrentIntent(data.intent);
         } else if (eventType === "create_message") {
+
           console.log("[useAgentSocket] Yeni Sistem Mesaj oluşturuldu:", data.messages, "Zaman:", new Date().toISOString());
           setCurrentIntent(data.messages.system_message.intent);
           dispatch(setMessageIntent(data.messages.system_message.intent));
           dispatch(setConversationMessage(data));
         } else if (eventType === "agent-feedback") {
+
           const mcp = data;
           console.log("[useAgentSocket] MCP feedback:", mcp, "Zaman:", new Date().toISOString());
           dispatch(stream(mcp.delta?.content));
-          if (currentIntent) {
+
+
+         /*  if (currentIntent) {
             setFeedbackData((prev) => {
               const currentList = prev[currentIntent] || [];
               let newContent = [];
@@ -143,7 +150,7 @@ export default function useAgentSocket() {
             });
           } else {
             console.warn("[useAgentSocket] Intent belirlenmeden feedback alındı:", mcp, "Zaman:", new Date().toISOString());
-          }
+          } */
         } else if (eventType === "agent-update-title") {
           console.log("[useAgentSocket] Yeni konuşma başlığı:", data.title, "Zaman:", new Date().toISOString());
           dispatch(setConversationTitle(data));
