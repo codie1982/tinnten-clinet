@@ -17,7 +17,7 @@ const remove = async (data) => {
     return response.data;
 }
 const search = async (data) => {
-    const response = await axiosInstance.get(`conversation/search/?q=${data.query}&p=${data.page}&l=${data.limit}`, {})
+    const response = await axiosInstance.get(`conversation/search/?query=${data.query}&page=${data.page}&limit=${data.limit}`, {})
     return response.data;
 }
 const conversation = async (data) => {

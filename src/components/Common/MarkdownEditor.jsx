@@ -3,9 +3,6 @@ import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 
 const MarkdownEditor = ({ message = "", onChange }) => {
-  const [text, setText] = useState(message)
-
-
   // Markdown'ı HTML'ye çevir ve sanitize et
   const renderedMessage = useMemo(() => {
     if (!message) return '';
@@ -14,14 +11,7 @@ const MarkdownEditor = ({ message = "", onChange }) => {
   }, [message]);
 
   return (
-    <div className="markdown-editor">
-      {/* <textarea
-        value={text}
-        onChange={handleChange}
-        placeholder="Enter markdown..."
-        style={{ width: "100%", height: "200px", padding: "10px", fontSize: "14px" }}
-      /> */}
-      <div
+    <div
         className="markdown-preview"
         style={{  color: "#e1e1e1", fontSize: "1rem" }}
       >
@@ -29,7 +19,6 @@ const MarkdownEditor = ({ message = "", onChange }) => {
           <div dangerouslySetInnerHTML={{ __html: renderedMessage }} />
         </div>
       </div>
-    </div>
   )
 }
 

@@ -16,7 +16,9 @@ export default function SystemMessage({ message }) {
                     </div>
                 </Col>
                 <Col xl={11}>
-                    <div className="message-content"><MarkdownEditor message={message} /></div>
+                    <div className="message-content">
+                        <MarkdownEditor message={message} />
+                        </div>
                 </Col>
             </Row>
         </div>

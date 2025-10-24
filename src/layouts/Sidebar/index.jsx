@@ -226,7 +226,7 @@ export default function Sidebar({ openSidebar }) {
                   onClick={() => getConversationDetail(history.conversationid)}
                   className="history-link"
                 >
-                  <span>{history.title || `${history.conversationid.substring(0, 15)}...`}</span>
+                  <span>{history.title || `${history.conversationid}...`}</span>
                 </Link>
                 <DropdownButton
                   className="filter-dropdown-button"
