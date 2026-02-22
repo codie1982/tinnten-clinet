@@ -14,9 +14,9 @@ import { toast } from 'react-toastify'
 import { useModal } from '../../components/Modals/ModalProvider'
 import tinntenLogo from "../../assets/char-logo.png"
 import UserPackagesModal from "../../components/Modals/UserPackagesModal";
-import { getbuisnesspackages } from "../../api/system-packages/systempackagesSlicer"
+import { getBusinessPackages } from "../../api/system-packages/systempackagesSlicer"
 
-export default function BuisnessPackage({onSelectedPackage}) {
+export default function BuisnessPackage({ onSelectedPackage }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [active, setActive] = useState(false);
@@ -28,7 +28,7 @@ export default function BuisnessPackage({onSelectedPackage}) {
 
 
   useEffect(() => {
-    dispatch(getbuisnesspackages())
+    dispatch(getBusinessPackages())
   }, [])
 
   useEffect(() => {

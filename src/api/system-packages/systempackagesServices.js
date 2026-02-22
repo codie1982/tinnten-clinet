@@ -4,11 +4,11 @@ const getuserpackages = async () => {
     const response = await axiosInstance.get("system-packages/user", {})
     return response.data;
 }
-const getbuisnesspackages = async () => {
-    const response = await axiosInstance.get("system-packages/buisness", {})
+const getBusinessPackages = async () => {
+    const response = await axiosInstance.get("system-packages/business", {})
     return response.data;
 }
 const systemPackagesService = {
-    getuserpackages,getbuisnesspackages
+    getuserpackages, getBusinessPackages
 }
 export default systemPackagesService

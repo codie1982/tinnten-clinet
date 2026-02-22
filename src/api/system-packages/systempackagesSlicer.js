@@ -21,11 +21,11 @@ export const getuserpackages = createAsyncThunk(
 )
 
 
-export const getbuisnesspackages = createAsyncThunk(
-    'systempackages/buisness',
+export const getBusinessPackages = createAsyncThunk(
+    'systempackages/business',
     async (data, thunkAPI) => {
         try {
-            return await systemPackagesService.getbuisnesspackages()
+            return await systemPackagesService.getBusinessPackages()
         } catch (error) {
             const message =
                 (error.response &&
@@ -76,16 +76,16 @@ export const systemPackagesSlice = createSlice({
                 state.system_packages = null;
                 state.message = action.payload.message
             })
-            .addCase(getbuisnesspackages.pending, (state) => {
+            .addCase(getBusinessPackages.pending, (state) => {
                 state.isConversationLoading = true
             })
-            .addCase(getbuisnesspackages.fulfilled, (state, action) => {
+            .addCase(getBusinessPackages.fulfilled, (state, action) => {
                 state.isConversationLoading = false
                 state.isSuccess = true
                 state.isError = false
                 state.system_buisness_packages = action.payload.data
             })
-            .addCase(getbuisnesspackages.rejected, (state, action) => {
+            .addCase(getBusinessPackages.rejected, (state, action) => {
                 state.isConversationLoading = false
                 state.isSuccess = false
                 state.isError = true
