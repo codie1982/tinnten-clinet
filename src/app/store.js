@@ -9,6 +9,7 @@ import streamReducer from '../api/stream/streamSlicer'
 import companysReducer from '../api/company/companySlicer'
 import dynamicformReducer from '../api/form/dynamicFormSlicer'
 import bidReducer from '../api/bid/bidSlicer'
+import contentReducer from '../api/content/contentSlicer'
 
 export const store = configureStore({
     reducer: {
@@ -22,5 +23,6 @@ export const store = configureStore({
         company: companysReducer,
         dynamicform: dynamicformReducer,
         bid: bidReducer,
+        content: contentReducer,
     }
 })
